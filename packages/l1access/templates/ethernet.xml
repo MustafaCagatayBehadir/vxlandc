@@ -1,0 +1,65 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+    <devices xmlns="http://tail-f.com/ns/ncs">
+        <device>
+            <name>{$DEVICE}</name>
+            <config>
+                <interface xmlns="http://tail-f.com/ned/cisco-nx">
+                    <Ethernet>
+                        <name>{$ETH_ID}</name>
+                        <enable>
+                            <switchport>true</switchport>
+                        </enable>
+                        <switchport>
+                            <?if {$PORT_MODE = 'trunk'}?>
+                            <mode>trunk</mode>
+                            <?end ?>
+                        </switchport>
+                        <?if {$SHUTDOWN = 'TRUE'}?>
+                        <shutdown />
+                        <?else ?>
+                        <shutdown tags="delete" />
+                        <?end ?>
+                        <description>{$DESCRIPTION}</description>
+                        <mtu>9216</mtu>
+                        <spanning-tree>
+                            <?if {$CONNECTION = 'host'}?>
+                            <bpduguard>enable</bpduguard>
+                            <?else ?>
+                            <guard>root</guard>
+                            <?end ?>
+                            <port>
+                                <type>edge</type>
+                                <?if {$PORT_MODE = 'trunk'}?>
+                                <trunk />
+                                <?end ?>
+                            </port>
+                        </spanning-tree>
+                        <storm-control>
+                            <broadcast>
+                                <level>{$BUM}</level>
+                            </broadcast>
+                            <unicast>
+                                <level>{$BUM}</level>
+                            </unicast>
+                            <multicast>
+                                <level>{$BUM}</level>
+                            </multicast>
+                            <action>
+                                <?if {$TRAP = 'TRUE'}?>
+                                <trap />
+                                <?else ?>
+                                <shutdown />
+                                <?end ?>
+                            </action>
+                        </storm-control>
+                        <?if {$VPC_NODE = 'TRUE'}?>
+                        <vpc>
+                            <orphan-port>suspend</orphan-port>
+                        </vpc>
+                        <?end ?>
+                    </Ethernet>
+                </interface>
+            </config>
+        </device>
+    </devices>
+</config-template>

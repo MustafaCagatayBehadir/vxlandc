@@ -1,0 +1,282 @@
+<devices xmlns="http://tail-f.com/ns/ncs">
+   <device>
+     <name>AVR-DSS1-BIP-BLF-SW-01</name>
+     <address>127.0.0.1</address>
+     <port>10022</port>
+     <ssh>
+       <host-key>
+         <algorithm>ssh-ed25519</algorithm>
+         <key-data>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDmgeyo7Kn1qQVL+zPo5cYMTD8DQQLqryq71LxpIrmha mustafa@ubuntu</key-data>
+       </host-key>
+       <host-key>
+         <algorithm>ssh-rsa</algorithm>
+         <key-data>ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC7qDlMO6ZLIu2Wg3Db4Ap55TRtYpJrpgVZdhPnvvXMZZNtTDNIxsDCCfGthJ/7Jsrqi7POG7on3gPPKQE2Q92eJ11CGmkWl0csrq1VdOB23UGR2AHAvhxSdQFkqiz2Ljnag0Oy6x5gMFrblTpfdxognBaXkxbxkNlpqoiVE1lspY6q95e+8YxxVtzWZkVB6ZTk4wDDG55+cgcUvmkj8ByQm1WHMbILsj4tqpdUZN25EtgXRLFKH2uFBAU634qsNrOD9InZ5Ca+qeOO0ZmXJHKhOqhyO/ucsx8zVAmC6Gp/epMvZ5nl9eK6nYXdMO2scwbOuYWTY6EsvRaCo0jLzteNE/154/C3phy/ichpNvW+4STJlKW0BixqinhY/VqTQ1ss/3yqc6aJAHYvHBLqTrcqhUWxIc4F9OtipEkISaSDZhkUkVpySWmS4RdBcBARaWpsw5FqzySR1+VuV/7xKna3b6wUyIeW2bfcNqpWNayRdUo1lhgXLz/Rr8EzeK6x0ZM= mustafa@ubuntu</key-data>
+       </host-key>
+     </ssh>
+     <ssh-algorithms>
+       <public-key>ssh-ed25519</public-key>
+       <public-key>ssh-rsa</public-key>
+     </ssh-algorithms>
+     <state>
+       <admin-state>unlocked</admin-state>
+     </state>
+     <authgroup>default</authgroup>
+     <device-type>
+       <cli>
+         
+       </cli>
+     </device-type>
+   </device>
+   <device>
+     <name>AVR-DSS1-BIP-BLF-SW-02</name>
+     <address>127.0.0.1</address>
+     <port>10023</port>
+     <ssh>
+       <host-key>
+         <algorithm>ssh-ed25519</algorithm>
+         <key-data>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDmgeyo7Kn1qQVL+zPo5cYMTD8DQQLqryq71LxpIrmha mustafa@ubuntu</key-data>
+       </host-key>
+       <host-key>
+         <algorithm>ssh-rsa</algorithm>
+         <key-data>ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC7qDlMO6ZLIu2Wg3Db4Ap55TRtYpJrpgVZdhPnvvXMZZNtTDNIxsDCCfGthJ/7Jsrqi7POG7on3gPPKQE2Q92eJ11CGmkWl0csrq1VdOB23UGR2AHAvhxSdQFkqiz2Ljnag0Oy6x5gMFrblTpfdxognBaXkxbxkNlpqoiVE1lspY6q95e+8YxxVtzWZkVB6ZTk4wDDG55+cgcUvmkj8ByQm1WHMbILsj4tqpdUZN25EtgXRLFKH2uFBAU634qsNrOD9InZ5Ca+qeOO0ZmXJHKhOqhyO/ucsx8zVAmC6Gp/epMvZ5nl9eK6nYXdMO2scwbOuYWTY6EsvRaCo0jLzteNE/154/C3phy/ichpNvW+4STJlKW0BixqinhY/VqTQ1ss/3yqc6aJAHYvHBLqTrcqhUWxIc4F9OtipEkISaSDZhkUkVpySWmS4RdBcBARaWpsw5FqzySR1+VuV/7xKna3b6wUyIeW2bfcNqpWNayRdUo1lhgXLz/Rr8EzeK6x0ZM= mustafa@ubuntu</key-data>
+       </host-key>
+     </ssh>
+     <ssh-algorithms>
+       <public-key>ssh-ed25519</public-key>
+       <public-key>ssh-rsa</public-key>
+     </ssh-algorithms>
+     <state>
+       <admin-state>unlocked</admin-state>
+     </state>
+     <authgroup>default</authgroup>
+     <device-type>
+       <cli>
+         
+       </cli>
+     </device-type>
+   </device>
+   <device>
+     <name>AVR-DSS1-BIP-SPN-SW-01</name>
+     <address>127.0.0.1</address>
+     <port>10024</port>
+     <ssh>
+       <host-key>
+         <algorithm>ssh-ed25519</algorithm>
+         <key-data>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDmgeyo7Kn1qQVL+zPo5cYMTD8DQQLqryq71LxpIrmha mustafa@ubuntu</key-data>
+       </host-key>
+       <host-key>
+         <algorithm>ssh-rsa</algorithm>
+         <key-data>ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC7qDlMO6ZLIu2Wg3Db4Ap55TRtYpJrpgVZdhPnvvXMZZNtTDNIxsDCCfGthJ/7Jsrqi7POG7on3gPPKQE2Q92eJ11CGmkWl0csrq1VdOB23UGR2AHAvhxSdQFkqiz2Ljnag0Oy6x5gMFrblTpfdxognBaXkxbxkNlpqoiVE1lspY6q95e+8YxxVtzWZkVB6ZTk4wDDG55+cgcUvmkj8ByQm1WHMbILsj4tqpdUZN25EtgXRLFKH2uFBAU634qsNrOD9InZ5Ca+qeOO0ZmXJHKhOqhyO/ucsx8zVAmC6Gp/epMvZ5nl9eK6nYXdMO2scwbOuYWTY6EsvRaCo0jLzteNE/154/C3phy/ichpNvW+4STJlKW0BixqinhY/VqTQ1ss/3yqc6aJAHYvHBLqTrcqhUWxIc4F9OtipEkISaSDZhkUkVpySWmS4RdBcBARaWpsw5FqzySR1+VuV/7xKna3b6wUyIeW2bfcNqpWNayRdUo1lhgXLz/Rr8EzeK6x0ZM= mustafa@ubuntu</key-data>
+       </host-key>
+     </ssh>
+     <ssh-algorithms>
+       <public-key>ssh-ed25519</public-key>
+       <public-key>ssh-rsa</public-key>
+     </ssh-algorithms>
+     <state>
+       <admin-state>unlocked</admin-state>
+     </state>
+     <authgroup>default</authgroup>
+     <device-type>
+       <cli>
+         
+       </cli>
+     </device-type>
+   </device>
+   <device>
+     <name>AVR-DSS1-BIP-SPN-SW-02</name>
+     <address>127.0.0.1</address>
+     <port>10025</port>
+     <ssh>
+       <host-key>
+         <algorithm>ssh-ed25519</algorithm>
+         <key-data>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDmgeyo7Kn1qQVL+zPo5cYMTD8DQQLqryq71LxpIrmha mustafa@ubuntu</key-data>
+       </host-key>
+       <host-key>
+         <algorithm>ssh-rsa</algorithm>
+         <key-data>ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC7qDlMO6ZLIu2Wg3Db4Ap55TRtYpJrpgVZdhPnvvXMZZNtTDNIxsDCCfGthJ/7Jsrqi7POG7on3gPPKQE2Q92eJ11CGmkWl0csrq1VdOB23UGR2AHAvhxSdQFkqiz2Ljnag0Oy6x5gMFrblTpfdxognBaXkxbxkNlpqoiVE1lspY6q95e+8YxxVtzWZkVB6ZTk4wDDG55+cgcUvmkj8ByQm1WHMbILsj4tqpdUZN25EtgXRLFKH2uFBAU634qsNrOD9InZ5Ca+qeOO0ZmXJHKhOqhyO/ucsx8zVAmC6Gp/epMvZ5nl9eK6nYXdMO2scwbOuYWTY6EsvRaCo0jLzteNE/154/C3phy/ichpNvW+4STJlKW0BixqinhY/VqTQ1ss/3yqc6aJAHYvHBLqTrcqhUWxIc4F9OtipEkISaSDZhkUkVpySWmS4RdBcBARaWpsw5FqzySR1+VuV/7xKna3b6wUyIeW2bfcNqpWNayRdUo1lhgXLz/Rr8EzeK6x0ZM= mustafa@ubuntu</key-data>
+       </host-key>
+     </ssh>
+     <ssh-algorithms>
+       <public-key>ssh-ed25519</public-key>
+       <public-key>ssh-rsa</public-key>
+     </ssh-algorithms>
+     <state>
+       <admin-state>unlocked</admin-state>
+     </state>
+     <authgroup>default</authgroup>
+     <device-type>
+       <cli>
+         
+       </cli>
+     </device-type>
+   </device>
+   <device>
+     <name>AVR-DSS1-BIP-SW-01</name>
+     <address>127.0.0.1</address>
+     <port>10026</port>
+     <ssh>
+       <host-key>
+         <algorithm>ssh-ed25519</algorithm>
+         <key-data>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDmgeyo7Kn1qQVL+zPo5cYMTD8DQQLqryq71LxpIrmha mustafa@ubuntu</key-data>
+       </host-key>
+       <host-key>
+         <algorithm>ssh-rsa</algorithm>
+         <key-data>ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC7qDlMO6ZLIu2Wg3Db4Ap55TRtYpJrpgVZdhPnvvXMZZNtTDNIxsDCCfGthJ/7Jsrqi7POG7on3gPPKQE2Q92eJ11CGmkWl0csrq1VdOB23UGR2AHAvhxSdQFkqiz2Ljnag0Oy6x5gMFrblTpfdxognBaXkxbxkNlpqoiVE1lspY6q95e+8YxxVtzWZkVB6ZTk4wDDG55+cgcUvmkj8ByQm1WHMbILsj4tqpdUZN25EtgXRLFKH2uFBAU634qsNrOD9InZ5Ca+qeOO0ZmXJHKhOqhyO/ucsx8zVAmC6Gp/epMvZ5nl9eK6nYXdMO2scwbOuYWTY6EsvRaCo0jLzteNE/154/C3phy/ichpNvW+4STJlKW0BixqinhY/VqTQ1ss/3yqc6aJAHYvHBLqTrcqhUWxIc4F9OtipEkISaSDZhkUkVpySWmS4RdBcBARaWpsw5FqzySR1+VuV/7xKna3b6wUyIeW2bfcNqpWNayRdUo1lhgXLz/Rr8EzeK6x0ZM= mustafa@ubuntu</key-data>
+       </host-key>
+     </ssh>
+     <ssh-algorithms>
+       <public-key>ssh-ed25519</public-key>
+       <public-key>ssh-rsa</public-key>
+     </ssh-algorithms>
+     <state>
+       <admin-state>unlocked</admin-state>
+     </state>
+     <authgroup>default</authgroup>
+     <device-type>
+       <cli>
+         
+       </cli>
+     </device-type>
+   </device>
+   <device>
+     <name>AVR-DSS1-BIP-SW-02</name>
+     <address>127.0.0.1</address>
+     <port>10027</port>
+     <ssh>
+       <host-key>
+         <algorithm>ssh-ed25519</algorithm>
+         <key-data>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDmgeyo7Kn1qQVL+zPo5cYMTD8DQQLqryq71LxpIrmha mustafa@ubuntu</key-data>
+       </host-key>
+       <host-key>
+         <algorithm>ssh-rsa</algorithm>
+         <key-data>ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC7qDlMO6ZLIu2Wg3Db4Ap55TRtYpJrpgVZdhPnvvXMZZNtTDNIxsDCCfGthJ/7Jsrqi7POG7on3gPPKQE2Q92eJ11CGmkWl0csrq1VdOB23UGR2AHAvhxSdQFkqiz2Ljnag0Oy6x5gMFrblTpfdxognBaXkxbxkNlpqoiVE1lspY6q95e+8YxxVtzWZkVB6ZTk4wDDG55+cgcUvmkj8ByQm1WHMbILsj4tqpdUZN25EtgXRLFKH2uFBAU634qsNrOD9InZ5Ca+qeOO0ZmXJHKhOqhyO/ucsx8zVAmC6Gp/epMvZ5nl9eK6nYXdMO2scwbOuYWTY6EsvRaCo0jLzteNE/154/C3phy/ichpNvW+4STJlKW0BixqinhY/VqTQ1ss/3yqc6aJAHYvHBLqTrcqhUWxIc4F9OtipEkISaSDZhkUkVpySWmS4RdBcBARaWpsw5FqzySR1+VuV/7xKna3b6wUyIeW2bfcNqpWNayRdUo1lhgXLz/Rr8EzeK6x0ZM= mustafa@ubuntu</key-data>
+       </host-key>
+     </ssh>
+     <ssh-algorithms>
+       <public-key>ssh-ed25519</public-key>
+       <public-key>ssh-rsa</public-key>
+     </ssh-algorithms>
+     <state>
+       <admin-state>unlocked</admin-state>
+     </state>
+     <authgroup>default</authgroup>
+     <device-type>
+       <cli>
+         
+       </cli>
+     </device-type>
+   </device>
+   <device>
+     <name>AVR-DSS1-BIP-SW-03</name>
+     <address>127.0.0.1</address>
+     <port>10028</port>
+     <ssh>
+       <host-key>
+         <algorithm>ssh-ed25519</algorithm>
+         <key-data>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDmgeyo7Kn1qQVL+zPo5cYMTD8DQQLqryq71LxpIrmha mustafa@ubuntu</key-data>
+       </host-key>
+       <host-key>
+         <algorithm>ssh-rsa</algorithm>
+         <key-data>ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC7qDlMO6ZLIu2Wg3Db4Ap55TRtYpJrpgVZdhPnvvXMZZNtTDNIxsDCCfGthJ/7Jsrqi7POG7on3gPPKQE2Q92eJ11CGmkWl0csrq1VdOB23UGR2AHAvhxSdQFkqiz2Ljnag0Oy6x5gMFrblTpfdxognBaXkxbxkNlpqoiVE1lspY6q95e+8YxxVtzWZkVB6ZTk4wDDG55+cgcUvmkj8ByQm1WHMbILsj4tqpdUZN25EtgXRLFKH2uFBAU634qsNrOD9InZ5Ca+qeOO0ZmXJHKhOqhyO/ucsx8zVAmC6Gp/epMvZ5nl9eK6nYXdMO2scwbOuYWTY6EsvRaCo0jLzteNE/154/C3phy/ichpNvW+4STJlKW0BixqinhY/VqTQ1ss/3yqc6aJAHYvHBLqTrcqhUWxIc4F9OtipEkISaSDZhkUkVpySWmS4RdBcBARaWpsw5FqzySR1+VuV/7xKna3b6wUyIeW2bfcNqpWNayRdUo1lhgXLz/Rr8EzeK6x0ZM= mustafa@ubuntu</key-data>
+       </host-key>
+     </ssh>
+     <ssh-algorithms>
+       <public-key>ssh-ed25519</public-key>
+       <public-key>ssh-rsa</public-key>
+     </ssh-algorithms>
+     <state>
+       <admin-state>unlocked</admin-state>
+     </state>
+     <authgroup>default</authgroup>
+     <device-type>
+       <cli>
+         
+       </cli>
+     </device-type>
+   </device>
+   <device>
+     <name>AVR-DSS1-BIP-SW-04</name>
+     <address>127.0.0.1</address>
+     <port>10029</port>
+     <ssh>
+       <host-key>
+         <algorithm>ssh-ed25519</algorithm>
+         <key-data>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDmgeyo7Kn1qQVL+zPo5cYMTD8DQQLqryq71LxpIrmha mustafa@ubuntu</key-data>
+       </host-key>
+       <host-key>
+         <algorithm>ssh-rsa</algorithm>
+         <key-data>ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC7qDlMO6ZLIu2Wg3Db4Ap55TRtYpJrpgVZdhPnvvXMZZNtTDNIxsDCCfGthJ/7Jsrqi7POG7on3gPPKQE2Q92eJ11CGmkWl0csrq1VdOB23UGR2AHAvhxSdQFkqiz2Ljnag0Oy6x5gMFrblTpfdxognBaXkxbxkNlpqoiVE1lspY6q95e+8YxxVtzWZkVB6ZTk4wDDG55+cgcUvmkj8ByQm1WHMbILsj4tqpdUZN25EtgXRLFKH2uFBAU634qsNrOD9InZ5Ca+qeOO0ZmXJHKhOqhyO/ucsx8zVAmC6Gp/epMvZ5nl9eK6nYXdMO2scwbOuYWTY6EsvRaCo0jLzteNE/154/C3phy/ichpNvW+4STJlKW0BixqinhY/VqTQ1ss/3yqc6aJAHYvHBLqTrcqhUWxIc4F9OtipEkISaSDZhkUkVpySWmS4RdBcBARaWpsw5FqzySR1+VuV/7xKna3b6wUyIeW2bfcNqpWNayRdUo1lhgXLz/Rr8EzeK6x0ZM= mustafa@ubuntu</key-data>
+       </host-key>
+     </ssh>
+     <ssh-algorithms>
+       <public-key>ssh-ed25519</public-key>
+       <public-key>ssh-rsa</public-key>
+     </ssh-algorithms>
+     <state>
+       <admin-state>unlocked</admin-state>
+     </state>
+     <authgroup>default</authgroup>
+     <device-type>
+       <cli>
+         
+       </cli>
+     </device-type>
+   </device>
+   <device>
+     <name>AVR-DSS1-BIP-SW-05</name>
+     <address>127.0.0.1</address>
+     <port>10030</port>
+     <ssh>
+       <host-key>
+         <algorithm>ssh-ed25519</algorithm>
+         <key-data>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDmgeyo7Kn1qQVL+zPo5cYMTD8DQQLqryq71LxpIrmha mustafa@ubuntu</key-data>
+       </host-key>
+       <host-key>
+         <algorithm>ssh-rsa</algorithm>
+         <key-data>ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC7qDlMO6ZLIu2Wg3Db4Ap55TRtYpJrpgVZdhPnvvXMZZNtTDNIxsDCCfGthJ/7Jsrqi7POG7on3gPPKQE2Q92eJ11CGmkWl0csrq1VdOB23UGR2AHAvhxSdQFkqiz2Ljnag0Oy6x5gMFrblTpfdxognBaXkxbxkNlpqoiVE1lspY6q95e+8YxxVtzWZkVB6ZTk4wDDG55+cgcUvmkj8ByQm1WHMbILsj4tqpdUZN25EtgXRLFKH2uFBAU634qsNrOD9InZ5Ca+qeOO0ZmXJHKhOqhyO/ucsx8zVAmC6Gp/epMvZ5nl9eK6nYXdMO2scwbOuYWTY6EsvRaCo0jLzteNE/154/C3phy/ichpNvW+4STJlKW0BixqinhY/VqTQ1ss/3yqc6aJAHYvHBLqTrcqhUWxIc4F9OtipEkISaSDZhkUkVpySWmS4RdBcBARaWpsw5FqzySR1+VuV/7xKna3b6wUyIeW2bfcNqpWNayRdUo1lhgXLz/Rr8EzeK6x0ZM= mustafa@ubuntu</key-data>
+       </host-key>
+     </ssh>
+     <ssh-algorithms>
+       <public-key>ssh-ed25519</public-key>
+       <public-key>ssh-rsa</public-key>
+     </ssh-algorithms>
+     <state>
+       <admin-state>unlocked</admin-state>
+     </state>
+     <authgroup>default</authgroup>
+     <device-type>
+       <cli>
+         
+       </cli>
+     </device-type>
+   </device>
+   <device>
+     <name>AVR-DSS1-BIP-SW-06</name>
+     <address>127.0.0.1</address>
+     <port>10031</port>
+     <ssh>
+       <host-key>
+         <algorithm>ssh-ed25519</algorithm>
+         <key-data>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDmgeyo7Kn1qQVL+zPo5cYMTD8DQQLqryq71LxpIrmha mustafa@ubuntu</key-data>
+       </host-key>
+       <host-key>
+         <algorithm>ssh-rsa</algorithm>
+         <key-data>ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC7qDlMO6ZLIu2Wg3Db4Ap55TRtYpJrpgVZdhPnvvXMZZNtTDNIxsDCCfGthJ/7Jsrqi7POG7on3gPPKQE2Q92eJ11CGmkWl0csrq1VdOB23UGR2AHAvhxSdQFkqiz2Ljnag0Oy6x5gMFrblTpfdxognBaXkxbxkNlpqoiVE1lspY6q95e+8YxxVtzWZkVB6ZTk4wDDG55+cgcUvmkj8ByQm1WHMbILsj4tqpdUZN25EtgXRLFKH2uFBAU634qsNrOD9InZ5Ca+qeOO0ZmXJHKhOqhyO/ucsx8zVAmC6Gp/epMvZ5nl9eK6nYXdMO2scwbOuYWTY6EsvRaCo0jLzteNE/154/C3phy/ichpNvW+4STJlKW0BixqinhY/VqTQ1ss/3yqc6aJAHYvHBLqTrcqhUWxIc4F9OtipEkISaSDZhkUkVpySWmS4RdBcBARaWpsw5FqzySR1+VuV/7xKna3b6wUyIeW2bfcNqpWNayRdUo1lhgXLz/Rr8EzeK6x0ZM= mustafa@ubuntu</key-data>
+       </host-key>
+     </ssh>
+     <ssh-algorithms>
+       <public-key>ssh-ed25519</public-key>
+       <public-key>ssh-rsa</public-key>
+     </ssh-algorithms>
+     <state>
+       <admin-state>unlocked</admin-state>
+     </state>
+     <authgroup>default</authgroup>
+     <device-type>
+       <cli>
+         
+       </cli>
+     </device-type>
+   </device>
+</devices>

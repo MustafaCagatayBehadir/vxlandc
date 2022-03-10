@@ -1,0 +1,278 @@
+module l2access {
+
+    yang-version 1.1;
+    namespace "http://turkcell.com.tr/l2access";
+    prefix l2access;
+
+    import ietf-inet-types {
+        prefix inet;
+    }
+    import tailf-common {
+        prefix tailf;
+    }
+    import tailf-ncs {
+        prefix ncs;
+    }
+    import vxlandc-core {
+        prefix vxlandc-core;
+    }
+    import l1access {
+        prefix l1access;
+    }
+
+    description
+      "VXLAN EVPN Datacenter l2vni RFS service";
+
+    revision 2022-01-17 {
+        description
+          "Initial revision.";
+    }
+
+    typedef vlan {
+        type uint16 {
+            range "1..4094";
+        }
+        description
+          "Typedef for VLAN";
+    }
+
+    typedef vxlan-id {
+        type uint32;
+        description
+          "Typedef for VxLAN ID.";
+    }
+
+    identity id-allocated {
+        base ncs:plan-state;
+    }
+
+    identity l2-fabric-service-configured {
+        base ncs:plan-state;
+    }
+
+    ncs:plan-outline l2-fabric-service-plan {
+        description
+          "L2 Fabric Service Plan";
+
+        ncs:component-type "ncs:self" {
+            ncs:state "ncs:init";
+
+            ncs:state "l2access:id-allocated" {
+                ncs:create {
+                    ncs:nano-callback;
+                }
+            }
+
+            ncs:state "l2access:l2-fabric-service-configured" {
+                ncs:create {
+                    ncs:pre-condition {
+                        ncs:all {
+                            ncs:monitor  "$SERVICE/plan/component[type='ncs:self'][name='self']/state[name='l2access:id-allocated']" {
+                                ncs:trigger-expr "status = 'reached'";
+                            }
+                            ncs:monitor "$SERVICE" {
+                                ncs:trigger-expr "approved = 'true'";
+                            }
+                        }
+                    }
+                    ncs:nano-callback;
+                }
+            }
+
+            ncs:state "ncs:ready";
+        }
+    }
+
+    ncs:service-behavior-tree l2-fabric-service-servicepoint {
+        description
+          "L2 Fabric Service Behavior Tree";
+        ncs:plan-outline-ref "l2-fabric-service-plan";
+
+        ncs:selector {
+            ncs:create-component "'self'" {
+                ncs:component-type-ref "ncs:self";
+            }
+        }
+    }
+
+    grouping l2-fabric-services {
+
+        container l2-fabric-services {
+            description
+              "L2 Fabric Service Configuration Container";
+            tailf:info "L2 Fabric Service Configurations";
+
+            list l2-fabric-service {
+
+                uses ncs:nano-plan-data;
+                uses ncs:service-data;
+                ncs:servicepoint l2-fabric-service-servicepoint;
+
+                key "name";
+
+                leaf name {
+                    description
+                      "Service Name.May take form of Service ID";
+                    tailf:info "Service Name.May take form of Service ID";
+                    type string;
+                }
+
+                leaf description {
+                    tailf:info "This description is auto-generated, use this field to overwrite the default behavior.";
+                    type string {
+                        length "1..128";
+                    }
+                }
+
+                leaf vlan-id {
+                    tailf:info "Vlan id is allocated by resource-manager, use this field to overwrite the default behavior.";
+                    type vlan;
+                }
+
+                leaf vni-id {
+                    tailf:info "Vni id is allocated by resource-manager, use this field to overwrite the default behavior.";
+                    type vxlan-id;
+                }
+
+                leaf site {
+                    tailf:hidden "Just for convenience";
+                    type string;
+                    tailf:default-ref "../../../../../vxlandc-core:fabric";
+                }
+
+                leaf mcast-group {
+                    tailf:hidden "Just for convenience";
+                    type inet:ipv4-address;
+                    tailf:default-ref "../../../../../vxlandc-core:fabric-parameters/vxlandc-core:mcast-group";
+                }
+
+                leaf tenant {
+                    tailf:hidden "Just for convenience";
+                    type string;
+                    tailf:default-ref "../../../vxlandc-core:name";
+                }
+
+                container endpoint-groups {
+                    description
+                      "L2 Access Service Internal Endpoint Groups";
+                    tailf:info "L2 Fabric Service Endpoint Group Configurations";
+
+                    list tenant-endpoint-group {
+                        description
+                          "L2 Fabric Service Tenant Endpoint Groups";
+                        tailf:info "L2 Fabric Service Endpoint Group Configuration";
+
+                        key name;
+
+                        leaf name {
+                            tailf:info "Tenant Port Group Name";
+                            type leafref {
+                                path "../../../../../l1access:port-groups/l1access:port-group/l1access:name";
+                            }
+                        }
+
+                        leaf mode {
+                            must "current() = deref(current()/../name)/../l1access:mode" {
+                                tailf:dependency ".";
+                                tailf:dependency "../name";
+                                error-message
+                                  "Port group mode must match with the service encap mode";
+                            }
+                            tailf:info "Port Mode.It can be Access | Native | Trunk";
+                            type enumeration {
+                                enum access;
+                                enum trunk;
+                            }
+                            mandatory true;
+                        }
+
+                        leaf device {
+                            when "deref(current()/../name)/../type = 'ethernet' or deref(current()/../name)/../type = 'port-channel'" {
+                                tailf:dependency "../name";
+                            }
+                            tailf:hidden "Just for convenience";
+                            type string;
+                        }
+
+                        leaf device-group {
+                            when "deref(current()/../name)/../type = 'vpc-port-channel'" {
+                                tailf:dependency "../name";
+                            }
+                            tailf:hidden "Just for convenience";
+                            type uint16;
+                        }
+                    }
+
+                    list external-tenant-endpoint-group {
+                        description
+                          "L2 Access Service External Endpoint Groups";
+                        tailf:info "L2 Fabric Service External Endpoint Group Configurations";
+
+                        key "tenant name";
+
+                        leaf tenant {
+                            must "not(current() = ../../../../../vxlandc-core:name)" {
+                                error-message
+                                  "Targeted tenant needs to be different than current tenant.";
+                            }
+                            tailf:info "External Tenant Name";
+                            type leafref {
+                                path "/vxlandc-core:vxlandc/vxlandc-core:sites/vxlandc-core:site/vxlandc-core:tenants/vxlandc-core:tenant/vxlandc-core:name";
+                            }
+                        }
+
+                        leaf name {
+                            tailf:info "External Tenant Port Group Name";
+                            type leafref {
+                                path "/vxlandc-core:vxlandc/vxlandc-core:sites/vxlandc-core:site/vxlandc-core:tenants/vxlandc-core:tenant[vxlandc-core:name=current()/../tenant]"
+                                + "/l1access:port-groups/l1access:port-group/l1access:name";
+                            }
+                        }
+
+                        leaf mode {
+                            must "current() = deref(current()/../name)/../l1access:mode" {
+                                tailf:dependency ".";
+                                tailf:dependency "../name";
+                                error-message
+                                  "Port group mode must match with the service encap mode";
+                            }
+                            tailf:info "Port Mode.It can be Access | Native | Trunk";
+                            type enumeration {
+                                enum access;
+                                enum trunk;
+                            }
+                            mandatory true;
+                        }
+
+                        leaf device {
+                            when "deref(current()/../name)/../type = 'ethernet' or deref(current()/../name)/../type = 'port-channel'" {
+                                tailf:dependency "../name";
+                            }
+                            tailf:hidden "Just for convenience";
+                            type string;
+                        }
+
+                        leaf device-group {
+                            when "deref(current()/../name)/../type = 'vpc-port-channel'" {
+                                tailf:dependency "../name";
+                            }
+                            tailf:hidden "Just for convenience";
+                            type uint16;
+                        }
+                    }
+                }
+
+                leaf approved {
+                    tailf:info "Approved will set to true if id is allocated";
+                    type boolean;
+                    default false;
+                }
+            }
+        }
+    }
+
+    augment "/vxlandc-core:vxlandc/vxlandc-core:sites/vxlandc-core:site/vxlandc-core:tenants/vxlandc-core:tenant" {
+        uses l2-fabric-services;
+    }
+}
+

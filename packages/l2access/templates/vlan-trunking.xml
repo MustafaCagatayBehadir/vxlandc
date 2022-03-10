@@ -1,0 +1,51 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+    <devices xmlns="http://tail-f.com/ns/ncs">
+        <device>
+            <name>{$DEVICE}</name>
+            <config>
+                <interface xmlns="http://tail-f.com/ned/cisco-nx">
+                    <?if {$PORT_TYPE != 'ethernet'}?>
+                    <port-channel>
+                        <name>{$PO_ID}</name>
+                        <switchport>
+                            <?if {$PORT_MODE = 'access'}?>
+                            <access>
+                                <vlan>{$VLAN_ID}</vlan>
+                            </access>
+                            <?else ?>
+                            <trunk>
+                                <allowed>
+                                    <vlan>
+                                        <ids>{$VLAN_ID}</ids>
+                                    </vlan>
+                                </allowed>
+                            </trunk>
+                            <?end ?>
+                        </switchport>
+                    </port-channel>
+                    <?else ?>
+                    <Ethernet>
+                        <name>{$ETH_ID}</name>
+                        <switchport>
+                            <?if {$PORT_MODE = 'access'}?>
+                            <access>
+                                <vlan>{$VLAN_ID}</vlan>
+                            </access>
+                            <?else ?>
+                            <trunk>
+                                <allowed>
+                                    <vlan>
+                                        <ids>{$VLAN_ID}</ids>
+                                    </vlan>
+                                </allowed>
+                            </trunk>
+                            <?end ?>
+                        </switchport>
+                    </Ethernet>
+                    <?end ?>
+                </interface>
+            </config>
+        </device>
+    </devices>
+</config-template>
+  

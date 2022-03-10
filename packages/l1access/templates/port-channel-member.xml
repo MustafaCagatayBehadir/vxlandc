@@ -1,0 +1,25 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$DEVICE}</name>
+      <config>
+        <interface xmlns="http://tail-f.com/ned/cisco-nx">
+          <Ethernet>
+            <name>{$ETH_ID}</name>
+            <channel-group>
+              <id>{$PO_ID}</id>
+              <mode>active</mode>
+            </channel-group>
+            <?if {$SHUTDOWN = 'TRUE'}?>
+            <shutdown />
+            <?else ?>
+            <shutdown tags="delete" />
+            <?end ?>
+            <description>{$PO_MEMBER_DESCRIPTION}</description>
+            <mtu>9216</mtu>
+          </Ethernet>
+        </interface>
+      </config>
+    </device>
+  </devices>
+</config-template>

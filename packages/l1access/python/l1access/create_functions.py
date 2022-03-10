@@ -105,8 +105,15 @@ def allocate_po_id(root, port, tctx, log):
         tctx: transaction context (TransCtxRef)
         log: log object(self.log)
     """
-    if port.port_type != 'ethernet':
+    if port.port_type == 'port-channel':
         requested_id = port.port_channel.port_channel_id if port.port_channel.port_channel_id else -1
+        svc_xpath = "/vxlandc-core:vxlandc/sites/site[fabric='{}']/tenants/tenant[name='{}']/l1access:ports/l1access:port[l1access:name='{}']"
+        svc_xpath = svc_xpath.format(port.site, port.tenant, port.name)
+        id_allocator.id_request(port, svc_xpath, tctx.username, helpers.get_port_channel_id_pool_name(
+            root, port), f'{port.site}::{port.tenant}::{port.name}', False, requested_id)
+        log.info(f'Port-Channel id is requested for port {port.name}')
+    elif port.port_type == 'vpc-port-channel':
+        requested_id = port.vpc_port_channel.port_channel_id if port.vpc_port_channel.port_channel_id else -1
         svc_xpath = "/vxlandc-core:vxlandc/sites/site[fabric='{}']/tenants/tenant[name='{}']/l1access:ports/l1access:port[l1access:name='{}']"
         svc_xpath = svc_xpath.format(port.site, port.tenant, port.name)
         id_allocator.id_request(port, svc_xpath, tctx.username, helpers.get_port_channel_id_pool_name(

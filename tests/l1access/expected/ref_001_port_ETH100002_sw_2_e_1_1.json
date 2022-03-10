@@ -5,29 +5,41 @@
             "enable": {
                 "switchport": true
             },
-            "description": "CUSTOM_DESCRIPTION_ETH100003",
+            "switchport": {
+                "mode": "trunk"
+            },
+            "shutdown": [
+                null
+            ],
+            "description": "0001_TURKCELL_ETH100002_TRUNK_10G_ETH",
             "mtu": 9216,
             "spanning-tree": {
-                "bpduguard": "enable",
+                "guard": "root",
                 "port": {
-                    "type": "edge"
+                    "type": "edge",
+                    "trunk": [
+                        null
+                    ]
                 }
             },
             "storm-control": {
                 "broadcast": {
-                    "level": "10.0"
+                    "level": "2.0"
                 },
                 "unicast": {
-                    "level": "10.0"
+                    "level": "2.0"
                 },
                 "multicast": {
-                    "level": "10.0"
+                    "level": "2.0"
                 },
                 "action": {
-                    "shutdown": [
+                    "trap": [
                         null
                     ]
                 }
+            },
+            "vpc": {
+                "orphan-port": "suspend"
             }
         }
     ]

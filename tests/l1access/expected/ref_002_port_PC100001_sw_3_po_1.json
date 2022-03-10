@@ -6,14 +6,17 @@
                 "switchport": true
             },
             "switchport": {
-                "mode": "access"
+                "mode": "trunk"
             },
-            "description": "0001_TURKCELL_PC100001_ACCESS_100G_PC",
+            "description": "0001_TURKCELL_PC100001_TRUNK_100G_PC",
             "mtu": 9216,
             "spanning-tree": {
                 "bpduguard": "enable",
                 "port": {
-                    "type": "edge"
+                    "type": "edge",
+                    "trunk": [
+                        null
+                    ]
                 }
             },
             "storm-control": {

@@ -1,14 +1,17 @@
 {
-    "tailf-ned-cisco-nx:port-channel": [
+    "tailf-ned-cisco-nx:Ethernet": [
         {
-            "name": "2",
+            "name": "1/2",
             "enable": {
                 "switchport": true
             },
             "switchport": {
                 "mode": "trunk"
             },
-            "description": "CUSTOM_DESCRIPTION_PC100002",
+            "shutdown": [
+                null
+            ],
+            "description": "0001_TURKCELL_ETH100002_TRUNK_10G_ETH",
             "mtu": 9216,
             "spanning-tree": {
                 "guard": "root",
@@ -34,6 +37,9 @@
                         null
                     ]
                 }
+            },
+            "vpc": {
+                "orphan-port": "suspend"
             }
         }
     ]

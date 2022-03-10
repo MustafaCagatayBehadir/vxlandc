@@ -3,10 +3,13 @@
         {
             "name": "1/10",
             "channel-group": {
-                "id": 2,
+                "id": 1,
                 "mode": "active"
             },
-            "description": "PO2_MEMBER_ETH_1/10",
+            "shutdown": [
+                null
+            ],
+            "description": "PO1_MEMBER_ETH_1/10",
             "mtu": 9216
         }
     ]

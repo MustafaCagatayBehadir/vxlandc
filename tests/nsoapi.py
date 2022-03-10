@@ -2,6 +2,9 @@ import logging
 import requests
 import json
 
+
+logfile = 'logs/nsoapi.log'
+logging.basicConfig(filename=logfile, level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
@@ -100,5 +103,4 @@ class NsoRestconfCall:
 
         url = f"http://{self.ip}:{self.port}/restconf/data/{path}"
         resp = requests.delete(url, auth=self.auth)
-        self._check_restconf_call_return(resp)
         return resp

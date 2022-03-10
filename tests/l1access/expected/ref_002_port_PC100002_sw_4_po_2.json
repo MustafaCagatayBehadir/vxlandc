@@ -1,0 +1,40 @@
+{
+    "tailf-ned-cisco-nx:port-channel": [
+        {
+            "name": "2",
+            "enable": {
+                "switchport": true
+            },
+            "switchport": {
+                "mode": "trunk"
+            },
+            "description": "CUSTOM_DESCRIPTION_PC100002",
+            "mtu": 9216,
+            "spanning-tree": {
+                "guard": "root",
+                "port": {
+                    "type": "edge",
+                    "trunk": [
+                        null
+                    ]
+                }
+            },
+            "storm-control": {
+                "broadcast": {
+                    "level": "2.0"
+                },
+                "unicast": {
+                    "level": "2.0"
+                },
+                "multicast": {
+                    "level": "2.0"
+                },
+                "action": {
+                    "trap": [
+                        null
+                    ]
+                }
+            }
+        }
+    ]
+}

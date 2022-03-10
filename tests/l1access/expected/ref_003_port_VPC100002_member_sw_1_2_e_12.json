@@ -1,0 +1,13 @@
+{
+    "tailf-ned-cisco-nx:Ethernet": [
+        {
+            "name": "1/12",
+            "channel-group": {
+                "id": 20,
+                "mode": "active"
+            },
+            "description": "PO20_MEMBER_ETH_1/12",
+            "mtu": 9216
+        }
+    ]
+}

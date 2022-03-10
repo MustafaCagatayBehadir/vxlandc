@@ -1,0 +1,40 @@
+{
+    "tailf-ned-cisco-nx:port-channel": [
+        {
+            "name": "1",
+            "enable": {
+                "switchport": true
+            },
+            "switchport": {
+                "mode": "access"
+            },
+            "shutdown": [
+                null
+            ],
+            "description": "0001_TURKCELL_PC100001_ACCESS_100G_PC",
+            "mtu": 9216,
+            "spanning-tree": {
+                "bpduguard": "enable",
+                "port": {
+                    "type": "edge"
+                }
+            },
+            "storm-control": {
+                "broadcast": {
+                    "level": "0.5"
+                },
+                "unicast": {
+                    "level": "0.5"
+                },
+                "multicast": {
+                    "level": "0.5"
+                },
+                "action": {
+                    "trap": [
+                        null
+                    ]
+                }
+            }
+        }
+    ]
+}

@@ -1,0 +1,40 @@
+{
+    "tailf-ned-cisco-nx:Ethernet": [
+        {
+            "name": "1/1",
+            "enable": {
+                "switchport": true
+            },
+            "shutdown": [
+                null
+            ],
+            "description": "CUSTOM_DESCRIPTION_ETH100001",
+            "mtu": 9216,
+            "spanning-tree": {
+                "bpduguard": "enable",
+                "port": {
+                    "type": "edge"
+                }
+            },
+            "storm-control": {
+                "broadcast": {
+                    "level": "10.0"
+                },
+                "unicast": {
+                    "level": "10.0"
+                },
+                "multicast": {
+                    "level": "10.0"
+                },
+                "action": {
+                    "trap": [
+                        null
+                    ]
+                }
+            },
+            "vpc": {
+                "orphan-port": "suspend"
+            }
+        }
+    ]
+}

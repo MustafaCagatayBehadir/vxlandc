@@ -1,0 +1,33 @@
+{
+    "tailf-ncs:devices": {
+        "device": [
+            {
+                "name": "AVR-DSS1-BIP-SW-05",
+                "config": {
+                    "tailf-ned-cisco-nx:vlan": {
+                        "vlan-list": [
+                            {
+                                "id": 1
+                            },
+                            {
+                                "id": 2,
+                                "name": "L2-VLAN-SERVICE-1",
+                                "vn-segment": 60000
+                            },
+                            {
+                                "id": 3,
+                                "name": "L2-VLAN-SERVICE-2",
+                                "vn-segment": 60001
+                            },
+                            {
+                                "id": 4,
+                                "name": "L2-VLAN-SERVICE-3",
+                                "vn-segment": 60002
+                            }
+                        ]
+                    }
+                }
+            }
+        ]
+    }
+}

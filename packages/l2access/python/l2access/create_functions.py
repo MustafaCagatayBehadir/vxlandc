@@ -37,10 +37,10 @@ def create_l2access_parameters_tenant_epg(root, tctx, l2access, vlan_trunking_pa
     tenant_epg = l2access.endpoint_groups.tenant_endpoint_group
     port_groups = tenant.l1access__port_groups
     ports = tenant.l1access__ports
-    vni_id = id_allocator.id_read(
-        tctx.username, root, helpers.get_vni_id_pool_name(root, l2access), l2access.name)
+    vni_id = id_allocator.id_read(tctx.username, root, helpers.get_vni_id_pool_name(
+        root, l2access), f'{l2access.site}::{l2access.tenant}::{l2access.name}')
     vlan_id = id_allocator.id_read(
-        tctx.username, root, helpers.get_vlan_id_pool_name(root, l2access), l2access.name)
+        tctx.username, root, helpers.get_vlan_id_pool_name(root, l2access), f'{l2access.site}::{l2access.tenant}::{l2access.name}')
     for epg in tenant_epg:
         for port_name in port_groups.port_group[epg.name].port:
             vlan_trunking_dict = vlan_trunking_parameters[ports.port[port_name].name]
@@ -99,7 +99,9 @@ def create_l2access_parameters_external_tenant_epg(root, tctx, l2access, vlan_tr
     """
     external_tenant_epg = l2access.endpoint_groups.external_tenant_endpoint_group
     vni_id = id_allocator.id_read(
-        tctx.username, root, helpers.get_vni_id_pool_name(root, l2access), l2access.name)
+        tctx.username, root, helpers.get_vni_id_pool_name(root, l2access), f'{l2access.site}::{l2access.tenant}::{l2access.name}')
+    vlan_id = id_allocator.id_read(
+        tctx.username, root, helpers.get_vlan_id_pool_name(root, l2access), f'{l2access.site}::{l2access.tenant}::{l2access.name}')
     for epg in external_tenant_epg:
         tenant = root.vxlandc_core__vxlandc.vxlandc_core__sites.vxlandc_core__site[
             l2access.site].vxlandc_core__tenants.vxlandc_core__tenant[epg.tenant]
@@ -109,8 +111,6 @@ def create_l2access_parameters_external_tenant_epg(root, tctx, l2access, vlan_tr
             vlan_trunking_dict = vlan_trunking_parameters[ports.port[port_name].name]
             vlan_trunking_dict['mode'] = ports.port[port_name].mode.string
             if ports.port[port_name].port_type == 'ethernet':
-                vlan_id = id_allocator.id_read(tctx.username, root, helpers.get_vlan_id_pool_name(
-                    root, l2access, ports.port[port_name]), l2access.name)
                 eth = ports.port[port_name].ethernet
                 node = eth.node
                 vlan_trunking_dict['port-type'] = 'ethernet'
@@ -164,7 +164,7 @@ def allocate_vlan_id(root, l2access, tctx, log):
     svc_xpath = "/vxlandc-core:vxlandc/sites/site[fabric='{}']/tenants/tenant[name='{}']/l2access:l2-fabric-services/l2-fabric-service[name='{}']"
     svc_xpath = svc_xpath.format(l2access.site, l2access.tenant, l2access.name)
     id_allocator.id_request(l2access, svc_xpath, tctx.username, helpers.get_vlan_id_pool_name(
-        root, l2access), l2access.name, False, requested_id)
+        root, l2access), f'{l2access.site}::{l2access.tenant}::{l2access.name}', False, requested_id)
     log.info(f'Vlan id is requested for service {l2access.name}')
 
 
@@ -182,7 +182,7 @@ def allocate_vni_id(root, l2access, tctx, log):
     svc_xpath = "/vxlandc-core:vxlandc/sites/site[fabric='{}']/tenants/tenant[name='{}']/l2access:l2-fabric-services/l2-fabric-service[name='{}']"
     svc_xpath = svc_xpath.format(l2access.site, l2access.tenant, l2access.name)
     id_allocator.id_request(l2access, svc_xpath, tctx.username, helpers.get_vni_id_pool_name(
-        root, l2access), l2access.name, False, requested_id)
+        root, l2access), f'{l2access.site}::{l2access.tenant}::{l2access.name}', False, requested_id)
     log.info(f'Vni id is requested for service {l2access.name}')
 
 

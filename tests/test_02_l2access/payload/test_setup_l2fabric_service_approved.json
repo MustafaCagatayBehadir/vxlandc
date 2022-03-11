@@ -1,0 +1,34 @@
+{
+    "vxlandc-core:vxlandc": {
+        "sites": {
+            "site": [
+                {
+                    "fabric": "avr-dss1-lbox-yaani-fabric",
+                    "tenants": {
+                        "tenant": [
+                            {
+                                "name": "0001_TURKCELL",
+                                "l2access:l2-fabric-services": {
+                                    "l2-fabric-service": [
+                                        {
+                                            "name": "L2-VLAN-SERVICE-1",
+                                            "approved": true
+                                        },
+                                        {
+                                            "name": "L2-VLAN-SERVICE-2",
+                                            "approved": true
+                                        },
+                                        {
+                                            "name": "L2-VLAN-SERVICE-3",
+                                            "approved": true
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+}

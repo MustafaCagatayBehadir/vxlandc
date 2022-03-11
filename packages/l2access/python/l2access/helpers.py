@@ -21,7 +21,7 @@ def get_node_group(root, l2access, device):
                 return int(r[0])
 
 
-def get_vlan_id_pool_name(root, l2access, port):
+def get_vlan_id_pool_name(root, l2access):
     """Function to return vlan id pool name for a given site
 
     Args:

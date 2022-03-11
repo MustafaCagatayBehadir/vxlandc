@@ -7,34 +7,41 @@
                     "tenants": {
                         "tenant": [
                             {
-                                "name": "0001_TURKCELL",
+                                "name": "0002_TURKCELL",
                                 "l1access:ports": {
                                     "port": [
                                         {
                                             "name": "ETH100001",
-                                            "description": "CUSTOM_DESCRIPTION_ETH100001",
+                                            "description": "CUSTOM_DESCRIPTION",
                                             "mode": "access",
                                             "connection": "host",
                                             "speed": "1G",
                                             "ethernet": {
-                                                "node": "AVR-DSS1-BIP-SW-01",
+                                                "node": "AVR-DSS1-BIP-SW-05",
                                                 "node-port": [
-                                                    "1/1"
+                                                    "1/1",
+                                                    "1/2"
                                                 ]
-                                            }
+                                            },
+                                            "port-channel": {},
+                                            "vpc-port-channel": {}
                                         },
                                         {
                                             "name": "ETH100002",
                                             "mode": "trunk",
                                             "connection": "switch",
                                             "speed": "10G",
+                                            "shutdown": [
+                                                null
+                                            ],
                                             "ethernet": {
-                                                "node": "AVR-DSS1-BIP-SW-02",
+                                                "node": "AVR-DSS1-BIP-SW-06",
                                                 "node-port": [
-                                                    "1/1",
-                                                    "1/2"
+                                                    "1/1"
                                                 ]
-                                            }
+                                            },
+                                            "port-channel": {},
+                                            "vpc-port-channel": {}
                                         },
                                         {
                                             "name": "PC100001",
@@ -43,43 +50,53 @@
                                             "speed": "100G",
                                             "ethernet": {},
                                             "port-channel": {
-                                                "node": "AVR-DSS1-BIP-SW-03",
+                                                "port-channel-id": 1,
+                                                "node": "AVR-DSS1-BIP-SW-05",
                                                 "node-port": [
                                                     "1/10",
                                                     "1/11"
                                                 ]
-                                            }
+                                            },
+                                            "vpc-port-channel": {}
                                         },
                                         {
                                             "name": "PC100002",
                                             "mode": "trunk",
                                             "connection": "switch",
                                             "speed": "10G",
+                                            "shutdown": [
+                                                null
+                                            ],
+                                            "ethernet": {},
                                             "port-channel": {
-                                                "node": "AVR-DSS1-BIP-SW-04",
+                                                "port-channel-id": 2,
+                                                "node": "AVR-DSS1-BIP-SW-06",
                                                 "node-port": [
                                                     "1/10",
                                                     "1/11"
                                                 ]
-                                            }
+                                            },
+                                            "vpc-port-channel": {}
                                         },
                                         {
                                             "name": "VPC100001",
-                                            "description": "CUSTOM_DESCRIPTION_VPC100001",
+                                            "description": "CUSTOM_DESCRIPTION",
                                             "mode": "access",
                                             "connection": "host",
                                             "speed": "1G",
+                                            "ethernet": {},
+                                            "port-channel": {},
                                             "vpc-port-channel": {
-                                                "node-group": 1,
+                                                "port-channel-id": 10,
+                                                "node-group": 2,
                                                 "node-1-port": [
-                                                    "1/10",
-                                                    "1/11"
+                                                    "1/12",
+                                                    "1/13"
                                                 ],
                                                 "node-2-port": [
-                                                    "1/10",
-                                                    "1/11"
-                                                ],
-                                                "port-channel-id": 10
+                                                    "1/12",
+                                                    "1/13"
+                                                ]
                                             }
                                         },
                                         {
@@ -87,17 +104,22 @@
                                             "mode": "trunk",
                                             "connection": "switch",
                                             "speed": "10G",
+                                            "shutdown": [
+                                                null
+                                            ],
+                                            "ethernet": {},
+                                            "port-channel": {},
                                             "vpc-port-channel": {
-                                                "node-group": 1,
+                                                "port-channel-id": 20,
+                                                "node-group": 2,
                                                 "node-1-port": [
-                                                    "1/12",
-                                                    "1/13"
+                                                    "1/14",
+                                                    "1/15"
                                                 ],
                                                 "node-2-port": [
-                                                    "1/12",
-                                                    "1/13"
-                                                ],
-                                                "port-channel-id": 20
+                                                    "1/14",
+                                                    "1/15"
+                                                ]
                                             }
                                         }
                                     ]

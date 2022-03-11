@@ -10,22 +10,12 @@ class L1AccessTests:
     A Test Class for NSO package l1access
     """
 
-    payload_path = Path.cwd() / "tests" / "test_02_l1access" / "payload"
-    expected_path = Path.cwd() / "tests" / "test_02_l1access" / "expected"
+    payload_path = Path.cwd() / "tests" / "test_01_l1access" / "payload"
+    expected_path = Path.cwd() / "tests" / "test_01_l1access" / "expected"
     nso = NsoRestconfCall()
 
     @classmethod
     def setup_class(cls):
-        cls.nso.patch(
-            payload=cls.payload_path / "test_setup_resource_pools_config.json",
-            path="",
-            params="",
-        )
-        cls.nso.patch(
-            payload=cls.payload_path / "test_setup_site_config.json",
-            path="",
-            params="",
-        )
         cls.nso.patch(
             payload=cls.payload_path / "test_setup_ports_config.json",
             path="",
@@ -148,8 +138,3 @@ class L1AccessTests:
         resp = self.nso.get(path=path)
         assert resp.status_code == 200
         assert json.loads(resp.text) == expected
-
-    @classmethod
-    def teardown_class(cls):
-        cls.nso.delete(path="vxlandc-core:vxlandc")
-        cls.nso.delete(path="resource-allocator:resource-pools")

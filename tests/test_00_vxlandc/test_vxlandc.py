@@ -10,8 +10,8 @@ class VxlandcTests:
     A Test Class for NSO package l1access
     """
 
-    payload_path = Path.cwd() / "tests" / "test_01_vxlandc" / "payload"
-    expected_path = Path.cwd() / "tests" / "test_01_vxlandc" / "expected"
+    payload_path = Path.cwd() / "tests" / "test_00_vxlandc" / "payload"
+    expected_path = Path.cwd() / "tests" / "test_00_vxlandc" / "expected"
     nso = NsoRestconfCall()
 
     @classmethod
@@ -40,8 +40,3 @@ class VxlandcTests:
         assert post_resp.status_code == 200
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
-
-    @classmethod
-    def teardown_class(cls):
-        cls.nso.delete(path="vxlandc-core:vxlandc")
-        cls.nso.delete(path="resource-allocator:resource-pools")

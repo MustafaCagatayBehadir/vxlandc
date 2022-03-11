@@ -7,7 +7,7 @@
                     "tenants": {
                         "tenant": [
                             {
-                                "name": "0001_TURKCELL",
+                                "name": "0002_TURKCELL",
                                 "l1access:ports": {
                                     "port": [
                                         {

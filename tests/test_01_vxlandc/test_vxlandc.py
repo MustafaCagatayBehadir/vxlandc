@@ -5,13 +5,13 @@ from pytest import mark
 import json
 
 
-class L1AccessTests:
+class VxlandcTests:
     """
     A Test Class for NSO package l1access
     """
 
-    payload_path = Path.cwd() / "tests" / "vxlandc" / "payload"
-    expected_path = Path.cwd() / "tests" / "vxlandc" / "expected"
+    payload_path = Path.cwd() / "tests" / "test_01_vxlandc" / "payload"
+    expected_path = Path.cwd() / "tests" / "test_01_vxlandc" / "expected"
     nso = NsoRestconfCall()
 
     @classmethod

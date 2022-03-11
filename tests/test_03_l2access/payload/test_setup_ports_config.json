@@ -1,0 +1,112 @@
+{
+    "vxlandc-core:vxlandc": {
+        "sites": {
+            "site": [
+                {
+                    "fabric": "avr-dss1-lbox-yaani-fabric",
+                    "tenants": {
+                        "tenant": [
+                            {
+                                "name": "0001_TURKCELL",
+                                "l1access:ports": {
+                                    "port": [
+                                        {
+                                            "name": "ETH100001",
+                                            "description": "CUSTOM_DESCRIPTION_ETH100001",
+                                            "mode": "access",
+                                            "connection": "host",
+                                            "speed": "1G",
+                                            "ethernet": {
+                                                "node": "AVR-DSS1-BIP-SW-01",
+                                                "node-port": [
+                                                    "1/1"
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "name": "ETH100002",
+                                            "mode": "trunk",
+                                            "connection": "switch",
+                                            "speed": "10G",
+                                            "ethernet": {
+                                                "node": "AVR-DSS1-BIP-SW-02",
+                                                "node-port": [
+                                                    "1/1",
+                                                    "1/2"
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "name": "PC100001",
+                                            "mode": "trunk",
+                                            "connection": "host",
+                                            "speed": "100G",
+                                            "ethernet": {},
+                                            "port-channel": {
+                                                "node": "AVR-DSS1-BIP-SW-03",
+                                                "node-port": [
+                                                    "1/10",
+                                                    "1/11"
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "name": "PC100002",
+                                            "mode": "trunk",
+                                            "connection": "switch",
+                                            "speed": "10G",
+                                            "port-channel": {
+                                                "node": "AVR-DSS1-BIP-SW-04",
+                                                "node-port": [
+                                                    "1/10",
+                                                    "1/11"
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "name": "VPC100001",
+                                            "description": "CUSTOM_DESCRIPTION_VPC100001",
+                                            "mode": "access",
+                                            "connection": "host",
+                                            "speed": "1G",
+                                            "vpc-port-channel": {
+                                                "node-group": 1,
+                                                "node-1-port": [
+                                                    "1/10",
+                                                    "1/11"
+                                                ],
+                                                "node-2-port": [
+                                                    "1/10",
+                                                    "1/11"
+                                                ],
+                                                "port-channel-id": 10
+                                            }
+                                        },
+                                        {
+                                            "name": "VPC100002",
+                                            "mode": "trunk",
+                                            "connection": "switch",
+                                            "speed": "10G",
+                                            "vpc-port-channel": {
+                                                "node-group": 1,
+                                                "node-1-port": [
+                                                    "1/12",
+                                                    "1/13"
+                                                ],
+                                                "node-2-port": [
+                                                    "1/12",
+                                                    "1/13"
+                                                ],
+                                                "port-channel-id": 20
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+}

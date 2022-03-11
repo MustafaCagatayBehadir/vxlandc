@@ -10,8 +10,8 @@ class L1AccessTests:
     A Test Class for NSO package l1access
     """
 
-    payload_path = Path.cwd() / "tests" / "l1access" / "payload"
-    expected_path = Path.cwd() / "tests" / "l1access" / "expected"
+    payload_path = Path.cwd() / "tests" / "test_02_l1access" / "payload"
+    expected_path = Path.cwd() / "tests" / "test_02_l1access" / "expected"
     nso = NsoRestconfCall()
 
     @classmethod
@@ -33,6 +33,11 @@ class L1AccessTests:
         )
         cls.nso.patch(
             payload=cls.payload_path / "test_setup_ports_approved.json",
+            path="",
+            params="",
+        )
+        cls.nso.patch(
+            payload=cls.payload_path / "test_setup_port_groups_config.json",
             path="",
             params="",
         )
@@ -134,6 +139,15 @@ class L1AccessTests:
         assert post_resp.status_code == 201
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
+
+    @mark.parametrize('expected, path', [
+        (expected_path / 'ref_006_port_groups.json',
+         'vxlandc-core:vxlandc/sites/site=avr-dss1-lbox-yaani-fabric/tenants/tenant=0001_TURKCELL/l1access:port-groups')
+    ], indirect=['expected'])
+    def test_006_port_groups(self, expected, path):
+        resp = self.nso.get(path=path)
+        assert resp.status_code == 200
+        assert json.loads(resp.text) == expected
 
     @classmethod
     def teardown_class(cls):

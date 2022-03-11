@@ -1,0 +1,37 @@
+{
+    "input": {
+        "id-pool": [
+            {
+                "id": "l2-vxlan-vni",
+                "start": 60000,
+                "end": 79000,
+                "scope": "fabric"
+            },
+            {
+                "id": "l3-vxlan-vni",
+                "start": 80000,
+                "end": 89000,
+                "scope": "fabric"
+            },
+            {
+                "id": "l2-network-vlan",
+                "start": 2,
+                "end": 3100,
+                "scope": "fabric"
+            },
+            {
+                "id": "l3-vrf-vlan",
+                "start": 3101,
+                "end": 3800,
+                "scope": "fabric"
+            },
+            {
+                "id": "port-channel-id",
+                "start": 1,
+                "end": 500,
+                "scope": "local"
+            }
+        ],
+        "site": "avr-dss1-lbox-yaani-fabric"
+    }
+}

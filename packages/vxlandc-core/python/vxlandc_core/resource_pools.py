@@ -47,12 +47,12 @@ class ResourcePools(Action):
                 create_resource_pool_reference(site, pool_parameters.get('Pool Name'), id_pool.scope.string)
             elif id_pool.scope.string == 'local':
                 for node in nodes:
-                    pool_parameters = {'Pool Name': f'{node.hostname}::{id_pool.id}', 'Start': start, 'End': end}
+                    pool_parameters = {'Pool Name': f'{input.site}::{node.hostname}::{id_pool.id}', 'Start': start, 'End': end}
                     self.log.info("ID Pool Parameters Dictionary: ", pool_parameters)
                     create_resource_pool(root, pool_parameters, self.log)
                     create_resource_pool_reference(node, pool_parameters.get('Pool Name'), id_pool.scope.string)
                 for node_group in node_groups:
-                    pool_name = f'{node_group.node_1}_{node_group.node_2}_VPC-{node_group.id}::{id_pool.id}'
+                    pool_name = f'{input.site}::{node_group.node_1}_{node_group.node_2}_VPC-{node_group.id}::{id_pool.id}'
                     pool_parameters = {'Pool Name': pool_name, 'Start': start, 'End': end}
                     self.log.info("ID Pool Parameters Dictionary: ", pool_parameters)
                     create_resource_pool(root, pool_parameters, self.log)

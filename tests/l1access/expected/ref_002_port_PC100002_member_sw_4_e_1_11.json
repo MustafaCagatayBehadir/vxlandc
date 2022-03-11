@@ -6,9 +6,6 @@
                 "id": 1,
                 "mode": "active"
             },
-            "shutdown": [
-                null
-            ],
             "description": "PO1_MEMBER_ETH_1/11",
             "mtu": 9216
         }

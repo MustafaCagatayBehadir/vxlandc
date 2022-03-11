@@ -28,9 +28,6 @@
                                             "mode": "trunk",
                                             "connection": "switch",
                                             "speed": "10G",
-                                            "shutdown": [
-                                                null
-                                            ],
                                             "ethernet": {
                                                 "node": "AVR-DSS1-BIP-SW-02",
                                                 "node-port": [
@@ -58,9 +55,6 @@
                                             "mode": "trunk",
                                             "connection": "switch",
                                             "speed": "10G",
-                                            "shutdown": [
-                                                null
-                                            ],
                                             "port-channel": {
                                                 "node": "AVR-DSS1-BIP-SW-04",
                                                 "node-port": [
@@ -93,9 +87,6 @@
                                             "mode": "trunk",
                                             "connection": "switch",
                                             "speed": "10G",
-                                            "shutdown": [
-                                                null
-                                            ],
                                             "vpc-port-channel": {
                                                 "node-group": 1,
                                                 "node-1-port": [
@@ -106,7 +97,7 @@
                                                     "1/12",
                                                     "1/13"
                                                 ],
-                                                "port-channel-id": 10
+                                                "port-channel-id": 20
                                             }
                                         }
                                     ]

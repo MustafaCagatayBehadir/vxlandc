@@ -3,7 +3,7 @@
         {
             "name": "1/13",
             "channel-group": {
-                "id": 2,
+                "id": 20,
                 "mode": "active"
             },
             "description": "PO20_MEMBER_ETH_1/13",

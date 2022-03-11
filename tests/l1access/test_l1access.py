@@ -74,10 +74,10 @@ class L1AccessTests:
          'tailf-ncs:devices/device=AVR-DSS1-BIP-SW-01/config/tailf-ned-cisco-nx:interface/port-channel=10'),
         (expected_path / 'ref_003_port_VPC100001_sw_1_2_po_10.json',
          'tailf-ncs:devices/device=AVR-DSS1-BIP-SW-02/config/tailf-ned-cisco-nx:interface/port-channel=10'),
-        (expected_path / 'ref_003_port_VPC100002_sw_1_2_po_2.json',
-         'tailf-ncs:devices/device=AVR-DSS1-BIP-SW-01/config/tailf-ned-cisco-nx:interface/port-channel=2'),
-        (expected_path / 'ref_003_port_VPC100002_sw_1_2_po_2.json',
-         'tailf-ncs:devices/device=AVR-DSS1-BIP-SW-02/config/tailf-ned-cisco-nx:interface/port-channel=2'),
+        (expected_path / 'ref_003_port_VPC100002_sw_1_2_po_20.json',
+         'tailf-ncs:devices/device=AVR-DSS1-BIP-SW-01/config/tailf-ned-cisco-nx:interface/port-channel=20'),
+        (expected_path / 'ref_003_port_VPC100002_sw_1_2_po_20.json',
+         'tailf-ncs:devices/device=AVR-DSS1-BIP-SW-02/config/tailf-ned-cisco-nx:interface/port-channel=20'),
         (expected_path / 'ref_003_port_VPC100001_member_sw_1_2_e_10.json',
          'tailf-ncs:devices/device=AVR-DSS1-BIP-SW-01/config/tailf-ned-cisco-nx:interface/Ethernet=1%2F10'),
         (expected_path / 'ref_003_port_VPC100001_member_sw_1_2_e_11.json',
@@ -100,7 +100,42 @@ class L1AccessTests:
         assert resp.status_code == 200
         assert json.loads(resp.text) == expected
 
-    # @classmethod
-    # def teardown_class(cls):
-    #     cls.nso.delete(path="vxlandc-core:vxlandc")
-    #     cls.nso.delete(path="resource-allocator:resource-pools")
+    @mark.parametrize('expected, post_path, get_path', [
+        (expected_path / 'ref_004_port_ETH100001_sw_1_e_1_1.json',
+         'vxlandc-core:vxlandc/sites/site=avr-dss1-lbox-yaani-fabric/tenants/tenant=0001_TURKCELL/l1access:ports/port=ETH100001/',
+         'tailf-ncs:devices/device=AVR-DSS1-BIP-SW-01/config/tailf-ned-cisco-nx:interface/Ethernet=1%2F1'),
+        (expected_path / 'ref_004_port_PC100001_sw_3_po_1.json',
+         'vxlandc-core:vxlandc/sites/site=avr-dss1-lbox-yaani-fabric/tenants/tenant=0001_TURKCELL/l1access:ports/port=PC100001/',
+         'tailf-ncs:devices/device=AVR-DSS1-BIP-SW-03/config/tailf-ned-cisco-nx:interface/port-channel=1'),
+        (expected_path / 'ref_004_port_VPC100001_sw_1_2_po_10.json',
+         'vxlandc-core:vxlandc/sites/site=avr-dss1-lbox-yaani-fabric/tenants/tenant=0001_TURKCELL/l1access:ports/port=VPC100001/',
+         'tailf-ncs:devices/device=AVR-DSS1-BIP-SW-01/config/tailf-ned-cisco-nx:interface/port-channel=10'),
+    ], indirect=['expected'])
+    def test_004_port_shutdown(self, expected, post_path, get_path):
+        post_resp = self.nso.post(
+            payload=self.payload_path / 'test_004_config.json', path=post_path, params='', action=False)
+        get_resp = self.nso.get(path=get_path)
+        assert post_resp.status_code == 201
+        assert get_resp.status_code == 200
+        assert json.loads(get_resp.text) == expected
+
+    @mark.parametrize('expected, post_path, get_path', [
+        (expected_path / 'ref_005_port_ETH100001_sw_1_e_1_1.json',
+         'vxlandc-core:vxlandc/sites/site=avr-dss1-lbox-yaani-fabric/tenants/tenant=0001_TURKCELL/l1access:ports/port=ETH100001/',
+         'tailf-ncs:devices/device=AVR-DSS1-BIP-SW-01/config/tailf-ned-cisco-nx:interface/Ethernet=1%2F1'),
+        (expected_path / 'ref_005_port_VPC100001_sw_1_2_po_10.json',
+         'vxlandc-core:vxlandc/sites/site=avr-dss1-lbox-yaani-fabric/tenants/tenant=0001_TURKCELL/l1access:ports/port=VPC100001/',
+         'tailf-ncs:devices/device=AVR-DSS1-BIP-SW-01/config/tailf-ned-cisco-nx:interface/port-channel=10'),
+    ], indirect=['expected'])
+    def test_005_port_storm_control_action_trap(self, expected, post_path, get_path):
+        post_resp = self.nso.post(
+            payload=self.payload_path / 'test_005_config.json', path=post_path, params='', action=False)
+        get_resp = self.nso.get(path=get_path)
+        assert post_resp.status_code == 201
+        assert get_resp.status_code == 200
+        assert json.loads(get_resp.text) == expected
+
+    @classmethod
+    def teardown_class(cls):
+        cls.nso.delete(path="vxlandc-core:vxlandc")
+        cls.nso.delete(path="resource-allocator:resource-pools")

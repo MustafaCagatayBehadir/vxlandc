@@ -1,0 +1,14 @@
+{
+    "tailf-ned-cisco-nx:vlan": {
+        "vlan-list": [
+            {
+                "id": 1
+            },
+            {
+                "id": 6,
+                "name": "L2-VLAN-SERVICE-5",
+                "vn-segment": 60004
+            }
+        ]
+    }
+}

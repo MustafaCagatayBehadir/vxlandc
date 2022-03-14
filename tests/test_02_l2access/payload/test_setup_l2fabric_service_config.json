@@ -60,6 +60,51 @@
                                                     }
                                                 ]
                                             }
+                                        },
+                                        {
+                                            "name": "L2-VLAN-SERVICE-4",
+                                            "endpoint-groups": {
+                                                "tenant-endpoint-group": [
+                                                    {
+                                                        "name": "ETH_PG_1_TRUNK",
+                                                        "mode": "trunk"
+                                                    },
+                                                    {
+                                                        "name": "VPC_PG_1_TRUNK",
+                                                        "mode": "trunk"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "name": "L2-VLAN-SERVICE-5",
+                                            "endpoint-groups": {
+                                                "tenant-endpoint-group": [
+                                                    {
+                                                        "name": "ETH_PG_1_TRUNK",
+                                                        "mode": "trunk"
+                                                    },
+                                                    {
+                                                        "name": "PC_PG_1_TRUNK",
+                                                        "mode": "trunk"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "name": "L2-VLAN-SERVICE-6",
+                                            "endpoint-groups": {
+                                                "tenant-endpoint-group": [
+                                                    {
+                                                        "name": "ETH_PG_1_ACCESS",
+                                                        "mode": "access"
+                                                    },
+                                                    {
+                                                        "name": "VPC_PG_1_ACCESS",
+                                                        "mode": "access"
+                                                    }
+                                                ]
+                                            }
                                         }
                                     ]
                                 }

@@ -46,8 +46,6 @@ def create_l2access_parameters_tenant_epg(root, tctx, l2access, vlan_trunking_pa
             vlan_trunking_dict = vlan_trunking_parameters[ports.port[port_name].name]
             vlan_trunking_dict['mode'] = ports.port[port_name].mode.string
             if ports.port[port_name].port_type == 'ethernet':
-                vlan_id = id_allocator.id_read(tctx.username, root, helpers.get_vlan_id_pool_name(
-                    root, l2access, ports.port[port_name]), l2access.name)
                 eth = ports.port[port_name].ethernet
                 node = eth.node
                 vlan_trunking_dict['port-type'] = 'ethernet'
@@ -83,7 +81,7 @@ def create_l2access_parameters_tenant_epg(root, tctx, l2access, vlan_trunking_pa
                     l2vni_parameters[node_1] = {
                         'vlan-id': vlan_id, 'vni-id': vni_id}
                 if not l2vni_parameters.get(node_2):
-                    l2vni_parameters[node_1] = {
+                    l2vni_parameters[node_2] = {
                         'vlan-id': vlan_id, 'vni-id': vni_id}
 
 
@@ -146,7 +144,7 @@ def create_l2access_parameters_external_tenant_epg(root, tctx, l2access, vlan_tr
                     l2vni_parameters[node_1] = {
                         'vlan-id': vlan_id, 'vni-id': vni_id}
                 if not l2vni_parameters.get(node_2):
-                    l2vni_parameters[node_1] = {
+                    l2vni_parameters[node_2] = {
                         'vlan-id': vlan_id, 'vni-id': vni_id}
 
 

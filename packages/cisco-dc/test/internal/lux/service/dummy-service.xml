@@ -4,9 +4,9 @@
       <collect-forward-diff>true</collect-forward-diff>
     </global-settings>
   </services>
-  <l3access xmlns="http://example.com/l3access">
+  <cisco-dc xmlns="http://example.com/cisco-dc">
     <name>33</name>
     <device>eth</device>
     <dummy>127.0.0.1</dummy>
-  </l3access>
+  </cisco-dc>
 </config>

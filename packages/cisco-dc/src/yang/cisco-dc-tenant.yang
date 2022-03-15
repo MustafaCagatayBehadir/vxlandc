@@ -1,0 +1,63 @@
+submodule cisco-dc-tenant {
+
+    belongs-to cisco-dc {
+        prefix "cisco-dc";
+    }
+
+    yang-version 1.1;
+
+    import ietf-inet-types {
+        prefix inet;
+    }
+    import tailf-common {
+        prefix tailf;
+    }
+    import tailf-ncs {
+        prefix ncs;
+    }
+    import resource-allocator {
+        prefix ralloc;
+    }
+    import id-allocator {
+        prefix idalloc;
+    }
+
+    description
+      "VXLAN EVPN Datacenter Customer Tenants";
+
+    revision 2022-01-17 {
+        description
+          "Initial revision.";
+    }
+
+    grouping tenants {
+        container tenants {
+            list tenant {
+                description
+                  "List of Data Center customer definitions";
+                tailf:info "Define Data Center customer data";
+                key name;
+                must "count(../tenant[translate(name,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')=translate(current()/name,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')])=1" {
+                    error-message
+                      "tenant name needs to be unique without case sensitivity";
+                    tailf:dependency "./name";
+                    tailf:override-auto-dependencies;
+                }
+                leaf name {
+                    type string;
+                    tailf:info "Tenant Name";
+                }
+
+                leaf id {
+                    type string;
+                    tailf:info "Unique Tenant ID";
+                }
+
+                leaf description {
+                    type string;
+                    tailf:info "Tenant Description";
+                }
+            }
+        }
+    }
+}

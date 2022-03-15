@@ -1,5 +1,5 @@
 <ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
-  <name>l3access</name>
+  <name>cisco-dc</name>
   <package-version>1.0</package-version>
   <description>Generated Python package</description>
   <ncs-min-version>5.7</ncs-min-version>
@@ -7,7 +7,7 @@
   <component>
     <name>main</name>
     <application>
-      <python-class-name>l3access.main.Main</python-class-name>
+      <python-class-name>cisco_dc.main.Main</python-class-name>
     </application>
   </component>
 </ncs-package>

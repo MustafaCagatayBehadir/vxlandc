@@ -1,7 +1,7 @@
 This is a generated Python package, made by:
 
   ncs-make-package --service-skeleton python-and-template \
-                   --component-class main.Main l3access
+                   --component-class main.Main cisco-dc
 
 It contains a dummy YANG model which implements a minimal Service
 and an Action that doesn't really do anything useful. They are

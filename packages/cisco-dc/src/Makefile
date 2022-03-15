@@ -4,7 +4,7 @@ all: fxs
 # Include standard NCS examples build definitions and rules
 include $(NCS_DIR)/src/ncs/build/include.ncs.mk
 
-SRC = $(wildcard yang/*.yang)
+SRC = $(wildcard yang/cisco-dc.yang)
 DIRS = ../load-dir java/src/$(JDIR)/$(NS)
 FXS = $(SRC:yang/%.yang=../load-dir/%.fxs)
 
@@ -12,6 +12,7 @@ FXS = $(SRC:yang/%.yang=../load-dir/%.fxs)
 ## or to other YANG files
 # YANGPATH += ../../<ned-name>/src/ncsc-out/modules/yang \
 # 	../../<pkt-name>/src/yang
+YANGPATH += ./yang ../../resource-manager/src/yang
 
 NCSCPATH   = $(YANGPATH:%=--yangpath %)
 YANGERPATH = $(YANGPATH:%=--path %)

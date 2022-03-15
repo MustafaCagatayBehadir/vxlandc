@@ -40,7 +40,7 @@
     ?SH-PROMPT:
 
     [progress \nVerify that the service code has been invoked...\n]
-    !tail -f ./logs/ncs-python-vm-l3access.log
+    !tail -f ./logs/ncs-python-vm-cisco-dc.log
     ?.*Worker RUNNING.*
     ?.*Service create.*
     [progress \nVerify that the service code has been invoked...ok\n]

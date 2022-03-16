@@ -22,7 +22,7 @@ class DcSiteTests:
             params="",
         )
 
-    @mark.parametrize('expected, path', [(expected_path / 'ref_001_site.json', 'vxlandc-core:vxlandc')], indirect=['expected'])
+    @mark.parametrize('expected, path', [(expected_path / 'ref_001_site.json', 'cisco-dc:dc-site')], indirect=['expected'])
     def test_001_site(self, expected, path):
         resp = self.nso.get(path=path)
         assert resp.status_code == 200

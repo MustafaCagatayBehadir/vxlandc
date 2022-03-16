@@ -10,8 +10,8 @@ class DcSiteTests:
     A Test Class for NSO package dc-site
     """
 
-    payload_path = Path.cwd() / "tests" / "test_00_vxlandc" / "payload"
-    expected_path = Path.cwd() / "tests" / "test_00_vxlandc" / "expected"
+    payload_path = Path.cwd() / "tests" / "test_00_dc_site" / "payload"
+    expected_path = Path.cwd() / "tests" / "test_00_dc_site" / "expected"
     nso = NsoRestconfCall()
 
     @classmethod

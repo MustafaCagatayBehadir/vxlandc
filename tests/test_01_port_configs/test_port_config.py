@@ -10,8 +10,8 @@ class L1AccessTests:
     A Test Class for NSO package l1access
     """
 
-    payload_path = Path.cwd() / "tests" / "test_01_l1access" / "payload"
-    expected_path = Path.cwd() / "tests" / "test_01_l1access" / "expected"
+    payload_path = Path.cwd() / "tests" / "test_01_port_configs" / "payload"
+    expected_path = Path.cwd() / "tests" / "test_01_port_configs" / "expected"
     nso = NsoRestconfCall()
 
     @classmethod

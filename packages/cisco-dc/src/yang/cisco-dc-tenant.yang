@@ -30,34 +30,23 @@ submodule cisco-dc-tenant {
           "Initial revision.";
     }
 
-    grouping tenants {
-        container tenants {
-            list tenant {
-                description
-                  "List of Data Center customer definitions";
-                tailf:info "Define Data Center customer data";
-                key name;
-                must "count(../tenant[translate(name,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')=translate(current()/name,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')])=1" {
-                    error-message
-                      "tenant name needs to be unique without case sensitivity";
-                    tailf:dependency "./name";
-                    tailf:override-auto-dependencies;
-                }
-                leaf name {
-                    type string;
-                    tailf:info "Tenant Name";
-                }
+    grouping tenant-configs {
+        
+        leaf name {
+            type string;
+            tailf:info "Tenant Name";
+        }
 
-                leaf id {
-                    type string;
-                    tailf:info "Unique Tenant ID";
-                }
+        leaf id {
+            tailf:hidden "dc";
+            type uint32;
+            tailf:info "Unique Tenant ID";
+            default 0;
+        }
 
-                leaf description {
-                    type string;
-                    tailf:info "Tenant Description";
-                }
-            }
+        leaf description {
+            type string;
+            tailf:info "Tenant Description";
         }
     }
 }

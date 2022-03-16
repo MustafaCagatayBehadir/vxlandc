@@ -20,7 +20,7 @@ class ServiceCallbacks(Service):
 class Main(ncs.application.Application):
     def setup(self):
         self.log.info('Main RUNNING')
-        self.register_action('create-site-resource-pools', ResourcePools)
+        # self.register_action('create-site-resource-pools', ResourcePools)
 
     def teardown(self):
         self.log.info('Main FINISHED')

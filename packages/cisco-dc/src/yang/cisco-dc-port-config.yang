@@ -1,0 +1,275 @@
+submodule cisco-dc-port-config {
+    belongs-to cisco-dc {
+        prefix "cisco-dc";
+    }
+
+    yang-version 1.1;
+
+    import tailf-common {
+        prefix tailf;
+    }
+
+    import tailf-ncs {
+        prefix ncs;
+    }
+
+    include cisco-dc-common {
+        revision-date "2022-01-17";
+    }
+
+    revision 2022-01-17 {
+        description
+          "Initial Revision.";
+    }
+
+    grouping port-group {
+
+        leaf name {
+            tailf:info "Port Group Name";
+            type string;
+        }
+
+        leaf-list port {
+            must "deref(current())/../mode = ../mode" {
+                error-message
+                  "Port mode has to be same as port group mode";
+                tailf:dependency ".";
+                tailf:dependency "../mode";
+            }
+            tailf:info "Ports belongs to port group";
+            type leafref {
+                path "../../../cisco-dc:port-configs/cisco-dc:port-config/cisco-dc:name";
+            }
+        }
+
+        leaf mode {
+            tailf:info "Port Group Mode can be Access or Trunk";
+            type enumeration {
+                enum access;
+                enum trunk;
+            }
+            mandatory true;
+        }
+    }
+
+    grouping port-config-service {
+
+        leaf name {
+            tailf:info "Unique ID for this physicalAttachment.  May contain Service ID";
+            type string;
+        }
+
+        leaf description {
+            tailf:info "This description is auto-generated, use this field to overwrite the default behavior.";
+            type string {
+                length "1..254";
+            }
+        }
+
+        leaf mode {
+            tailf:info "Port Mode can be Access or Trunk";
+            type enumeration {
+                enum access;
+                enum trunk;
+            }
+            mandatory true;
+        }
+
+        leaf connection {
+            tailf:info "Connection type can be host or switch";
+            type enumeration {
+                enum host;
+                enum switch;
+            }
+            mandatory true;
+        }
+
+        leaf speed {
+            tailf:info "Port Speed";
+            type enumeration {
+                enum 1G;
+                enum 10G;
+                enum 25G;
+                enum 40G;
+                enum 100G;
+            }
+            mandatory true;
+        }
+
+        leaf shutdown {
+            tailf:info "Port administratively down";
+            type empty;
+        }
+
+        leaf storm-control-action-trap {
+            tailf:info "Change storm control action to trap";
+            type empty;
+        }
+
+        leaf site {
+            tailf:hidden "Just for convenience";
+            type string;
+            tailf:default-ref "../../../../cisco-dc:fabric";
+        }
+
+        leaf tenant {
+            tailf:hidden "Just for convenience";
+            type string;
+            tailf:default-ref "../../../cisco-dc:name";
+        }
+
+        leaf type {
+            tailf:hidden "Just for convenience";
+            type string;
+        }
+
+        choice port-type {
+            mandatory true;
+            case ethernet {
+                container ethernet {
+                    tailf:info "Single Attach Port Type";
+
+                    leaf node {
+                        must "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../site]" 
+                             + "/cisco-dc:node[cisco-dc:hostname=current()]/cisco-dc:node-role = 'access-leaf'" {
+                            error-message
+                              "Node type must be access-leaf";
+                        }
+                        tailf:info "Node Name";
+                        type leafref {
+                            path "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../site]"
+                                 + "/cisco-dc:node/cisco-dc:hostname";
+                        }
+                        mandatory true;
+                    }
+
+                    leaf-list node-port {
+                        tailf:info "Node Port Id List";
+                        type node-port;
+                        min-elements 1;
+                    }
+
+                    leaf node-port-flat {
+                        config false;
+                        tailf:cdb-oper {
+                            tailf:persistent true;
+                        }
+                        tailf:info "Flat structure of the Node Port";
+                        type string;
+                    }
+                }
+            }
+            case port-channel {
+                container port-channel {
+                    tailf:info "Port Channel Port Type";
+
+                    leaf port-channel-id {
+                        tailf:info "Port Channel Id is auto-generated, use this field to overwrite the default behavior.";
+                        type uint16 {
+                            range "1..500";
+                        }
+                    }
+
+                    leaf allocated-port-channel-id {
+                        tailf:hidden "Just for convenience";
+                        type uint16 {
+                            range "1..500";
+                        }
+                    }
+
+                    leaf node {
+                        must "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../site]" 
+                             + "/cisco-dc:node[cisco-dc:hostname=current()]/cisco-dc:node-role = 'access-leaf'" {
+                            error-message
+                              "Node type must be access-leaf";
+                        }
+                        tailf:info "Node Name";
+                        type leafref {
+                            path "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../site]"
+                                 + "/cisco-dc:node/cisco-dc:hostname";
+                        }
+                    }
+
+                    leaf-list node-port {
+                        tailf:info "Node Port Id List";
+                        type node-port;
+                        min-elements 1;
+                    }
+
+                    leaf node-port-flat {
+                        config false;
+                        tailf:cdb-oper {
+                            tailf:persistent true;
+                        }
+                        tailf:info "Flat structure of the Node Port";
+                        type string;
+                    }
+                }
+            }
+            case vpc-port-channel {
+                container vpc-port-channel {
+                    tailf:info "VPC Port Channel Port Type";
+
+                    leaf port-channel-id {
+                        tailf:info "Port Channel Id is auto-generated, use this field to overwrite the default behavior.";
+                        type uint16 {
+                            range "1..500";
+                        }
+                    }
+
+                    leaf allocated-port-channel-id {
+                        tailf:hidden "Just for convenience";
+                        type uint16 {
+                            range "1..500";
+                        }
+                    }
+
+                    leaf node-group {
+                        tailf:info "Node Group Name";
+                        type leafref {
+                            path "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../site]"
+                                 + "/cisco-dc:node-group/cisco-dc:id";
+                        }
+                        mandatory true;
+                    }
+
+                    leaf-list node-1-port {
+                        tailf:info "Node 1 Port List";
+                        type node-port;
+                        min-elements 1;
+                    }
+
+                    leaf-list node-2-port {
+                        tailf:info "Node 2 Port List";
+                        type node-port;
+                        min-elements 1;
+                    }
+
+                    leaf node-1-port-flat {
+                        config false;
+                        tailf:cdb-oper {
+                            tailf:persistent true;
+                        }
+                        tailf:info "Flat structure of the Node 1 Port";
+                        type string;
+                    }
+
+                    leaf node-2-port-flat {
+                        config false;
+                        tailf:cdb-oper {
+                            tailf:persistent true;
+                        }
+                        tailf:info "Flat structure of the Node 2 Port";
+                        type string;
+                    }
+                }
+            }
+        }
+
+        leaf approved {
+            tailf:info "Approved will set to true if id is allocated";
+            type boolean;
+            default false;
+        }
+    }
+}

@@ -30,161 +30,154 @@ submodule cisco-dc-site {
           "Initial revision.";
     }
 
-    grouping sites {
+    grouping site-configs {
 
-        container sites {
+        leaf fabric {
+            tailf:info "Data Center Fabric Name";
+            type string;
+        }
 
-            list site {
-                key fabric;
+        list node {
+            key hostname;
 
-                leaf fabric {
-                    tailf:info "Data Center Fabric Name";
-                    type string;
+            leaf hostname {
+                tailf:info "Node hostname";
+                type leafref {
+                    path "/ncs:devices/ncs:device/ncs:name";
                 }
+            }
 
-                list node {
-                    key hostname;
-
-                    leaf hostname {
-                        tailf:info "Node hostname";
-                        type leafref {
-                            path "/ncs:devices/ncs:device/ncs:name";
-                        }
-                    }
-
-                    leaf node-role {
-                        tailf:info "Node role in the fabric";
-                        type enumeration {
-                            enum access-leaf;
-                            enum border-leaf;
-                            enum spine;
-                        }
-                    }
-
-                    leaf node-type {
-                        when "../node-role != 'spine'";
-                        tailf:info "Node type can be vPC or standalone";
-                        type enumeration {
-                            enum standalone;
-                            enum vPC;
-                        }
-                        mandatory true;
-                    }
-
-                    leaf po-id-pool {
-                        tailf:info "Port Channel ID Pool Name";
-                        type leafref {
-                            path "/ralloc:resource-pools/idalloc:id-pool/idalloc:name";
-                        }
-                    }
+            leaf node-role {
+                tailf:info "Node role in the fabric";
+                type enumeration {
+                    enum access-leaf;
+                    enum border-leaf;
+                    enum spine;
                 }
+            }
 
-                list node-group {
-                    key id;
-                    unique "node-1 node-2";
-
-                    leaf id {
-                        tailf:info "VPC Domain ID";
-                        type uint16 {
-                            range "1..1000";
-                        }
-                        tailf:cli-suppress-range;
-                    }
-
-                    leaf node-1 {
-                        must "/cisco-dc:ciscodc/cisco-dc:sites/cisco-dc:site[cisco-dc:fabric=current()/../../cisco-dc:fabric]"
-                        + "/cisco-dc:node[cisco-dc:hostname=current()]/cisco-dc:node-type = 'vPC'" {
-                            error-message
-                              "Node type must be vPC";
-                        }
-                        tailf:info "VPC Node 1 hostname";
-                        type leafref {
-                            path "/ncs:devices/ncs:device/ncs:name";
-                        }
-                        mandatory true;
-                    }
-
-                    leaf node-2 {
-                        must "/cisco-dc:ciscodc/cisco-dc:sites/cisco-dc:site[cisco-dc:fabric=current()/../../cisco-dc:fabric]"
-                        + "/cisco-dc:node[cisco-dc:hostname=current()]/cisco-dc:node-type = 'vPC'" {
-                            error-message
-                              "Node type must be vPC";
-                        }
-                        tailf:info "VPC Node 2 hostname";
-                        type leafref {
-                            path "/ncs:devices/ncs:device/ncs:name";
-                        }
-                        mandatory true;
-                    }
-
-                    leaf po-id-pool {
-                        tailf:info "Port Channel ID Pool Name";
-                        type leafref {
-                            path "/ralloc:resource-pools/idalloc:id-pool/idalloc:name";
-                        }
-                    }
+            leaf node-type {
+                when "../node-role != 'spine'";
+                tailf:info "Node type can be vpc or standalone";
+                type enumeration {
+                    enum standalone;
+                    enum vpc;
                 }
+                mandatory true;
+            }
 
-                container connections {
-                    leaf uplink-to-dci-gw-01 {
-                        tailf:info "Port-Channel interface id on the border leaf to DCI-GW-01";
-                        type uint16 {
-                            range "1..9999";
-                        }
-                        mandatory true;
-                    }
-
-                    leaf uplink-to-dci-gw-02 {
-                        tailf:info "Port-Channel interface id on the border leaf to DCI-GW-02";
-                        type uint16 {
-                            range "1..9999";
-                        }
-                        mandatory true;
-                    }
+            leaf po-id-pool {
+                tailf:info "Port Channel ID Pool Name";
+                type leafref {
+                    path "/ralloc:resource-pools/idalloc:id-pool/idalloc:name";
                 }
+            }
+        }
 
-                container fabric-parameters {
-                    leaf as-number {
-                        tailf:info "BGP AS Number of the Site";
-                        type inet:as-number;
-                        mandatory true;
-                    }
+        list node-group {
+            key id;
+            unique "node-1 node-2";
 
-                    leaf mcast-group {
-                        tailf:info "Multicast Group for VXLAN Overlay";
-                        type inet:ipv4-address;
-                        mandatory true;
-                    }
+            leaf id {
+                tailf:info "vpc Domain ID";
+                type uint16 {
+                    range "1..1000";
                 }
+                tailf:cli-suppress-range;
+            }
 
-                container resource-pools {
-                    leaf l2-network-vlan {
-                        tailf:info "Layer 2 Network Vlan Pool";
-                        type leafref {
-                            path "/ralloc:resource-pools/idalloc:id-pool/idalloc:name";
-                        }
-                    }
+            leaf node-1 {
+                must "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../cisco-dc:fabric]"
+                     + "/cisco-dc:node[cisco-dc:hostname=current()]/cisco-dc:node-type = 'vpc'" {
+                    error-message
+                      "Node type must be vpc";
+                }
+                tailf:info "vpc Node 1 hostname";
+                type leafref {
+                    path "/ncs:devices/ncs:device/ncs:name";
+                }
+                mandatory true;
+            }
 
-                    leaf l3-vrf-vlan {
-                        tailf:info "Layer 3 VRF Vlan Pool";
-                        type leafref {
-                            path "/ralloc:resource-pools/idalloc:id-pool/idalloc:name";
-                        }
-                    }
+            leaf node-2 {
+                must "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../cisco-dc:fabric]"
+                     + "/cisco-dc:node[cisco-dc:hostname=current()]/cisco-dc:node-type = 'vpc'" {
+                    error-message
+                      "Node type must be vpc";
+                }
+                tailf:info "vpc Node 2 hostname";
+                type leafref {
+                    path "/ncs:devices/ncs:device/ncs:name";
+                }
+                mandatory true;
+            }
 
-                    leaf l2-vxlan-vni {
-                        tailf:info "Layer 2 VXLAN VNI Pool";
-                        type leafref {
-                            path "/ralloc:resource-pools/idalloc:id-pool/idalloc:name";
-                        }
-                    }
+            leaf po-id-pool {
+                tailf:info "Port Channel ID Pool Name";
+                type leafref {
+                    path "/ralloc:resource-pools/idalloc:id-pool/idalloc:name";
+                }
+            }
+        }
 
-                    leaf l3-vxlan-vni {
-                        tailf:info "Layer 3 VXLAN VNI Pool";
-                        type leafref {
-                            path "/ralloc:resource-pools/idalloc:id-pool/idalloc:name";
-                        }
-                    }
+        container connections {
+            leaf uplink-to-dci-gw-01 {
+                tailf:info "Port-Channel interface id on the border leaf to DCI-GW-01";
+                type uint16 {
+                    range "1..9999";
+                }
+                mandatory true;
+            }
+
+            leaf uplink-to-dci-gw-02 {
+                tailf:info "Port-Channel interface id on the border leaf to DCI-GW-02";
+                type uint16 {
+                    range "1..9999";
+                }
+                mandatory true;
+            }
+        }
+
+        container fabric-parameters {
+            leaf as-number {
+                tailf:info "BGP AS Number of the Site";
+                type inet:as-number;
+                mandatory true;
+            }
+
+            leaf mcast-group {
+                tailf:info "Multicast Group for VXLAN Overlay";
+                type inet:ipv4-address;
+                mandatory true;
+            }
+        }
+
+        container resource-pools {
+            leaf l2-network-vlan {
+                tailf:info "Layer 2 Network Vlan Pool";
+                type leafref {
+                    path "/ralloc:resource-pools/idalloc:id-pool/idalloc:name";
+                }
+            }
+
+            leaf l3-vrf-vlan {
+                tailf:info "Layer 3 VRF Vlan Pool";
+                type leafref {
+                    path "/ralloc:resource-pools/idalloc:id-pool/idalloc:name";
+                }
+            }
+
+            leaf l2-vxlan-vni {
+                tailf:info "Layer 2 VXLAN VNI Pool";
+                type leafref {
+                    path "/ralloc:resource-pools/idalloc:id-pool/idalloc:name";
+                }
+            }
+
+            leaf l3-vxlan-vni {
+                tailf:info "Layer 3 VXLAN VNI Pool";
+                type leafref {
+                    path "/ralloc:resource-pools/idalloc:id-pool/idalloc:name";
                 }
             }
         }

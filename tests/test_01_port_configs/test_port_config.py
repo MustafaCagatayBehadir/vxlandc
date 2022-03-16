@@ -5,9 +5,9 @@ from pytest import mark
 import json
 
 
-class L1AccessTests:
+class PortConfigsTest:
     """
-    A Test Class for NSO package l1access
+    A Test Class for NSO package Port Configs
     """
 
     payload_path = Path.cwd() / "tests" / "test_01_port_configs" / "payload"
@@ -97,13 +97,13 @@ class L1AccessTests:
 
     @mark.parametrize('expected, post_path, get_path', [
         (expected_path / 'ref_004_port_ETH100001_sw_1_e_1_1.json',
-         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant=0001_TURKCELL/l1access:ports/port=ETH100001/',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant=0001_TURKCELL/port-configs/port-config=ETH100001/',
          'tailf-ncs:devices/device=AVR-DSS1-BIP-SW-01/config/tailf-ned-cisco-nx:interface/Ethernet=1%2F1'),
         (expected_path / 'ref_004_port_PC100001_sw_3_po_1.json',
-         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant=0001_TURKCELL/l1access:ports/port=PC100001/',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant=0001_TURKCELL/port-configs/port-config=PC100001/',
          'tailf-ncs:devices/device=AVR-DSS1-BIP-SW-03/config/tailf-ned-cisco-nx:interface/port-channel=1'),
         (expected_path / 'ref_004_port_VPC100001_sw_1_2_po_10.json',
-         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant=0001_TURKCELL/l1access:ports/port=VPC100001/',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant=0001_TURKCELL/port-configs/port-config=VPC100001/',
          'tailf-ncs:devices/device=AVR-DSS1-BIP-SW-01/config/tailf-ned-cisco-nx:interface/port-channel=10'),
     ], indirect=['expected'])
     def test_004_port_shutdown(self, expected, post_path, get_path):
@@ -116,10 +116,10 @@ class L1AccessTests:
 
     @mark.parametrize('expected, post_path, get_path', [
         (expected_path / 'ref_005_port_ETH100001_sw_1_e_1_1.json',
-         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant=0001_TURKCELL/l1access:ports/port=ETH100001/',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant=0001_TURKCELL/port-configs/port-config=ETH100001/',
          'tailf-ncs:devices/device=AVR-DSS1-BIP-SW-01/config/tailf-ned-cisco-nx:interface/Ethernet=1%2F1'),
         (expected_path / 'ref_005_port_VPC100001_sw_1_2_po_10.json',
-         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant=0001_TURKCELL/l1access:ports/port=VPC100001/',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant=0001_TURKCELL/port-configs/port-config=VPC100001/',
          'tailf-ncs:devices/device=AVR-DSS1-BIP-SW-01/config/tailf-ned-cisco-nx:interface/port-channel=10'),
     ], indirect=['expected'])
     def test_005_port_storm_control_action_trap(self, expected, post_path, get_path):
@@ -132,7 +132,7 @@ class L1AccessTests:
 
     @mark.parametrize('expected, path', [
         (expected_path / 'ref_006_port_groups.json',
-         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant=0001_TURKCELL/l1access:port-groups')
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant=0001_TURKCELL/port-groups')
     ], indirect=['expected'])
     def test_006_port_groups(self, expected, path):
         resp = self.nso.get(path=path)

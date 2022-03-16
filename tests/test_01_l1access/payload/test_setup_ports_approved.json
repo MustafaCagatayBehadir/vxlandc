@@ -1,46 +1,40 @@
 {
-    "vxlandc-core:vxlandc": {
-        "sites": {
-            "site": [
+    "cisco-dc:dc-site": [
+        {
+            "fabric": "avr-dss1-lbox-yaani-fabric",
+            "tenant": [
                 {
-                    "fabric": "avr-dss1-lbox-yaani-fabric",
-                    "tenants": {
-                        "tenant": [
+                    "name": "0001_TURKCELL",
+                    "port-configs": {
+                        "port-config": [
                             {
-                                "name": "0001_TURKCELL",
-                                "l1access:ports": {
-                                    "port": [
-                                        {
-                                            "name": "ETH100001",
-                                            "approved": true
-                                        },
-                                        {
-                                            "name": "ETH100002",
-                                            "approved": true
-                                        },
-                                        {
-                                            "name": "PC100001",
-                                            "approved": true
-                                        },
-                                        {
-                                            "name": "PC100002",
-                                            "approved": true
-                                        },
-                                        {
-                                            "name": "VPC100001",
-                                            "approved": true
-                                        },
-                                        {
-                                            "name": "VPC100002",
-                                            "approved": true
-                                        }
-                                    ]
-                                }
+                                "name": "ETH100001",
+                                "approved": true
+                            },
+                            {
+                                "name": "ETH100002",
+                                "approved": true
+                            },
+                            {
+                                "name": "PC100001",
+                                "approved": true
+                            },
+                            {
+                                "name": "PC100002",
+                                "approved": true
+                            },
+                            {
+                                "name": "VPC100001",
+                                "approved": true
+                            },
+                            {
+                                "name": "VPC100002",
+                                "approved": true
                             }
                         ]
                     }
                 }
             ]
         }
-    }
+    ]
 }

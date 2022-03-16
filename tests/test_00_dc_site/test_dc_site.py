@@ -5,9 +5,9 @@ from pytest import mark
 import json
 
 
-class VxlandcTests:
+class DcSiteTests:
     """
-    A Test Class for NSO package l1access
+    A Test Class for NSO package dc-site
     """
 
     payload_path = Path.cwd() / "tests" / "test_00_vxlandc" / "payload"
@@ -30,7 +30,7 @@ class VxlandcTests:
 
     @mark.parametrize('expected, post_path, get_path', [
         (expected_path / 'ref_002_resource_pools.json',
-         'vxlandc-core:vxlandc/sites-operations/resource-pools/create-site-resource-pools',
+         'cisco-dc:dc-actions/resource-pools/create-site-resource-pools',
          'resource-allocator:resource-pools'),
     ], indirect=['expected'])
     def test_002_resource_pools(self, expected, post_path, get_path):

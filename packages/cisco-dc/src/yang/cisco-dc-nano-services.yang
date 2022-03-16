@@ -61,7 +61,7 @@ submodule cisco-dc-nano-services {
         }
     }
 
-    ncs:service-behavior-tree port-config-service-servicepoint {
+    ncs:service-behavior-tree port-config-servicepoint {
         description
           "Port Config Service Behavior Tree";
         ncs:plan-outline-ref "port-config-service-plan";

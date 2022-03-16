@@ -91,100 +91,100 @@ module cisco-dc {
                 }
             }
         }
+    }
 
-        container dc-actions {
-            tailf:info "Supported DC actions";
-            description
-              "Supported DC actions";
+    container dc-actions {
+        tailf:info "Supported DC actions";
+        description
+          "Supported DC actions";
 
-            container site-discovery {
-                tailf:action discover-site {
-                    tailf:actionpoint discover-site;
-                    description
-                      "Action to add devices to NSO and create fabric environment";
-                    input {
-                        leaf site {
-                            tailf:info "Site name for discovery";
-                            type leafref {
-                                path "/cisco-dc:dc-site/cisco-dc:fabric";
-                            }
-                        }
-                        leaf spine {
-                            must "contains(., 'SPN')" {
-                                error-message
-                                  "Node must be a spine node";
-                                tailf:dependency ".";
-                            }
-                            tailf:info "Spine name for discover the fabric";
-                            type leafref {
-                                path "/ncs:devices/ncs:device/ncs:name";
-                            }
+        container site-discovery {
+            tailf:action discover-site {
+                tailf:actionpoint discover-site;
+                description
+                  "Action to add devices to NSO and create fabric environment";
+                input {
+                    leaf site {
+                        tailf:info "Site name for discovery";
+                        type leafref {
+                            path "/cisco-dc:dc-site/cisco-dc:fabric";
                         }
                     }
-                    output {
-                        leaf success {
-                            type boolean;
+                    leaf spine {
+                        must "contains(., 'SPN')" {
+                            error-message
+                              "Node must be a spine node";
+                            tailf:dependency ".";
+                        }
+                        tailf:info "Spine name for discover the fabric";
+                        type leafref {
+                            path "/ncs:devices/ncs:device/ncs:name";
                         }
                     }
                 }
+                output {
+                    leaf success {
+                        type boolean;
+                    }
+                }
             }
+        }
 
-            container resource-pools {
-                tailf:action create-site-resource-pools {
-                    tailf:actionpoint create-site-resource-pools;
-                    description
-                      "Action to create resource-pools for selected site";
-                    input {
-                        list id-pool {
-                            key "id";
+        container resource-pools {
+            tailf:action create-site-resource-pools {
+                tailf:actionpoint create-site-resource-pools;
+                description
+                  "Action to create resource-pools for selected site";
+                input {
+                    list id-pool {
+                        key "id";
 
-                            leaf id {
-                                tailf:info "Pool Name. Can be l2-vxlan-vni | l3-vxlan-vni | network-vlan | vrf-vlan";
-                                type enumeration {
-                                    enum l2-vxlan-vni;
-                                    enum l3-vxlan-vni;
-                                    enum l2-network-vlan;
-                                    enum l3-vrf-vlan;
-                                    enum port-channel-id;
-                                }
-                            }
-
-                            leaf start {
-                                type uint32;
-                                mandatory true;
-                            }
-
-                            leaf end {
-                                type uint32;
-                                mandatory true;
-                                must ". >= ../start" {
-                                    error-message
-                                      "range end must be greater or equal to range start";
-                                    tailf:dependency "../start";
-                                }
-                            }
-
-                            leaf scope {
-                                tailf:info "Id Pool Scope. Can be fabric | local";
-                                type enumeration {
-                                    enum fabric;
-                                    enum local;
-                                }
+                        leaf id {
+                            tailf:info "Pool Name. Can be l2-vxlan-vni | l3-vxlan-vni | network-vlan | vrf-vlan";
+                            type enumeration {
+                                enum l2-vxlan-vni;
+                                enum l3-vxlan-vni;
+                                enum l2-network-vlan;
+                                enum l3-vrf-vlan;
+                                enum port-channel-id;
                             }
                         }
 
-                        leaf site {
-                            tailf:info "Site name";
-                            type leafref {
-                                path "/cisco-dc:dc-site/cisco-dc:fabric";
+                        leaf start {
+                            type uint32;
+                            mandatory true;
+                        }
+
+                        leaf end {
+                            type uint32;
+                            mandatory true;
+                            must ". >= ../start" {
+                                error-message
+                                  "range end must be greater or equal to range start";
+                                tailf:dependency "../start";
+                            }
+                        }
+
+                        leaf scope {
+                            tailf:info "Id Pool Scope. Can be fabric | local";
+                            type enumeration {
+                                enum fabric;
+                                enum local;
                             }
                         }
                     }
 
-                    output {
-                        leaf success {
-                            type boolean;
+                    leaf site {
+                        tailf:info "Site name";
+                        type leafref {
+                            path "/cisco-dc:dc-site/cisco-dc:fabric";
                         }
+                    }
+                }
+
+                output {
+                    leaf success {
+                        type boolean;
                     }
                 }
             }

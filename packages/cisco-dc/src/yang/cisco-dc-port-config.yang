@@ -109,7 +109,7 @@ submodule cisco-dc-port-config {
         leaf site {
             tailf:hidden "Just for convenience";
             type string;
-            tailf:default-ref "../../../../cisco-dc:fabric";
+            tailf:default-ref "../../../cisco-dc:fabric";
         }
 
         leaf type {

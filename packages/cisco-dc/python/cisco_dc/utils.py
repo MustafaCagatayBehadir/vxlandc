@@ -56,7 +56,6 @@ def get_description(port, port_parameters):
         String: Port description
 
     """
-    tenant = port._parent._parent._parent.name
     description = f"{port_parameters['name']}_{port_parameters['mode']}_{port_parameters['speed']}".upper(
     )
     if port_parameters['type'] == 'ethernet':

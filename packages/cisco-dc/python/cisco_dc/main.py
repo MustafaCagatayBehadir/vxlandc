@@ -3,6 +3,7 @@ import ncs
 
 from . import dc_actions
 from . import port_config_service
+from . import validate_callback
 
 # ---------------------------------------------
 # COMPONENT THREAD THAT WILL BE STARTED BY NCS.
@@ -20,6 +21,9 @@ class Main(ncs.application.Application):
         self.register_nano_service('port-config-servicepoint', 'ncs:self',
                                    'cisco-dc:port-configured', port_config_service.PortServiceSelfComponent)
 
+        # Port Config Service  Validation
+        self.port_config_val = validate_callback.ValPointRegistrar(
+            self.log, 'port-config-val', 'port-config-service-validation', port_config_service.PortConfigServiceValidator(self.log))
         ############################################################################################
 
         # DC-ACTIONS

@@ -59,7 +59,7 @@ submodule cisco-dc-port-config {
             type string;
         }
 
-        tailf:validate "port-config-service-cfs-validation" {
+        tailf:validate "port-config-service-validation" {
             tailf:dependency ".";
         }
 

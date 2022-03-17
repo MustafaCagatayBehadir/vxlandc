@@ -35,14 +35,14 @@ def _id_requested(root, port, tctx, log):
     if port.port_type == 'port-channel':
         requested_id = port.port_channel.port_channel_id if port.port_channel.port_channel_id else -1
         svc_xpath = "/cisco-dc:dc-site[fabric='{}']/cisco-dc:port-configs/cisco-dc:port-config[cisco-dc:name='{}']"
-        svc_xpath = svc_xpath.format(port.site, port.tenant, port.name)
+        svc_xpath = svc_xpath.format(port.site, port.name)
         id_allocator.id_request(port, svc_xpath, tctx.username, utils.get_port_channel_id_pool_name(
             root, port), f'{port.site}::{port.name}', False, requested_id)
         log.info(f'Port-Channel id is requested for port {port.name}')
     elif port.port_type == 'vpc-port-channel':
         requested_id = port.vpc_port_channel.port_channel_id if port.vpc_port_channel.port_channel_id else -1
         svc_xpath = "/cisco-dc:dc-site[fabric='{}']/cisco-dc:port-configs/cisco-dc:port-config[cisco-dc:name='{}']"
-        svc_xpath = svc_xpath.format(port.site, port.tenant, port.name)
+        svc_xpath = svc_xpath.format(port.site, port.name)
         id_allocator.id_request(port, svc_xpath, tctx.username, utils.get_port_channel_id_pool_name(
             root, port), f'{port.site}::{port.name}', False, requested_id)
         log.info(f'Port-Channel id is requested for port {port.name}')

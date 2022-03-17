@@ -59,6 +59,10 @@ submodule cisco-dc-port-config {
             type string;
         }
 
+        tailf:validate "port-config-service-cfs-validation" {
+            tailf:dependency ".";
+        }
+
         leaf description {
             tailf:info "This description is auto-generated, use this field to overwrite the default behavior.";
             type string {

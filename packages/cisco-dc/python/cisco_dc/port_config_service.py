@@ -1,5 +1,7 @@
 import ncs
-
+import _ncs
+import ncs.maapi as maapi
+import ncs.maagic as maagic
 from . import utils
 from .resource_manager import id_allocator
 from collections import defaultdict
@@ -202,3 +204,28 @@ def _create_port(port, port_parameters):
                 tvars.add('PO_MEMBER_DESCRIPTION', utils.get_po_member_description(
                     node_port, port_parameters))
                 utils.apply_template(port, 'port-channel-member', tvars)
+
+
+class PortConfigServiceValidator(object):
+    def __init__(self, log):
+        self.log = log
+
+    def cb_validate(self, tctx, kp, newval):
+        '''
+        Validating node port values are not overlapping for port-configs services
+        '''
+
+        try:
+            self.log.debug("Validating port-config service")
+            m = maapi.Maapi()
+            th = m.attach(tctx)
+
+            service = maagic.get_node(th, str(kp))
+            dc_ctrl = maagic.cd(service, "../..")
+            
+            # raise Exception("Invalid port config")
+
+        except Exception as e:
+            self.log.error(e)
+            raise
+        return _ncs.OK

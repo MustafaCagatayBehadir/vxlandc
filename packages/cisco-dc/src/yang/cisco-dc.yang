@@ -52,43 +52,46 @@ module cisco-dc {
         list tenant {
             description
               "List of Data Center customer definitions";
-            tailf:info "Define Data Center customer data";
+            tailf:info "Deploy a tenant service";
 
+            uses ncs:nano-plan-data;
+            uses ncs:service-data;
+            ncs:servicepoint tenant-config-servicepoint;
             key name;
 
-            uses tenant-configs;
+            uses tenant-service;
+        }
 
-            container port-groups {
+        container port-groups {
+            description
+              "Tenant Physical Attachmnets Groups";
+            tailf:info "Tenant Physical Attachments Groups";
+
+            list port-group {
+                tailf:info "Port group config service for VXLAN-EVPN configurations.";
                 description
-                  "Tenant Physical Attachmnets Groups";
-                tailf:info "Tenant Physical Attachments Groups";
+                  "Port group config service for VXLAN-EVPN configurations.";
 
-                list port-group {
-                    tailf:info "Port group config service for VXLAN-EVPN configurations.";
-                    description
-                      "Port group config service for VXLAN-EVPN configurations.";
+                key name;
 
-                    key name;
-
-                    uses port-group;
-                }
+                uses port-group;
             }
+        }
 
-            container port-configs {
-                tailf:info "Deploy different type of port services [ethernet, port-channel, virtual-port-channel]";
+        container port-configs {
+            tailf:info "Deploy different type of port services [ethernet, port-channel, virtual-port-channel]";
 
-                list port-config {
-                    tailf:info "Port config service for VXLAN-EVPN configurations.";
-                    description
-                      "Port config service for VXLAN-EVPN configurations.";
+            list port-config {
+                tailf:info "Port config service for VXLAN-EVPN configurations.";
+                description
+                  "Port config service for VXLAN-EVPN configurations.";
 
-                    uses ncs:nano-plan-data;
-                    uses ncs:service-data;
-                    ncs:servicepoint port-config-servicepoint;
-                    key name;
+                uses ncs:nano-plan-data;
+                uses ncs:service-data;
+                ncs:servicepoint port-config-servicepoint;
+                key name;
 
-                    uses port-config-service;
-                }
+                uses port-config-service;
             }
         }
     }

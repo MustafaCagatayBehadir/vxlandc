@@ -29,7 +29,11 @@ submodule cisco-dc-nano-services {
         base ncs:plan-state;
     }
 
-    ncs:plan-outline port-config-service-plan {
+    identity tenant-configured {
+        base ncs:plan-state;
+    }
+
+    ncs:plan-outline port-config-nano-plan {
         description
           "Port Config Service Plan";
 
@@ -64,7 +68,52 @@ submodule cisco-dc-nano-services {
     ncs:service-behavior-tree port-config-servicepoint {
         description
           "Port Config Service Behavior Tree";
-        ncs:plan-outline-ref "port-config-service-plan";
+        ncs:plan-outline-ref "port-config-nano-plan";
+
+        ncs:selector {
+            ncs:create-component "'self'" {
+                ncs:component-type-ref "ncs:self";
+            }
+        }
+    }
+
+    ncs:plan-outline tenant-config-nano-plan {
+        description
+          "Fabric Service Plan";
+
+        ncs:component-type "ncs:self" {
+            ncs:state "ncs:init";
+
+            ncs:state "cisco-dc:id-allocated" {
+                ncs:create {
+                    ncs:nano-callback;
+                }
+            }
+
+            ncs:state "cisco-dc:tenant-configured" {
+                ncs:create {
+                    ncs:pre-condition {
+                        ncs:all {
+                            ncs:monitor  "$SERVICE/plan/component[type='ncs:self'][name='self']/state[name='cisco-dc:id-allocated']" {
+                                ncs:trigger-expr "status = 'reached'";
+                            }
+                            ncs:monitor "$SERVICE" {
+                                ncs:trigger-expr "approved = 'true'";
+                            }
+                        }
+                    }
+                    ncs:nano-callback;
+                }
+            }
+
+            ncs:state "ncs:ready";
+        }
+    }
+
+    ncs:service-behavior-tree tenant-config-service-servicepoint {
+        description
+          "L2 Fabric Service Behavior Tree";
+        ncs:plan-outline-ref "l2-fabric-service-plan";
 
         ncs:selector {
             ncs:create-component "'self'" {

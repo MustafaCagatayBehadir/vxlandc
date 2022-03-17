@@ -24,12 +24,12 @@
                 {
                     "hostname": "AVR-DSS1-BIP-SW-01",
                     "node-role": "access-leaf",
-                    "node-type": "vPC"
+                    "node-type": "vpc"
                 },
                 {
                     "hostname": "AVR-DSS1-BIP-SW-02",
                     "node-role": "access-leaf",
-                    "node-type": "vPC"
+                    "node-type": "vpc"
                 },
                 {
                     "hostname": "AVR-DSS1-BIP-SW-03",
@@ -44,12 +44,12 @@
                 {
                     "hostname": "AVR-DSS1-BIP-SW-05",
                     "node-role": "access-leaf",
-                    "node-type": "vPC"
+                    "node-type": "vpc"
                 },
                 {
                     "hostname": "AVR-DSS1-BIP-SW-06",
                     "node-role": "access-leaf",
-                    "node-type": "vPC"
+                    "node-type": "vpc"
                 }
             ],
             "node-group": [

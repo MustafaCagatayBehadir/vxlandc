@@ -170,9 +170,9 @@ def is_node_vpc(root, port, port_parameters):
     """
     site = root.cisco_dc__dc_site[port.site]
     if port_parameters['type'] == 'ethernet':
-        return site.node[port_parameters['node']].node_type == 'vPC'
+        return site.node[port_parameters['node']].node_type == 'vpc'
     elif port_parameters['type'] == 'port-channel':
-        return site.node[port_parameters['node']].node_type == 'vPC'
+        return site.node[port_parameters['node']].node_type == 'vpc'
     return True
 
 

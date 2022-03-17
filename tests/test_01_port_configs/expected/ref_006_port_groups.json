@@ -1,5 +1,5 @@
 {
-    "l1access:port-groups": {
+    "cisco-dc:port-groups": {
         "port-group": [
             {
                 "name": "ETH_PG_1_ACCESS",

@@ -5,7 +5,7 @@ from pytest import mark
 import json
 
 
-class PortConfigsTest:
+class PortConfigsTests:
     """
     A Test Class for NSO package Port Configs
     """

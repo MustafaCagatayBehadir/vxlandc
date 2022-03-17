@@ -112,12 +112,6 @@ submodule cisco-dc-port-config {
             tailf:default-ref "../../../../cisco-dc:fabric";
         }
 
-        leaf tenant {
-            tailf:hidden "Just for convenience";
-            type string;
-            tailf:default-ref "../../../cisco-dc:name";
-        }
-
         leaf type {
             tailf:hidden "Just for convenience";
             type string;

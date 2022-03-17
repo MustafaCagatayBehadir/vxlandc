@@ -35,8 +35,8 @@ class ResourcePoolsAction(ncs.dp.Action):
         site = root.cisco_dc__dc_site[input.site]
         # Standalone nodes
         nodes = [node for node in site.node if node.node_role !=
-                 'spine' and node.node_type != 'vPC']
-        # vPC node groups
+                 'spine' and node.node_type != 'vpc']
+        # vpc node groups
         node_groups = [node_group for node_group in site.node_group]
         for id_pool in input.id_pool:
             start, end = id_pool.start, id_pool.end

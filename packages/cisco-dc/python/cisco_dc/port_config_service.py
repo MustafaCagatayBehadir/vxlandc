@@ -34,17 +34,17 @@ def _id_requested(root, port, tctx, log):
     """
     if port.port_type == 'port-channel':
         requested_id = port.port_channel.port_channel_id if port.port_channel.port_channel_id else -1
-        svc_xpath = "/cisco-dc:dc-site[fabric='{}']/tenant[name='{}']/cisco-dc:port-configs/cisco-dc:port-config[cisco-dc:name='{}']"
+        svc_xpath = "/cisco-dc:dc-site[fabric='{}']/cisco-dc:port-configs/cisco-dc:port-config[cisco-dc:name='{}']"
         svc_xpath = svc_xpath.format(port.site, port.tenant, port.name)
         id_allocator.id_request(port, svc_xpath, tctx.username, utils.get_port_channel_id_pool_name(
-            root, port), f'{port.site}::{port.tenant}::{port.name}', False, requested_id)
+            root, port), f'{port.site}::{port.name}', False, requested_id)
         log.info(f'Port-Channel id is requested for port {port.name}')
     elif port.port_type == 'vpc-port-channel':
         requested_id = port.vpc_port_channel.port_channel_id if port.vpc_port_channel.port_channel_id else -1
-        svc_xpath = "/cisco-dc:dc-site[fabric='{}']/tenant[name='{}']/cisco-dc:port-configs/cisco-dc:port-config[cisco-dc:name='{}']"
+        svc_xpath = "/cisco-dc:dc-site[fabric='{}']/cisco-dc:port-configs/cisco-dc:port-config[cisco-dc:name='{}']"
         svc_xpath = svc_xpath.format(port.site, port.tenant, port.name)
         id_allocator.id_request(port, svc_xpath, tctx.username, utils.get_port_channel_id_pool_name(
-            root, port), f'{port.site}::{port.tenant}::{port.name}', False, requested_id)
+            root, port), f'{port.site}::{port.name}', False, requested_id)
         log.info(f'Port-Channel id is requested for port {port.name}')
 
 
@@ -94,7 +94,7 @@ def _create_port_parameters(root, port, tctx, port_parameters, log):
             root, port, port_parameters) else 'FALSE'
     elif port_parameters['type'] == 'port-channel':
         port_parameters['port-channel-id'] = id_allocator.id_read(
-            tctx.username, root, utils.get_port_channel_id_pool_name(root, port), f'{port.site}::{port.tenant}::{port.name}')
+            tctx.username, root, utils.get_port_channel_id_pool_name(root, port), f'{port.site}::{port.name}')
         port_parameters['node'] = port.port_channel.node
         port_parameters['node-port'] = port.port_channel.node_port.as_list()
         port_parameters['vpc-node'] = 'TRUE' if utils.is_node_vpc(
@@ -102,7 +102,7 @@ def _create_port_parameters(root, port, tctx, port_parameters, log):
         port_parameters['is-vpc'] = 'FALSE'
     elif port_parameters['type'] == 'vpc-port-channel':
         port_parameters['port-channel-id'] = id_allocator.id_read(
-            tctx.username, root, utils.get_port_channel_id_pool_name(root, port), f'{port.site}::{port.tenant}::{port.name}')
+            tctx.username, root, utils.get_port_channel_id_pool_name(root, port), f'{port.site}::{port.name}')
         port_parameters['node-1'], port_parameters['node-2'] = utils.get_vpc_nodes(
             root, port)
         port_parameters['node-1-port'] = port.vpc_port_channel.node_1_port.as_list()

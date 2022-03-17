@@ -8,7 +8,7 @@
             "switchport": {
                 "mode": "trunk"
             },
-            "description": "0001_TURKCELL_VPC100002_TRUNK_10G_VPC",
+            "description": "VPC100002_TRUNK_10G_VPC",
             "mtu": 9216,
             "spanning-tree": {
                 "guard": "root",

@@ -26,11 +26,6 @@ class PortConfigsTests:
             path="",
             params="",
         )
-        cls.nso.patch(
-            payload=cls.payload_path / "test_setup_port_groups_config.json",
-            path="",
-            params="",
-        )
 
     @mark.parametrize('expected, path', [
         (expected_path / 'ref_001_port_ETH100001_sw_1_e_1_1.json',
@@ -97,13 +92,13 @@ class PortConfigsTests:
 
     @mark.parametrize('expected, post_path, get_path', [
         (expected_path / 'ref_004_port_ETH100001_sw_1_e_1_1.json',
-         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs/port-config=ETH100001/',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs=ETH_PG_1_ACCESS/port-config=ETH100001/',
          'tailf-ncs:devices/device=AVR-DSS1-BIP-SW-01/config/tailf-ned-cisco-nx:interface/Ethernet=1%2F1'),
         (expected_path / 'ref_004_port_PC100001_sw_3_po_1.json',
-         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs/port-config=PC100001/',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs=PC_PG_1_TRUNK/port-config=PC100001/',
          'tailf-ncs:devices/device=AVR-DSS1-BIP-SW-03/config/tailf-ned-cisco-nx:interface/port-channel=1'),
         (expected_path / 'ref_004_port_VPC100001_sw_1_2_po_10.json',
-         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs/port-config=VPC100001/',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs=VPC_PG_1_ACCESS/port-config=VPC100001/',
          'tailf-ncs:devices/device=AVR-DSS1-BIP-SW-01/config/tailf-ned-cisco-nx:interface/port-channel=10'),
     ], indirect=['expected'])
     def test_004_port_shutdown(self, expected, post_path, get_path):
@@ -116,10 +111,10 @@ class PortConfigsTests:
 
     @mark.parametrize('expected, post_path, get_path', [
         (expected_path / 'ref_005_port_ETH100001_sw_1_e_1_1.json',
-         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs/port-config=ETH100001/',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs=ETH_PG_1_ACCESS/port-config=ETH100001/',
          'tailf-ncs:devices/device=AVR-DSS1-BIP-SW-01/config/tailf-ned-cisco-nx:interface/Ethernet=1%2F1'),
         (expected_path / 'ref_005_port_VPC100001_sw_1_2_po_10.json',
-         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs/port-config=VPC100001/',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs=VPC_PG_1_ACCESS/port-config=VPC100001/',
          'tailf-ncs:devices/device=AVR-DSS1-BIP-SW-01/config/tailf-ned-cisco-nx:interface/port-channel=10'),
     ], indirect=['expected'])
     def test_005_port_storm_control_action_trap(self, expected, post_path, get_path):
@@ -130,11 +125,19 @@ class PortConfigsTests:
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
 
-    @mark.parametrize('expected, path', [
-        (expected_path / 'ref_006_port_groups.json',
-         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-groups')
+    @mark.parametrize('expected, post_payload, post_path', [
+        (expected_path / 'ref_007_port_ETH100003_error.json',
+         payload_path / 'test_007_config_01.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs'),
+        (expected_path / 'ref_007_port_PC100003_error.json',
+         payload_path / 'test_007_config_02.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs'),
+        (expected_path / 'ref_007_port_VPC100003_error.json',
+         payload_path / 'test_007_config_03.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs')
     ], indirect=['expected'])
-    def test_006_port_groups(self, expected, path):
-        resp = self.nso.get(path=path)
-        assert resp.status_code == 200
+    def test_007_interface_already_used(self, expected, post_payload, post_path):
+        resp = self.nso.post(payload=post_payload,
+                             path=post_path, params='', action=False)
+        assert resp.status_code == 400
         assert json.loads(resp.text) == expected

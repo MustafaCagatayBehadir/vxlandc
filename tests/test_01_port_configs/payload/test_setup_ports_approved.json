@@ -2,34 +2,57 @@
     "cisco-dc:dc-site": [
         {
             "fabric": "avr-dss1-lbox-yaani-fabric",
-            "port-configs": {
-                "port-config": [
-                    {
-                        "name": "ETH100001",
-                        "approved": true
-                    },
-                    {
-                        "name": "ETH100002",
-                        "approved": true
-                    },
-                    {
-                        "name": "PC100001",
-                        "approved": true
-                    },
-                    {
-                        "name": "PC100002",
-                        "approved": true
-                    },
-                    {
-                        "name": "VPC100001",
-                        "approved": true
-                    },
-                    {
-                        "name": "VPC100002",
-                        "approved": true
-                    }
-                ]
-            }
+            "port-configs": [
+                {
+                    "name": "ETH_PG_1_ACCESS",
+                    "port-config": [
+                        {
+                            "name": "ETH100001",
+                            "approved": true
+                        }
+                    ]
+                },
+                {
+                    "name": "ETH_PG_1_TRUNK",
+                    "port-config": [
+                        {
+                            "name": "ETH100002",
+                            "approved": true
+                        }
+                    ]
+                },
+                {
+                    "name": "PC_PG_1_TRUNK",
+                    "port-config": [
+                        {
+                            "name": "PC100001",
+                            "approved": true
+                        },
+                        {
+                            "name": "PC100002",
+                            "approved": true
+                        }
+                    ]
+                },
+                {
+                    "name": "VPC_PG_1_ACCESS",
+                    "port-config": [
+                        {
+                            "name": "VPC100001",
+                            "approved": true
+                        }
+                    ]
+                },
+                {
+                    "name": "VPC_PG_1_TRUNK",
+                    "port-config": [
+                        {
+                            "name": "VPC100002",
+                            "approved": true
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }

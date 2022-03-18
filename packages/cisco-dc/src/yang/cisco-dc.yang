@@ -49,7 +49,7 @@ module cisco-dc {
 
         uses site-configs;
 
-        list tenant {
+        list tenant-service {
             description
               "List of Data Center customer definitions";
             tailf:info "Deploy a tenant service";
@@ -62,24 +62,12 @@ module cisco-dc {
             uses tenant-service;
         }
 
-        container port-groups {
-            description
-              "Tenant Physical Attachmnets Groups";
-            tailf:info "Tenant Physical Attachments Groups";
-
-            list port-group {
-                tailf:info "Port group config service for VXLAN-EVPN configurations.";
-                description
-                  "Port group config service for VXLAN-EVPN configurations.";
-
-                key name;
-
-                uses port-group;
-            }
-        }
-
-        container port-configs {
+        list port-configs {
             tailf:info "Deploy different type of port services [ethernet, port-channel, virtual-port-channel]";
+
+            key name;
+
+            uses port-configs;
 
             list port-config {
                 tailf:info "Port config service for VXLAN-EVPN configurations.";

@@ -36,17 +36,17 @@ def _id_requested(root, port, tctx, log):
     """
     if port.port_type == 'port-channel':
         requested_id = port.port_channel.port_channel_id if port.port_channel.port_channel_id else -1
-        svc_xpath = "/cisco-dc:dc-site[fabric='{}']/cisco-dc:port-configs/cisco-dc:port-config[cisco-dc:name='{}']"
-        svc_xpath = svc_xpath.format(port.site, port.name)
+        svc_xpath = "/cisco-dc:dc-site[cisco-dc:fabric='{}']/cisco-dc:port-configs[cisco-dc:name='{}']/cisco-dc:port-config[cisco-dc:name='{}']"
+        svc_xpath = svc_xpath.format(port.site, port.port_group, port.name)
         id_allocator.id_request(port, svc_xpath, tctx.username, utils.get_port_channel_id_pool_name(
-            root, port), f'{port.site}::{port.name}', False, requested_id)
+            root, port), f'{port.site}:{port.port_group}:{port.name}', False, requested_id)
         log.info(f'Port-Channel id is requested for port {port.name}')
     elif port.port_type == 'vpc-port-channel':
         requested_id = port.vpc_port_channel.port_channel_id if port.vpc_port_channel.port_channel_id else -1
-        svc_xpath = "/cisco-dc:dc-site[fabric='{}']/cisco-dc:port-configs/cisco-dc:port-config[cisco-dc:name='{}']"
-        svc_xpath = svc_xpath.format(port.site, port.name)
+        svc_xpath = "/cisco-dc:dc-site[cisco-dc:fabric='{}']/cisco-dc:port-configs[cisco-dc:name='{}']/cisco-dc:port-config[cisco-dc:name='{}']"
+        svc_xpath = svc_xpath.format(port.site, port.port_group, port.name)
         id_allocator.id_request(port, svc_xpath, tctx.username, utils.get_port_channel_id_pool_name(
-            root, port), f'{port.site}::{port.name}', False, requested_id)
+            root, port), f'{port.site}:{port.port_group}:{port.name}', False, requested_id)
         log.info(f'Port-Channel id is requested for port {port.name}')
 
 
@@ -96,7 +96,7 @@ def _create_port_parameters(root, port, tctx, port_parameters, log):
             root, port, port_parameters) else 'FALSE'
     elif port_parameters['type'] == 'port-channel':
         port_parameters['port-channel-id'] = id_allocator.id_read(
-            tctx.username, root, utils.get_port_channel_id_pool_name(root, port), f'{port.site}::{port.name}')
+            tctx.username, root, utils.get_port_channel_id_pool_name(root, port), f'{port.site}:{port.port_group}:{port.name}')
         port_parameters['node'] = port.port_channel.node
         port_parameters['node-port'] = port.port_channel.node_port.as_list()
         port_parameters['vpc-node'] = 'TRUE' if utils.is_node_vpc(
@@ -104,7 +104,7 @@ def _create_port_parameters(root, port, tctx, port_parameters, log):
         port_parameters['is-vpc'] = 'FALSE'
     elif port_parameters['type'] == 'vpc-port-channel':
         port_parameters['port-channel-id'] = id_allocator.id_read(
-            tctx.username, root, utils.get_port_channel_id_pool_name(root, port), f'{port.site}::{port.name}')
+            tctx.username, root, utils.get_port_channel_id_pool_name(root, port), f'{port.site}:{port.port_group}:{port.name}')
         port_parameters['node-1'], port_parameters['node-2'] = utils.get_vpc_nodes(
             root, port)
         port_parameters['node-1-port'] = port.vpc_port_channel.node_1_port.as_list()
@@ -126,7 +126,7 @@ def _set_node_port_flat_leaf_list(port, port_parameters):
 
     Args:
         port: service node
-        port_parameters: port configuration elements dictionary        
+        port_parameters: port configuration elements dictionary
 
     """
     if port_parameters['type'] == 'ethernet':
@@ -147,7 +147,7 @@ def _set_hidden_leaves(port, port_parameters):
 
     Args:
         port: service node
-        port_parameters: port configuration elements dictionary    
+        port_parameters: port configuration elements dictionary
 
     """
     if port_parameters['type'] == 'ethernet':
@@ -236,10 +236,11 @@ class PortConfigServiceValidator(object):
         '''
         :th: ncs.maapi.Transaction
         :port: ncs.maagic.ListElement
-        :fabric: fabric name string 
+        :fabric: fabric name string
         '''
         current_interface_id = self._get_interface_id(th, port)
-        self._check_no_interface_id_overlap(th, current_interface_id, port, fabric)
+        self._check_no_interface_id_overlap(
+            th, current_interface_id, port, fabric)
 
     def _get_interface_id(self, th, port):
         '''
@@ -267,33 +268,35 @@ class PortConfigServiceValidator(object):
         :fabric: fabric name string
         '''
         root = ncs.maagic.get_root(th)
-        port_config = root.dc_site[fabric].port_configs.port_config
-        for port in port_config:
-            if port.name != current_port.name:
-                if port.port_type == 'ethernet':
-                    node = port.ethernet.node
-                    node_port = {id for id in port.ethernet.node_port}
-                    if current_interface_id.get(node):
-                        if current_interface_id[node].intersection(node_port):
-                            raise Exception(
-                                f'Interface id is already used for port {port.name}')
-                elif port.port_type == 'port-channel':
-                    node = port.port_channel.node
-                    node_port = {id for id in port.port_channel.node_port}
-                    if current_interface_id.get(node):
-                        if current_interface_id[node].intersection(node_port):
-                            raise Exception(
-                                f'Interface id is already used for port {port.name}')
-                elif port.port_type == 'vpc-port-channel':
-                    node_1, node_2 = utils.get_vpc_nodes(
-                        ncs.maagic.get_root(th), port)
-                    node_1_port, node_2_port = {id for id in port.vpc_port_channel.node_1_port}, {
-                        id for id in port.vpc_port_channel.node_2_port}
-                    if current_interface_id.get(node_1):
-                        if current_interface_id[node_1].intersection(node_1_port):
-                            raise Exception(
-                                f'Interface id is already used for port {port.name}')
-                    if current_interface_id.get(node_2):
-                        if current_interface_id[node_2].intersection(node_2_port):
-                            raise Exception(
-                                f'Interface id is already used for port {port.name}')
+        port_configs = root.dc_site[fabric].port_configs
+        for port_group in port_configs:
+            for port in port_group.port_config:
+                if port.name != current_port.name:
+                    if port.port_type == 'ethernet':
+                        node = port.ethernet.node
+                        node_port = {id for id in port.ethernet.node_port}
+                        if current_interface_id.get(node):
+                            if current_interface_id[node].intersection(node_port):
+                                raise Exception(
+                                    f'Interface id is already used for port {port.name}')
+                    elif port.port_type == 'port-channel':
+                        node = port.port_channel.node
+                        node_port = {
+                            id for id in port.port_channel.node_port}
+                        if current_interface_id.get(node):
+                            if current_interface_id[node].intersection(node_port):
+                                raise Exception(
+                                    f'Interface id is already used for port {port.name}')
+                    elif port.port_type == 'vpc-port-channel':
+                        node_1, node_2 = utils.get_vpc_nodes(
+                            ncs.maagic.get_root(th), port)
+                        node_1_port, node_2_port = {id for id in port.vpc_port_channel.node_1_port}, {
+                            id for id in port.vpc_port_channel.node_2_port}
+                        if current_interface_id.get(node_1):
+                            if current_interface_id[node_1].intersection(node_1_port):
+                                raise Exception(
+                                    f'Interface id is already used for port {port.name}')
+                        if current_interface_id.get(node_2):
+                            if current_interface_id[node_2].intersection(node_2_port):
+                                raise Exception(
+                                    f'Interface id is already used for port {port.name}')

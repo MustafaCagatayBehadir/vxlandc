@@ -17,6 +17,16 @@ submodule cisco-dc-common {
           "Initial Revision.";
     }
 
+    typedef dc-string {
+        type string {
+            pattern
+              '[^\s]+' {
+                error-message
+                  "No space/s allowed.";
+            }
+        }
+    }
+
     typedef node-port {
         type string {
             pattern

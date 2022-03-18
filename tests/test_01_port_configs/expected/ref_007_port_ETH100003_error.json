@@ -4,8 +4,8 @@
             {
                 "error-type": "application",
                 "error-tag": "malformed-message",
-                "error-path": "/cisco-dc:dc-site[fabric='avr-dss1-lbox-yaani-fabric']/port-configs/port-config[name='ETH100003']",
-                "error-message": "/dc-site{avr-dss1-lbox-yaani-fabric}/port-configs/port-config{ETH100003}: Python cb_validate error. Interface id is already used for port ETH100001"
+                "error-path": "/cisco-dc:dc-site[fabric='avr-dss1-lbox-yaani-fabric']/port-configs[name='ETH_PG_1_ACCESS']/port-config[name='ETH100003']",
+                "error-message": "/dc-site{avr-dss1-lbox-yaani-fabric}/port-configs{ETH_PG_1_ACCESS}/port-config{ETH100003}: Python cb_validate error. Interface id is already used for port ETH100001"
             }
         ]
     }

@@ -1,22 +1,16 @@
 {
-    "port-configs": [
+    "port-config": [
         {
-            "name": "PC_PG_1_TRUNK",
-            "port-config": [
-                {
-                    "name": "PC100003",
-                    "description": "CUSTOM_DESCRIPTION_PC100003",
-                    "mode": "trunk",
-                    "connection": "host",
-                    "speed": "1G",
-                    "port-channel": {
-                        "node": "AVR-DSS1-BIP-SW-03",
-                        "node-port": [
-                            "1/10"
-                        ]
-                    }
-                }
-            ]
+            "name": "PC100003",
+            "description": "CUSTOM_DESCRIPTION_PC100003",
+            "connection": "host",
+            "speed": "1G",
+            "port-channel": {
+                "node": "AVR-DSS1-BIP-SW-03",
+                "node-port": [
+                    "1/10"
+                ]
+            }
         }
     ]
 }

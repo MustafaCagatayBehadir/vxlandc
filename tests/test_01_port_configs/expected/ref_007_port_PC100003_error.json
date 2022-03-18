@@ -4,8 +4,8 @@
             {
                 "error-type": "application",
                 "error-tag": "malformed-message",
-                "error-path": "/cisco-dc:dc-site[fabric='avr-dss1-lbox-yaani-fabric']/port-configs/port-config[name='PC100003']",
-                "error-message": "/dc-site{avr-dss1-lbox-yaani-fabric}/port-configs/port-config{PC100003}: Python cb_validate error. Interface id is already used for port PC100001"
+                "error-path": "/cisco-dc:dc-site[fabric='avr-dss1-lbox-yaani-fabric']/port-configs[name='PC_PG_1_TRUNK']/port-config[name='PC100003']",
+                "error-message": "/dc-site{avr-dss1-lbox-yaani-fabric}/port-configs{PC_PG_1_TRUNK}/port-config{PC100003}: Python cb_validate error. Interface id is already used for port PC100001"
             }
         ]
     }

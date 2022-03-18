@@ -1,25 +1,19 @@
 {
-    "port-configs": [
+    "port-config": [
         {
-            "name": "VPC_PG_1_ACCESS",
-            "port-config": [
-                {
-                    "name": "VPC100003",
-                    "description": "CUSTOM_DESCRIPTION_VPC100003",
-                    "mode": "access",
-                    "connection": "host",
-                    "speed": "1G",
-                    "vpc-port-channel": {
-                        "node-group": 1,
-                        "node-1-port": [
-                            "1/10"
-                        ],
-                        "node-2-port": [
-                            "1/10"
-                        ]
-                    }
-                }
-            ]
+            "name": "VPC100003",
+            "description": "CUSTOM_DESCRIPTION_VPC100003",
+            "connection": "host",
+            "speed": "1G",
+            "vpc-port-channel": {
+                "node-group": 1,
+                "node-1-port": [
+                    "1/10"
+                ],
+                "node-2-port": [
+                    "1/10"
+                ]
+            }
         }
     ]
 }

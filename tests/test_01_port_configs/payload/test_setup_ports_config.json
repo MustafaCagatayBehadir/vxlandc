@@ -9,7 +9,7 @@
                     "port-config": [
                         {
                             "name": "ETH100001",
-                            "description": "CUSTOM_DESCRIPTION",
+                            "description": "CUSTOM_DESCRIPTION_ETH100001",
                             "connection": "host",
                             "speed": "1G",
                             "ethernet": {
@@ -31,9 +31,6 @@
                             "name": "ETH100002",
                             "connection": "switch",
                             "speed": "10G",
-                            "shutdown": [
-                                null
-                            ],
                             "ethernet": {
                                 "node": "AVR-DSS1-BIP-SW-02",
                                 "node-port": [
@@ -68,9 +65,6 @@
                             "name": "PC100002",
                             "connection": "switch",
                             "speed": "10G",
-                            "shutdown": [
-                                null
-                            ],
                             "ethernet": {},
                             "port-channel": {
                                 "node": "AVR-DSS1-BIP-SW-04",
@@ -89,7 +83,7 @@
                     "port-config": [
                         {
                             "name": "VPC100001",
-                            "description": "CUSTOM_DESCRIPTION",
+                            "description": "CUSTOM_DESCRIPTION_VPC100001",
                             "connection": "host",
                             "speed": "1G",
                             "ethernet": {},
@@ -117,12 +111,10 @@
                             "name": "VPC100002",
                             "connection": "switch",
                             "speed": "10G",
-                            "shutdown": [
-                                null
-                            ],
                             "ethernet": {},
                             "port-channel": {},
                             "vpc-port-channel": {
+                                "port-channel-id": 20,
                                 "node-group": 1,
                                 "node-1-port": [
                                     "1/12",

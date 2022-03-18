@@ -1,22 +1,16 @@
 {
-    "port-configs": [
+    "port-config": [
         {
-            "name": "ETH_PG_1_ACCESS",
-            "port-config": [
-                {
-                    "name": "ETH100003",
-                    "description": "CUSTOM_DESCRIPTION_ETH100003",
-                    "mode": "access",
-                    "connection": "host",
-                    "speed": "1G",
-                    "ethernet": {
-                        "node": "AVR-DSS1-BIP-SW-01",
-                        "node-port": [
-                            "1/1"
-                        ]
-                    }
-                }
-            ]
+            "name": "ETH100003",
+            "description": "CUSTOM_DESCRIPTION_ETH100001",
+            "connection": "host",
+            "speed": "1G",
+            "ethernet": {
+                "node": "AVR-DSS1-BIP-SW-01",
+                "node-port": [
+                    "1/1"
+                ]
+            }
         }
     ]
 }

@@ -268,7 +268,7 @@ class PortConfigServiceValidator(object):
         :fabric: fabric name string
         '''
         root = ncs.maagic.get_root(th)
-        port_configs = root.dc_site[fabric].port_configs
+        port_configs = root.cisco_dc__dc_site[fabric].port_configs
         for port_group in port_configs:
             for port in port_group.port_config:
                 if port.name != current_port.name:

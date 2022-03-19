@@ -3,6 +3,7 @@ import ncs
 
 from . import dc_actions
 from . import port_config_service
+from . import bridge_domain_service
 from . import validate_callback
 
 # ---------------------------------------------
@@ -24,6 +25,14 @@ class Main(ncs.application.Application):
         # Port Config Service  Validation
         self.port_config_val = validate_callback.ValPointRegistrar(
             self.log, 'port-config-val', 'port-config-service-validation', port_config_service.PortConfigServiceValidator(self.log))
+
+         # Bridge Domain Registration
+        self.register_nano_service('bridge-domain-config-servicepoint', 'ncs:self',
+                                   'cisco-dc:id-allocated', bridge_domain_service.BridgeDomainServiceSelfComponent)
+
+        self.register_nano_service('bridge-domain-config-servicepoint', 'ncs:self',
+                                   'cisco-dc:bridge-domain-configured', bridge_domain_service.BridgeDomainServiceSelfComponent)         
+
         ############################################################################################
 
         # DC-ACTIONS

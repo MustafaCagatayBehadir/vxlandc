@@ -110,7 +110,7 @@ submodule cisco-dc-nano-services {
         }
     }
 
-    ncs:service-behavior-tree bridge-domain-config-service-servicepoint {
+    ncs:service-behavior-tree bridge-domain-config-servicepoint {
         description
           "Bridge Domain Service Behavior Tree";
         ncs:plan-outline-ref "bridge-domain-config-nano-plan";

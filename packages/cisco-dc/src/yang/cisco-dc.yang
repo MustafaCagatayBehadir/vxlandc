@@ -54,12 +54,21 @@ module cisco-dc {
               "List of Data Center customer definitions";
             tailf:info "Deploy a tenant service";
 
-            uses ncs:nano-plan-data;
-            uses ncs:service-data;
-            ncs:servicepoint tenant-config-servicepoint;
             key name;
 
             uses tenant-service;
+
+            list bridge-domain {
+                tailf:info "Define Bridge Domain Name";
+
+                uses ncs:nano-plan-data;
+                uses ncs:service-data;
+                ncs:servicepoint bridge-domain-config-servicepoint;
+
+                key name;
+
+                uses bridge-domain;
+            }
         }
 
         list port-configs {

@@ -39,71 +39,87 @@ submodule cisco-dc-tenant {
             type string;
             tailf:info "Tenant Description";
         }
+    }
 
-        list bridge-domain {
-            tailf:info "Define Bridge Domain Name";
+    grouping bridge-domain {
+
+        leaf name {
+            tailf:info "Specify bridge domain name";
+            type dc-string;
+        }
+
+        container l2vni {
+            tailf:info "Layer 2 VNI Configuration Parameters";
+
+            leaf vlan-id {
+                tailf:info "Vlan id is allocated by resource-manager, use this field to overwrite the default behavior.";
+                type vlan;
+            }
+
+            leaf vni-id {
+                tailf:info "Vni id is allocated by resource-manager, use this field to overwrite the default behavior.";
+                type vxlan-id;
+            }
+        }
+
+        container l3vni {
+            tailf:info "Layer 3 VNI Configuration Parameters";
+
+            leaf vlan-id {
+                tailf:info "Vlan id is allocated by resource-manager, use this field to overwrite the default behavior.";
+                type vlan;
+            }
+
+            leaf vni-id {
+                tailf:info "Vni id is allocated by resource-manager, use this field to overwrite the default behavior.";
+                type vxlan-id;
+            }
+        }
+
+        list port-group {
+            tailf:info "Attach port group defined in fabric";
+
             key name;
 
             leaf name {
-                tailf:info "Specify bridge domain name";
-                type dc-string;
-            }
-
-            container l2vni {
-                tailf:info "Layer 2 VNI Configuration Parameters";
-
-                leaf vlan-id {
-                    tailf:info "Vlan id is allocated by resource-manager, use this field to overwrite the default behavior.";
-                    type vlan;
-                }
-
-                leaf vni-id {
-                    tailf:info "Vni id is allocated by resource-manager, use this field to overwrite the default behavior.";
-                    type vxlan-id;
+                tailf:info "Port Group Name";
+                type leafref {
+                    path "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../../../fabric]/cisco-dc:port-configs/cisco-dc:name";
                 }
             }
 
-            container l3vni {
-                tailf:info "Layer 2 VNI Configuration Parameters";
-
-                leaf vlan-id {
-                    tailf:info "Vlan id is allocated by resource-manager, use this field to overwrite the default behavior.";
-                    type vlan;
+            leaf mode {
+                must "current() = deref(current()/../name)/../cisco-dc:mode" {
+                    tailf:dependency ".";
+                    tailf:dependency "../name";
+                    error-message
+                      "Port group mode must match with the tenant-service encap mode";
                 }
-
-                leaf vni-id {
-                    tailf:info "Vni id is allocated by resource-manager, use this field to overwrite the default behavior.";
-                    type vxlan-id;
+                tailf:info "Port Mode.It can be Access | Trunk";
+                type enumeration {
+                    enum access;
+                    enum trunk;
                 }
+                mandatory true;
             }
+        }
 
-            list port-group {
-                tailf:info "Attach port group defined in fabric";
+        leaf site {
+            tailf:hidden "Just for convenience";
+            type string;
+            tailf:default-ref "../../../cisco-dc:fabric";
+        }
 
-                key name;
+        leaf mcast-group {
+            tailf:hidden "Just for convenience";
+            type inet:ipv4-address;
+            tailf:default-ref "../../../cisco-dc:fabric-parameters/cisco-dc:mcast-group";
+        }
 
-                leaf name {
-                    tailf:info "Port Group Name";
-                    type leafref {
-                        path "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../../../fabric]/cisco-dc:port-configs/cisco-dc:name";
-                    }
-                }
-
-                leaf mode {
-                    must "current() = deref(current()/../name)/../cisco-dc:mode" {
-                        tailf:dependency ".";
-                        tailf:dependency "../name";
-                        error-message
-                          "Port group mode must match with the tenant-service encap mode";
-                    }
-                    tailf:info "Port Mode.It can be Access | Trunk";
-                    type enumeration {
-                        enum access;
-                        enum trunk;
-                    }
-                    mandatory true;
-                }
-            }
+        leaf tenant {
+            tailf:hidden "Just for convenience";
+            type string;
+            tailf:default-ref "../../cisco-dc:name";
         }
     }
 }

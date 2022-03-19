@@ -77,7 +77,7 @@ submodule cisco-dc-nano-services {
         }
     }
 
-    ncs:plan-outline tenant-config-nano-plan {
+    ncs:plan-outline bridge-domain-config-nano-plan {
         description
           "Fabric Service Plan";
 
@@ -90,7 +90,7 @@ submodule cisco-dc-nano-services {
                 }
             }
 
-            ncs:state "cisco-dc:tenant-configured" {
+            ncs:state "cisco-dc:bridge-domain-configured" {
                 ncs:create {
                     ncs:pre-condition {
                         ncs:all {
@@ -110,10 +110,10 @@ submodule cisco-dc-nano-services {
         }
     }
 
-    ncs:service-behavior-tree tenant-config-service-servicepoint {
+    ncs:service-behavior-tree bridge-domain-config-service-servicepoint {
         description
-          "L2 Fabric Service Behavior Tree";
-        ncs:plan-outline-ref "l2-fabric-service-plan";
+          "Bridge Domain Service Behavior Tree";
+        ncs:plan-outline-ref "bridge-domain-config-nano-plan";
 
         ncs:selector {
             ncs:create-component "'self'" {

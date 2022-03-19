@@ -1,5 +1,6 @@
 import ncs
 from .resource_manager import id_allocator
+from . import utils
 
 
 class BridgeDomainServiceSelfComponent(ncs.application.NanoService):
@@ -17,7 +18,7 @@ class BridgeDomainServiceSelfComponent(ncs.application.NanoService):
             _id_requested(root, service, tctx, self.log)
 
         elif state == 'cisco-dc:bridge-domain-configured':
-            _configure_tenant(root, service, tctx, self.log)
+            _configure_bridge_domain(root, service, tctx, self.log)
 
 
 def _id_requested(root, bd, tctx, log):
@@ -42,5 +43,27 @@ def _id_requested(root, bd, tctx, log):
         log.info(f'Id is requested from pool {pool_name} for service {bd.name}')
 
 
-def _configure_tenant(root, service, tctx, log):
-    pass
+def _configure_bridge_domain(root, bd, tctx, log):
+    """Function to configure bridge domain service
+
+    Args:
+        root: Maagic object pointing to the root of the CDB
+        bd: service node
+        tctx: transaction context (TransCtxRef)
+        log: log object (self.log)
+
+    """
+    _create_bd_parameters(root, bd, tctx, log)
+
+
+def _create_bd_parameters(root, tctx, bd, log):
+    """Function to create vlan trunking parameters and bd parameters
+
+    Args:
+        root: Maagic object pointing to the root of the CDB
+        bd: service node
+        log: log object (self.log)
+
+    """
+    port_groups = root.cisco_dc__port_configs
+    attached_port_groups = bd.port_group

@@ -43,7 +43,7 @@ submodule cisco-dc-port-config {
     grouping port-config-service {
 
         leaf name {
-            tailf:info "Unique ID for this physicalAttachment.  May contain Service ID";
+            tailf:info "Port Name";
             tailf:cli-allow-range;
             type dc-string;
         }

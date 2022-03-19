@@ -29,7 +29,7 @@ submodule cisco-dc-nano-services {
         base ncs:plan-state;
     }
 
-    identity tenant-configured {
+    identity bridge-domain-configured {
         base ncs:plan-state;
     }
 

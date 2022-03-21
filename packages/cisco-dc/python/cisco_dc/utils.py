@@ -96,7 +96,7 @@ def get_bum(port_parameters):
     return 0.50
 
 
-def get_vpc_nodes(root, port):
+def get_vpc_nodes_from_port(root, port):
     """Function to return vPC nodes
 
     Args:
@@ -110,6 +110,22 @@ def get_vpc_nodes(root, port):
     site = root.cisco_dc__dc_site[port.site]
     node_group = site.node_group[port.vpc_port_channel.node_group]
     return node_group.node_1, node_group.node_2
+
+def get_vpc_nodes_from_bd(root, bd, vlan_dict):
+    """Function to return vPC nodes
+
+    Args:
+        root: Maagic object pointing to the root of the CDB
+        bd: service node
+        vlan_dict: vlan configuration elements dictionary
+
+    Returns:
+        List: vPC node1 & vPC node2 list object
+
+    """
+    site = root.cisco_dc__dc_site[bd.site]
+    node_group = site.node_group[vlan_dict.get('node-group')]
+    return [node_group.node_1, node_group.node_2]
 
 
 def is_node_vpc(root, port, port_parameters):

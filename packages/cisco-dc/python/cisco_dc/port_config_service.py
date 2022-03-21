@@ -105,7 +105,7 @@ def _create_port_parameters(root, port, tctx, port_parameters, log):
     elif port_parameters['type'] == 'vpc-port-channel':
         port_parameters['port-channel-id'] = id_allocator.id_read(
             tctx.username, root, utils.get_port_channel_id_pool_name(root, port), f'{port.site}:{port.port_group}:{port.name}')
-        port_parameters['node-1'], port_parameters['node-2'] = utils.get_vpc_nodes(
+        port_parameters['node-1'], port_parameters['node-2'] = utils.get_vpc_nodes_from_port(
             root, port)
         port_parameters['node-1-port'] = port.vpc_port_channel.node_1_port.as_list()
         port_parameters['node-2-port'] = port.vpc_port_channel.node_2_port.as_list()
@@ -255,7 +255,7 @@ class PortConfigServiceValidator(object):
             node = port.port_channel.node
             interface_id[node] = {id for id in port.port_channel.node_port}
         elif port.port_type == 'vpc-port-channel':
-            node_1, node_2 = utils.get_vpc_nodes(ncs.maagic.get_root(th), port)
+            node_1, node_2 = utils.get_vpc_nodes_from_port(ncs.maagic.get_root(th), port)
             interface_id[node_1], interface_id[node_2] = {id for id in port.vpc_port_channel.node_1_port}, {
                 id for id in port.vpc_port_channel.node_2_port}
         return interface_id
@@ -288,7 +288,7 @@ class PortConfigServiceValidator(object):
                                 raise Exception(
                                     f'Interface id is already used for port {port.name}')
                     elif port.port_type == 'vpc-port-channel':
-                        node_1, node_2 = utils.get_vpc_nodes(
+                        node_1, node_2 = utils.get_vpc_nodes_from_port(
                             ncs.maagic.get_root(th), port)
                         node_1_port, node_2_port = {id for id in port.vpc_port_channel.node_1_port}, {
                             id for id in port.vpc_port_channel.node_2_port}

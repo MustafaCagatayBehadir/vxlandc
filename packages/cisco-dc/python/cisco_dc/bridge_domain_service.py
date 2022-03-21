@@ -56,15 +56,20 @@ def _configure_bridge_domain(root, bd, tctx, log):
         log: log object (self.log)
 
     """
-    _create_bd_parameters(root, bd, tctx, log)
+    bd_parameters = defaultdict(dict)
+    vlan_parameters = defaultdict(dict)
+    _create_service_parameters(root, bd, tctx, bd_parameters, vlan_parameters, log)
+    _create_bd_config(root, bd, bd_parameters, vlan_parameters)
 
 
-def _create_bd_parameters(root, bd, tctx, log):
-    """Function to create vlan trunking parameters and bd parameters
+def _create_service_parameters(root, bd, tctx, bd_parameters, vlan_parameters, log):
+    """Function to create vlan parameters and bd parameters
 
     Args:
         root: Maagic object pointing to the root of the CDB
         bd: service node
+        bd_parameters: collections defaultdict object (defaultdict(dict))
+        vlan_parameters: collections defaultdict object (defaultdict(dict))
         log: log object (self.log)
 
     """
@@ -100,7 +105,7 @@ def _create_bd_parameters(root, bd, tctx, log):
                 node = pc.node
                 vlan_dict['port-type'] = 'port-channel'
                 vlan_dict['node'] = node
-                vlan_dict['node-port'] = eth.node_port.as_list()
+                vlan_dict['node-port'] = pc.node_port.as_list()
                 vlan_dict['vlan-id'] = id_parameters['network-vlan']
                 if not bd_parameters.get(node):
                     bd_parameters[node] = id_parameters
@@ -118,3 +123,51 @@ def _create_bd_parameters(root, bd, tctx, log):
                     bd_parameters[node_1] = id_parameters
                 if not bd_parameters.get(node_2):
                     bd_parameters[node_2] = id_parameters
+    log.debug(f'bridge-Domain: {bd.name}, bd-parameters:{bd_parameters}, vlan-parameters: {vlan_parameters}')
+
+
+def _create_bd_config(root, bd, bd_parameters, vlan_parameters):
+    """Function to create bridge-domain configuration
+
+    Args:
+        root: Maagic object pointing to the root of the CDB
+        bd: service node
+        bd_parameters: collections defaultdict object (defaultdict(dict))
+        vlan_parameters: collections defaultdict object (defaultdict(dict))
+
+    """
+    vars = ncs.template.Variables()
+    vlan_name, mcast_group = bd.name, bd.mcast_group
+    vars.add('VLAN_NAME', vlan_name)
+    vars.add('MCAST_GROUP', mcast_group)
+    for device in bd_parameters:
+        vars.add('DEVICE', device)
+        vars.add('VLAN_ID', bd_parameters[device]['network-vlan'])
+        vars.add('VNI_ID', bd_parameters[device]['l2vni'])
+        utils.apply_template(bd, 'cisco-dc-services-fabric-bd-l2vni-service', vars)
+    for vlan_dict in vlan_parameters:
+        vars.add('PORT_MODE', vlan_dict['mode'])
+        vars.add('PORT_TYPE', vlan_dict['port-type'])
+        if vlan_dict['port-type'] == 'ethernet':
+            vars.add('DEVICE', vlan_dict['node'])
+            vars.add('VLAN_ID', vlan_dict['vlan-id'])
+            for port in vlan_dict['node-port']:
+                vars.add('ETH_ID', port)
+                utils.apply_template(bd, 'cisco-dc-services-fabric-bd-vlan-service', vars)
+        elif vlan_dict['port-type'] == 'port-channel':
+            vars.add('DEVICE', vlan_dict['node'])
+            vars.add('VLAN_ID', vlan_dict['vlan-id'])
+            vars.add('ETH_ID', '')
+            vars.add('PO_ID', vlan_dict['port-channel-id'])
+            utils.apply_template(bd, 'cisco-dc-services-fabric-bd-vlan-service', vars)
+        elif vlan_dict['port-type'] == 'vpc-port-channel':
+            vars.add('PO_ID', vlan_dict['port-channel-id'])
+            vars.add('ETH_ID', '')
+            vars.add('PO_ID', vlan_dict['port-channel-id'])
+            for device in utils.get_vpc_nodes_from_bd(root, bd, vlan_dict):
+                vars.add('DEVICE', device)
+                vars.add('VLAN_ID', vlan_dict['vlan-id'])
+                utils.apply_template(bd, 'cisco-dc-services-fabric-bd-vlan-service', vars)
+            
+
+

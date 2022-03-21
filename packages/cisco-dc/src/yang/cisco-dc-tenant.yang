@@ -39,6 +39,26 @@ submodule cisco-dc-tenant {
             type string;
             tailf:info "Tenant Description";
         }
+
+        leaf id {
+            tailf:hidden "dc";
+            type uint32;
+        }
+
+        list vrf {
+            tailf:info "Specify VRF's";
+            key name;
+
+            leaf name {
+                tailf:info "Define VRF name";
+                type dc-string;
+            }
+
+            leaf id {
+                tailf:hidden "dc";
+                type uint32;
+            }
+        }
     }
 
     grouping bridge-domain {
@@ -46,6 +66,11 @@ submodule cisco-dc-tenant {
         leaf name {
             tailf:info "Specify bridge domain name";
             type dc-string;
+        }
+
+        leaf id {
+            tailf:hidden "dc";
+            type uint32;
         }
 
         container l2vni {
@@ -101,6 +126,32 @@ submodule cisco-dc-tenant {
                     enum trunk;
                 }
                 mandatory true;
+            }
+        }
+
+        list bd-subnet {
+            tailf:info "Specify Bridge Domain subnet address & scope";
+            key address;
+
+            leaf address {
+                tailf:info "A.B.C.D/L;;Prefix or X:X::X/L;;Prefix for L3 Internal Subnet";
+                type tailf:ip-address-and-prefix-length;
+            }
+
+            leaf preferred {
+                tailf:info "Specify preferred value [no]";
+                type enumeration {
+                    enum yes;
+                    enum no;
+                }
+                default no;
+            }
+        }
+
+        leaf vrf {
+            tailf:info "Associate VRF on Bridge Domain";
+            type leafref {
+                path "../../cisco-dc:vrf/cisco-dc:name";
             }
         }
 

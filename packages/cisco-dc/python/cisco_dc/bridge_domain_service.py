@@ -59,7 +59,7 @@ def _configure_bridge_domain(root, bd, tctx, log):
     bd_parameters = defaultdict(dict)
     vlan_parameters = defaultdict(dict)
     _create_service_parameters(root, bd, tctx, bd_parameters, vlan_parameters, log)
-    _create_bd_config(root, bd, bd_parameters, vlan_parameters)
+    _create_bd_config(root, bd, bd_parameters, vlan_parameters, log)
 
 
 def _create_service_parameters(root, bd, tctx, bd_parameters, vlan_parameters, log):
@@ -73,8 +73,6 @@ def _create_service_parameters(root, bd, tctx, bd_parameters, vlan_parameters, l
         log: log object (self.log)
 
     """
-    bd_parameters = defaultdict(dict)
-    vlan_parameters = defaultdict(dict)
     id_parameters = dict()
     resource_pools = root.cisco_dc__dc_site[bd.site].resource_pools
     id = [('network-vlan', resource_pools.l2_network_vlan),
@@ -91,6 +89,7 @@ def _create_service_parameters(root, bd, tctx, bd_parameters, vlan_parameters, l
         ports = port_groups[port_group.name].port_config
         for port in ports:
             vlan_dict = vlan_parameters[port.name]
+            vlan_dict['mode'] = port.mode
             if port.port_type == 'ethernet':
                 eth = port.ethernet
                 node = eth.node
@@ -104,6 +103,7 @@ def _create_service_parameters(root, bd, tctx, bd_parameters, vlan_parameters, l
                 pc = port.port_channel
                 node = pc.node
                 vlan_dict['port-type'] = 'port-channel'
+                vlan_dict['port-channel-id'] = pc.allocated_port_channel_id
                 vlan_dict['node'] = node
                 vlan_dict['node-port'] = pc.node_port.as_list()
                 vlan_dict['vlan-id'] = id_parameters['network-vlan']
@@ -118,7 +118,7 @@ def _create_service_parameters(root, bd, tctx, bd_parameters, vlan_parameters, l
                 vlan_dict['node-1-port'] = vpc.node_1_port.as_list()
                 vlan_dict['node-2-port'] = vpc.node_2_port.as_list()
                 vlan_dict['vlan-id'] = id_parameters['network-vlan']
-                node_1, node_2 = utils.get_vpc_nodes(root, port)
+                node_1, node_2 = utils.get_vpc_nodes_from_port(root, port)
                 if not bd_parameters.get(node_1):
                     bd_parameters[node_1] = id_parameters
                 if not bd_parameters.get(node_2):
@@ -126,7 +126,7 @@ def _create_service_parameters(root, bd, tctx, bd_parameters, vlan_parameters, l
     log.debug(f'bridge-Domain: {bd.name}, bd-parameters:{bd_parameters}, vlan-parameters: {vlan_parameters}')
 
 
-def _create_bd_config(root, bd, bd_parameters, vlan_parameters):
+def _create_bd_config(root, bd, bd_parameters, vlan_parameters, log):
     """Function to create bridge-domain configuration
 
     Args:
@@ -134,20 +134,27 @@ def _create_bd_config(root, bd, bd_parameters, vlan_parameters):
         bd: service node
         bd_parameters: collections defaultdict object (defaultdict(dict))
         vlan_parameters: collections defaultdict object (defaultdict(dict))
+        log: log object (self.log)
 
     """
     vars = ncs.template.Variables()
-    vlan_name, mcast_group = bd.name, bd.mcast_group
-    vars.add('VLAN_NAME', vlan_name)
+    network_vlan_name, vrf_vlan_name, mcast_group = f'{bd.name}-network-vlan', f'{bd.name}-vrf-vlan', bd.mcast_group
+    vars.add('NETWORK_VLAN_NAME', network_vlan_name)
+    vars.add('VRF_VLAN_NAME', vrf_vlan_name)
     vars.add('MCAST_GROUP', mcast_group)
-    for device in bd_parameters:
+    for device, bd_dict in bd_parameters.items():
         vars.add('DEVICE', device)
-        vars.add('VLAN_ID', bd_parameters[device]['network-vlan'])
-        vars.add('VNI_ID', bd_parameters[device]['l2vni'])
+        vars.add('NETWORK_VLAN_ID', bd_dict['network-vlan'])
+        vars.add('VRF_VLAN_ID', bd_dict['vrf-vlan'])
+        vars.add('L2VNI_ID', bd_dict['l2vni'])
+        vars.add('L3VNI_ID', bd_dict['l3vni'])
+        vars.add('VRF', bd.vrf)
         utils.apply_template(bd, 'cisco-dc-services-fabric-bd-l2vni-service', vars)
-    for vlan_dict in vlan_parameters:
+        log.debug(f'Device {device} bridge-bomain {bd.name} l2nvi configuration is applied.')
+    for port_name, vlan_dict in vlan_parameters.items():
         vars.add('PORT_MODE', vlan_dict['mode'])
         vars.add('PORT_TYPE', vlan_dict['port-type'])
+        vars.add('PO_ID', '')
         if vlan_dict['port-type'] == 'ethernet':
             vars.add('DEVICE', vlan_dict['node'])
             vars.add('VLAN_ID', vlan_dict['vlan-id'])
@@ -168,6 +175,7 @@ def _create_bd_config(root, bd, bd_parameters, vlan_parameters):
                 vars.add('DEVICE', device)
                 vars.add('VLAN_ID', vlan_dict['vlan-id'])
                 utils.apply_template(bd, 'cisco-dc-services-fabric-bd-vlan-service', vars)
+        log.debug(f'Port {port_name} bridge-bomain {bd.name} vlan configuration is applied.')
             
 
 

@@ -149,10 +149,12 @@ submodule cisco-dc-tenant {
         }
 
         leaf vrf {
+            when "../bd-subnet";
             tailf:info "Associate VRF on Bridge Domain";
             type leafref {
                 path "../../cisco-dc:vrf/cisco-dc:name";
             }
+            mandatory true;
         }
 
         leaf site {

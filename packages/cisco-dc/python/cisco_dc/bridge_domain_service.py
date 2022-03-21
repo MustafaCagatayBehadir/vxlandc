@@ -138,17 +138,15 @@ def _create_bd_config(root, bd, bd_parameters, vlan_parameters, log):
 
     """
     vars = ncs.template.Variables()
-    network_vlan_name, vrf_vlan_name, mcast_group = f'{bd.name}-network-vlan', f'{bd.name}-vrf-vlan', bd.mcast_group
+    network_vlan_name, vrf_vlan_name = f'{bd.name}-network-vlan', f'{bd.name}-vrf-vlan'
     vars.add('NETWORK_VLAN_NAME', network_vlan_name)
     vars.add('VRF_VLAN_NAME', vrf_vlan_name)
-    vars.add('MCAST_GROUP', mcast_group)
     for device, bd_dict in bd_parameters.items():
         vars.add('DEVICE', device)
         vars.add('NETWORK_VLAN_ID', bd_dict['network-vlan'])
         vars.add('VRF_VLAN_ID', bd_dict['vrf-vlan'])
         vars.add('L2VNI_ID', bd_dict['l2vni'])
         vars.add('L3VNI_ID', bd_dict['l3vni'])
-        vars.add('VRF', bd.vrf)
         utils.apply_template(bd, 'cisco-dc-services-fabric-bd-l2vni-service', vars)
         log.debug(f'Device {device} bridge-bomain {bd.name} l2nvi configuration is applied.')
     for port_name, vlan_dict in vlan_parameters.items():

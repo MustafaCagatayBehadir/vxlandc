@@ -38,6 +38,21 @@ submodule cisco-dc-port-config {
             }
             mandatory true;
         }
+
+        list bd-service {
+            tailf:hidden "Attach bridge domain defined in infra";
+            key "tenant bd";
+
+            leaf tenant {
+                tailf:info "Specify tenant name";
+                type string;
+            }
+
+            leaf bd {
+                tailf:info "Specify bridge domain name";
+                type string;
+            }
+        }
     }
 
     grouping port-config-service {
@@ -115,6 +130,7 @@ submodule cisco-dc-port-config {
 
         choice port-type {
             mandatory true;
+
             case ethernet {
                 container ethernet {
                     tailf:info "Single Attach Port Type";
@@ -149,6 +165,7 @@ submodule cisco-dc-port-config {
                     }
                 }
             }
+
             case port-channel {
                 container port-channel {
                     tailf:info "Port Channel Port Type";
@@ -196,6 +213,7 @@ submodule cisco-dc-port-config {
                     }
                 }
             }
+
             case vpc-port-channel {
                 container vpc-port-channel {
                     tailf:info "VPC Port Channel Port Type";

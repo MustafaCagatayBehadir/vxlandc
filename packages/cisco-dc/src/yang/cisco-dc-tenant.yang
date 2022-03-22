@@ -129,6 +129,60 @@ submodule cisco-dc-tenant {
             }
         }
 
+        list port {
+            tailf:hidden "Attach access port defined in infra";
+            key "leaf-id interface-id";
+
+            leaf leaf-id {
+                tailf:info "Define Leaf Node ID";
+                type string;
+            }
+
+            leaf interface-id {
+                tailf:info "Define Interface ID example: 1/19";
+                type node-port;
+            }
+        }
+
+        list direct-pc {
+            tailf:hidden "Attach direct port-channel defined in infra";
+            key "leaf-id name";
+
+            leaf leaf-id {
+                tailf:info "Define Leaf Node ID";
+                type string;
+            }
+
+            leaf name {
+                tailf:info "Attach direct-port-channel name";
+                type string;
+            }
+
+            leaf port-channel-id {
+                tailf:info "Port Channel Id";
+                type uint16;
+            }
+        }
+
+        list virtual-pc {
+            tailf:hidden "Attach virtual port-channel defined in infra";
+            key "leaf-id name";
+            leaf leaf-id {
+                tailf:info "Define Leaf Node ID";
+                type string;
+            }
+
+            leaf name {
+                tailf:info "Attach virtual-port-channel name";
+                type uint16;
+            }
+
+            leaf port-channel-id {
+                tailf:info "Port Channel Id";
+                type uint16;
+            }
+        }
+
         list bd-subnet {
             tailf:info "Specify Bridge Domain subnet address & scope";
             key address;

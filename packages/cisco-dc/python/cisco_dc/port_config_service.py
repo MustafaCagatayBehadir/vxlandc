@@ -33,6 +33,7 @@ def _id_requested(root, port, tctx, log):
         port: service node
         tctx: transaction context (TransCtxRef)
         log: log object(self.log)
+        
     """
     if port.port_type == 'port-channel':
         requested_id = port.port_channel.port_channel_id if port.port_channel.port_channel_id else -1

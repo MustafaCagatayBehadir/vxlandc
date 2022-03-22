@@ -131,16 +131,31 @@ submodule cisco-dc-tenant {
 
         list port {
             tailf:hidden "Attach access port defined in infra";
-            key "leaf-id interface-id";
+            key "leaf-id name";
 
             leaf leaf-id {
                 tailf:info "Define Leaf Node ID";
                 type string;
             }
 
-            leaf interface-id {
+            leaf name {
+                tailf:info "Attach port name";
+                type string;
+            }            
+
+            leaf-list interface-id {
                 tailf:info "Define Interface ID example: 1/19";
                 type node-port;
+            }
+
+            leaf mode {
+                tailf:info "Port Mode.It can be Access | Trunk";
+                type string;
+            }
+
+            leaf vlan {
+                tailf:info "Define vlan value";
+                type vlan;
             }
         }
 
@@ -162,6 +177,16 @@ submodule cisco-dc-tenant {
                 tailf:info "Port Channel Id";
                 type uint16;
             }
+
+            leaf mode {
+                tailf:info "Port Mode.It can be Access | Trunk";
+                type string;
+            }
+
+            leaf vlan {
+                tailf:info "Define vlan value";
+                type vlan;
+            }
         }
 
         list virtual-pc {
@@ -174,13 +199,53 @@ submodule cisco-dc-tenant {
 
             leaf name {
                 tailf:info "Attach virtual-port-channel name";
-                type uint16;
+                type string;
             }
 
             leaf port-channel-id {
                 tailf:info "Port Channel Id";
                 type uint16;
             }
+
+            leaf mode {
+                tailf:info "Port Mode.It can be Access | Trunk";
+                type string;
+            }
+
+            leaf vlan {
+                tailf:info "Define vlan value";
+                type vlan;
+            }
+        }
+
+        list device {
+            tailf:hidden "Attach device defined in infra";
+            key "leaf-id";
+
+            leaf leaf-id {
+                tailf:info "Define Leaf Node ID";
+                type string;
+            }
+
+            leaf network-vlan {
+                tailf:info "Define network vlan value";
+                type vlan;
+            }
+
+            leaf vrf-vlan {
+                tailf:info "Define vrf vlan value";
+                type vlan;                
+            }
+
+            leaf l2vni {
+                tailf:info "L2 Vni id is allocated by resource-manager";
+                type vxlan-id;
+            }
+
+            leaf l3vni {
+                tailf:info "L3 Vni id is allocated by resource-manager";
+                type vxlan-id;
+            } 
         }
 
         list bd-subnet {

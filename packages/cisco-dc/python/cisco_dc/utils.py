@@ -111,6 +111,7 @@ def get_vpc_nodes_from_port(root, port):
     node_group = site.node_group[port.vpc_port_channel.node_group]
     return node_group.node_1, node_group.node_2
 
+
 def get_vpc_nodes_from_bd(root, bd, vlan_dict):
     """Function to return vPC nodes
 

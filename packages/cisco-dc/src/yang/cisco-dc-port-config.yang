@@ -95,39 +95,6 @@ submodule cisco-dc-port-config {
             mandatory true;
         }
 
-        leaf shutdown {
-            tailf:info "Port administratively down";
-            type empty;
-        }
-
-        leaf storm-control-action-trap {
-            tailf:info "Change storm control action to trap";
-            type empty;
-        }
-
-        leaf site {
-            tailf:hidden "Just for convenience";
-            type string;
-            tailf:default-ref "../../../cisco-dc:fabric";
-        }
-
-        leaf mode {
-            tailf:hidden "Just for convenience";
-            type string;
-            tailf:default-ref "../../mode";
-        }
-
-        leaf port-group {
-            tailf:hidden "Just for convenience";
-            type string;
-            tailf:default-ref "../../name";
-        }
-
-        leaf type {
-            tailf:hidden "Just for convenience";
-            type string;
-        }
-
         choice port-type {
             mandatory true;
 
@@ -270,7 +237,70 @@ submodule cisco-dc-port-config {
                         tailf:info "Flat structure of the Node 2 Port";
                         type string;
                     }
+
+                    list node {
+
+                        key name;
+
+                        leaf name {
+                            tailf:info "Define Leaf Node ID";
+                            type string;
+                        }
+
+                        leaf allocated-port-channel-id {
+                            tailf:hidden "Just for convenience";
+                            type uint16 {
+                                range "1..500";
+                            }
+                            tailf:default-ref "../../allocated-port-channel-id";
+                        }
+
+                        leaf-list node-port {
+                            tailf:info "Define Interface ID example: 1/19";
+                            type node-port;
+                        }
+                    }
                 }
+            }
+        }
+
+        leaf shutdown {
+            tailf:info "Port administratively down";
+            type empty;
+        }
+
+        leaf storm-control-action-trap {
+            tailf:info "Change storm control action to trap";
+            type empty;
+        }
+
+        leaf site {
+            tailf:hidden "Just for convenience";
+            type string;
+            tailf:default-ref "../../../cisco-dc:fabric";
+        }
+
+        leaf mode {
+            tailf:hidden "Just for convenience";
+            type string;
+            tailf:default-ref "../../mode";
+        }
+
+        leaf port-group {
+            tailf:hidden "Just for convenience";
+            type string;
+            tailf:default-ref "../../name";
+        }
+
+        leaf type {
+            tailf:hidden "Just for convenience";
+            type string;
+        }
+
+        leaf bum {
+            tailf:hidden "Just for convenience";
+            type decimal64 {
+                fraction-digits 2;
             }
         }
 

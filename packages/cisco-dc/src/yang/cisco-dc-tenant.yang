@@ -144,7 +144,7 @@ submodule cisco-dc-tenant {
         }
 
         list port {
-            tailf:hidden "Attach access port defined in infra";
+            // tailf:hidden "Attach access port defined in infra";
             key "leaf-id name";
 
             leaf leaf-id {
@@ -174,7 +174,7 @@ submodule cisco-dc-tenant {
         }
 
         list direct-pc {
-            tailf:hidden "Attach direct port-channel defined in infra";
+            // tailf:hidden "Attach direct port-channel defined in infra";
             key "leaf-id name";
 
             leaf leaf-id {
@@ -204,7 +204,7 @@ submodule cisco-dc-tenant {
         }
 
         list virtual-pc {
-            tailf:hidden "Attach virtual port-channel defined in infra";
+            // tailf:hidden "Attach virtual port-channel defined in infra";
             key "leaf-id name";
             leaf leaf-id {
                 tailf:info "Define Leaf Node ID";

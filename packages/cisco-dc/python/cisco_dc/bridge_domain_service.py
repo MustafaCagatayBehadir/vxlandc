@@ -2,7 +2,6 @@ from multiprocessing import pool
 import ncs
 from .resource_manager import id_allocator
 from . import utils
-from collections import defaultdict
 
 
 class BridgeDomainServiceSelfComponent(ncs.application.NanoService):
@@ -71,7 +70,7 @@ def _configure_bridge_domain(root, bd, tctx, log):
     _create_service_parameters(
         root, bd, tctx, id_parameters, log)
     _set_hidden_leaves(root, bd, id_parameters, log)
-    _create_bd_config(root, bd, log)
+    _create_bd_config(bd)
 
 
 def _create_service_parameters(root, bd, tctx, id_parameters, log):
@@ -103,7 +102,7 @@ def _create_service_parameters(root, bd, tctx, id_parameters, log):
 
 
 def _set_hidden_leaves(root, bd, id_parameters, log):
-    """Function to create bd-service list at /dc-site/port-configs/bd-service
+    """Function to create hidden leaves for template operations
 
     Args:
         root: Maagic object pointing to the root of the CDB
@@ -184,13 +183,11 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
                 f'Port {port.name} bridge-bomain {bd.name} hidden configuration is applied.')
 
 
-def _create_bd_config(root, bd, log):
+def _create_bd_config(bd):
     """Function to create bridge-domain configuration
 
     Args:
-        root: Maagic object pointing to the root of the CDB
         bd: service node
-        log: log object (self.log)
 
     """
     template = ncs.template.Template(bd)

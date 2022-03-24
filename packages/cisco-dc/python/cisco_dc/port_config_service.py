@@ -33,7 +33,7 @@ def _id_requested(root, port, tctx, log):
         port: service node
         tctx: transaction context (TransCtxRef)
         log: log object(self.log)
-        
+
     """
     if port.port_type == 'port-channel':
         requested_id = port.port_channel.port_channel_id if port.port_channel.port_channel_id else -1
@@ -56,155 +56,111 @@ def _configure_port(root, port, tctx, log):
 
     Args:
         root: Maagic object pointing to the root of the CDB
-        l1access: service node
+        port: service node
         tctx: transaction context (TransCtxRef)
         log: log object (self.log)
 
     """
-    port_parameters = defaultdict()
+    id_parameters = dict()
+    _create_service_parameters(
+        root, port, tctx, id_parameters, log)
+    _set_hidden_leaves(root, port, tctx, id_parameters, log)
+    _create_port_config(port)
 
-    log.info(f'Configure Service {port.name}')
-    _create_port_parameters(root, port, tctx, port_parameters, log)
-    _create_port(port, port_parameters)
 
-
-def _create_port_parameters(root, port, tctx, port_parameters, log):
+def _create_service_parameters(root, port, tctx, id_parameters, log):
     """Function to create port parameters for Ethernet & Port-Channel & VPC Port-Channel
 
     Args:
         root: Maagic object pointing to the root of the CDB
         port: service node
         tctx: transaction context (TransCtxRef)
-        port_parameters: empty dict object
+        id_parameters: dict object
         log: log object(self.log)
 
     """
-    port_parameters['name'] = port.name
-    port_parameters['mode'] = port.mode.string
-    port_parameters['speed'] = port.speed.string
-    port_parameters['type'] = str(port.port_type)
-    port_parameters['connection'] = port.connection.string
-    port_parameters['shutdown'] = 'TRUE' if port.shutdown else 'FALSE'
-    port_parameters['description'] = port.description if port.description else utils.get_description(
-        port, port_parameters)
-    port_parameters['bum'] = utils.get_bum(port_parameters)
-    port_parameters['trap'] = 'TRUE' if port.speed.string != '1G' or port.storm_control_action_trap else 'FALSE'
-
-    if port_parameters['type'] == 'ethernet':
-        port_parameters['node'] = port.ethernet.node
-        port_parameters['node-port'] = port.ethernet.node_port.as_list()
-        port_parameters['vpc-node'] = 'TRUE' if utils.is_node_vpc(
-            root, port, port_parameters) else 'FALSE'
-    elif port_parameters['type'] == 'port-channel':
-        port_parameters['port-channel-id'] = id_allocator.id_read(
+    if port.port_type == 'port-channel':
+        id_parameters['port-channel-id'] = id_allocator.id_read(
             tctx.username, root, utils.get_port_channel_id_pool_name(root, port), f'{port.site}:{port.port_group}:{port.name}')
-        port_parameters['node'] = port.port_channel.node
-        port_parameters['node-port'] = port.port_channel.node_port.as_list()
-        port_parameters['vpc-node'] = 'TRUE' if utils.is_node_vpc(
-            root, port, port_parameters) else 'FALSE'
-        port_parameters['is-vpc'] = 'FALSE'
-    elif port_parameters['type'] == 'vpc-port-channel':
-        port_parameters['port-channel-id'] = id_allocator.id_read(
+    elif port.port_type == 'vpc-port-channel':
+        id_parameters['port-channel-id'] = id_allocator.id_read(
             tctx.username, root, utils.get_port_channel_id_pool_name(root, port), f'{port.site}:{port.port_group}:{port.name}')
-        port_parameters['node-1'], port_parameters['node-2'] = utils.get_vpc_nodes_from_port(
-            root, port)
-        port_parameters['node-1-port'] = port.vpc_port_channel.node_1_port.as_list()
-        port_parameters['node-2-port'] = port.vpc_port_channel.node_2_port.as_list()
-        port_parameters['vpc-node'] = 'TRUE'
-        port_parameters['is-vpc'] = 'TRUE'
-
-    log.info('Port Parameters: ', port_parameters)
-
-    # Set hidden elements
-    _set_hidden_leaves(port, port_parameters)
-
-    # Create Node Port Flat Lists for Query
-    _set_node_port_flat_leaf_list(port, port_parameters)
 
 
-def _set_node_port_flat_leaf_list(port, port_parameters):
-    """Function to set node-port-flat leaf-list for query operations
+def _set_hidden_leaves(root, port, tctx, id_parameters, log):
+    """Function to create hidden leaves for template operations
 
     Args:
+        root: Maagic object pointing to the root of the CDB
         port: service node
-        port_parameters: port configuration elements dictionary
+        tctx: transaction context (TransCtxRef)
+        id_parameters: dict object
+        log: log object(self.log)    
 
     """
-    if port_parameters['type'] == 'ethernet':
-        port.ethernet.node_port_flat = ",".join(
-            [str(_port_id) for _port_id in port_parameters['node-port']])
-    elif port_parameters['type'] == 'port-channel':
-        port.port_channel.node_port_flat = ",".join(
-            [str(_port_id) for _port_id in port_parameters['node-port']])
-    elif port_parameters['type'] == 'vpc-port-channel':
-        port.vpc_port_channel.node_1_port_flat = ",".join(
-            [str(_port_id) for _port_id in port_parameters['node-1-port']])
-        port.vpc_port_channel.node_2_port_flat = ",".join(
-            [str(_port_id) for _port_id in port_parameters['node-2-port']])
-
-
-def _set_hidden_leaves(port, port_parameters):
-    """Function to set hidden leaves which are used for convenience
-
-    Args:
-        port: service node
-        port_parameters: port configuration elements dictionary
-
-    """
-    if port_parameters['type'] == 'ethernet':
+    if port.port_type == 'ethernet':
         port.type = 'ethernet'
-    elif port_parameters['type'] == 'port-channel':
+    elif port.port_type == 'port-channel':
         port.type = 'port-channel'
-        port.port_channel.allocated_port_channel_id = port_parameters['port-channel-id']
-    elif port_parameters['type'] == 'vpc-port-channel':
+        port.port_channel.allocated_port_channel_id = id_parameters.get(
+            'port-channel-id')
+    elif port.port_type == 'vpc-port-channel':
         port.type = 'vpc-port-channel'
-        port.vpc_port_channel.allocated_port_channel_id = port_parameters['port-channel-id']
+        port.vpc_port_channel.allocated_port_channel_id = id_parameters.get(
+            'port-channel-id')
+        node_1, node_2 = utils.get_vpc_nodes_from_port(root, port)
+        vpc_nodes = [(node_1, port.vpc_port_channel.node_1_port),
+                    (node_2, port.vpc_port_channel.node_2_port)]
+        for node, node_port in vpc_nodes:
+            vpc_node = port.vpc_port_channel.node.create(node)
+            vpc_node.node_port = node_port
+    port.bum = utils.get_bum(port.speed)
+    kp = '/dc-site{}/tenant-service{}/bridge-domain{}'
+    bd_services = root.cisco_dc__dc_site[port.site].port_configs[port.port_group].bd_service
+    for bd_service in bd_services:
+        bd = ncs.maagic.get_node(tctx, kp.format(
+            port.site, bd_service.tenant, bd_service.bd))
+        if port.port_type == 'ethernet':
+            eth = port.ethernet
+            if (eth.node, port.name) not in bd.port:
+                bd_port = bd.port.create(eth.node, eth.name)
+                bd_port.interface_id = eth.node_port
+            else:
+                bd.port[eth.node, eth.name].interface_id = eth.node_port
+        elif port.port_type == 'port-channel':
+            pc = port.port_channel
+            if (pc.node, port.name) not in bd.direct_pc:
+                bd_direct_pc = bd.direct_pc.create(pc.node, port.name)
+                bd_direct_pc.port_channel_id = pc.allocated_port_channel_id
+            else:
+                bd.direct_pc[pc.node,
+                             port.name].port_channel_id = pc.allocated_port_channel_id
+        elif port.port_type == 'vpc-port-channel':
+            vpc = port.vpc_port_channel
+            node_1, node_2 = utils.get_vpc_nodes_from_port(root, port)
+            if (node_1, port.name) not in bd.virtual_pc:
+                bd_virtual_pc = bd.virtual_pc.create(node_1, port.name)
+                bd_virtual_pc.port_channel_id = vpc.allocated_port_channel_id
+            else:
+                bd_virtual_pc[node_1,
+                              port.name].port_channel_id = vpc.allocated_port_channel_id
+            if (node_2, port.name) not in bd.virtual_pc:
+                bd_virtual_pc = bd.virtual_pc.create(node_2, port.name)
+                bd_virtual_pc.port_channel_id = vpc.allocated_port_channel_id
+            else:
+                bd_virtual_pc[node_2,
+                              port.name].port_channel_id = vpc.allocated_port_channel_id
 
 
-def _create_port(port, port_parameters):
-    """Function to create port
+def _create_port_config(port):
+    """Function to create port configuration
 
     Args:
         port: service node
-        port_parameters: port configuration elements dictionary
-    """
-    tvars = ncs.template.Variables()
-    tvars.add('PORT_MODE', port_parameters['mode'])
-    tvars.add('DESCRIPTION', port_parameters['description'])
-    tvars.add('CONNECTION', port_parameters['connection'])
-    tvars.add('BUM', port_parameters['bum'])
-    tvars.add('VPC_NODE', port_parameters['vpc-node'])
-    tvars.add('SHUTDOWN', port_parameters['shutdown'])
-    tvars.add('TRAP', port_parameters['trap'])
 
-    if port_parameters['type'] == 'ethernet':
-        tvars.add('DEVICE', port_parameters['node'])
-        for node_port in port_parameters['node-port']:
-            tvars.add('ETH_ID', node_port)
-            utils.apply_template(port, 'ethernet', tvars)
-    elif port_parameters['type'] == 'port-channel':
-        tvars.add('DEVICE', port_parameters['node'])
-        tvars.add('PO_ID', port_parameters['port-channel-id'])
-        tvars.add('VPC', port_parameters['is-vpc'])
-        utils.apply_template(port, 'port-channel', tvars)
-        for node_port in port_parameters['node-port']:
-            tvars.add('ETH_ID', node_port)
-            tvars.add('PO_MEMBER_DESCRIPTION', utils.get_po_member_description(
-                node_port, port_parameters))
-            utils.apply_template(port, 'port-channel-member', tvars)
-    elif port_parameters['type'] == 'vpc-port-channel':
-        tvars.add('PO_ID', port_parameters['port-channel-id'])
-        tvars.add('VPC', port_parameters['is-vpc'])
-        vpc_params = {port_parameters['node-1']: port_parameters['node-1-port'],
-                      port_parameters['node-2']: port_parameters['node-2-port']}
-        for node, node_ports in vpc_params.items():
-            tvars.add('DEVICE', node)
-            utils.apply_template(port, 'port-channel', tvars)
-            for node_port in node_ports:
-                tvars.add('ETH_ID', node_port)
-                tvars.add('PO_MEMBER_DESCRIPTION', utils.get_po_member_description(
-                    node_port, port_parameters))
-                utils.apply_template(port, 'port-channel-member', tvars)
+    """
+    template = ncs.template.Template(port)
+    template.apply('cisco-dc-services-fabric-port-service')
 
 
 class PortConfigServiceValidator(object):
@@ -256,7 +212,8 @@ class PortConfigServiceValidator(object):
             node = port.port_channel.node
             interface_id[node] = {id for id in port.port_channel.node_port}
         elif port.port_type == 'vpc-port-channel':
-            node_1, node_2 = utils.get_vpc_nodes_from_port(ncs.maagic.get_root(th), port)
+            node_1, node_2 = utils.get_vpc_nodes_from_port(
+                ncs.maagic.get_root(th), port)
             interface_id[node_1], interface_id[node_2] = {id for id in port.vpc_port_channel.node_1_port}, {
                 id for id in port.vpc_port_channel.node_2_port}
         return interface_id

@@ -79,19 +79,19 @@ def get_po_member_description(node_port, port_parameters):
     return f"PO{port_parameters['port-channel-id']}_MEMBER_ETH_{node_port}"
 
 
-def get_bum(port_parameters):
+def get_bum(speed):
     """Function to return BUM Values based on port speeds
 
     Args:
-        port_parameters: port configuration elements dictionary
+        speed: speed string value
 
     Returns:
         Float: BUM value
 
     """
-    if port_parameters['speed'] == '1G':
+    if speed == '1G':
         return 10.00
-    elif port_parameters['speed'] == '10G':
+    elif speed == '10G':
         return 2.00
     return 0.50
 

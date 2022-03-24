@@ -1,0 +1,43 @@
+{
+    "tailf-ned-cisco-nx:port-channel": [
+        {
+            "name": "1",
+            "enable": {
+                "switchport": true
+            },
+            "switchport": {
+                "mode": "trunk"
+            },
+            "shutdown": [
+                null
+            ],
+            "description": "PC100001_TRUNK_100G_PC",
+            "mtu": 9216,
+            "spanning-tree": {
+                "bpduguard": "enable",
+                "port": {
+                    "type": "edge",
+                    "trunk": [
+                        null
+                    ]
+                }
+            },
+            "storm-control": {
+                "broadcast": {
+                    "level": "0.5"
+                },
+                "unicast": {
+                    "level": "0.5"
+                },
+                "multicast": {
+                    "level": "0.5"
+                },
+                "action": {
+                    "trap": [
+                        null
+                    ]
+                }
+            }
+        }
+    ]
+}

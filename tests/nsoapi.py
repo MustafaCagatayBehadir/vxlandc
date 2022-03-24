@@ -2,6 +2,9 @@ import logging
 import requests
 import json
 
+
+logfile = 'logs/nsoapi.log'
+logging.basicConfig(filename=logfile, level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
@@ -36,4 +39,68 @@ class NsoRestconfCall:
         }
         resp = requests.get(url, headers=header, auth=self.auth)
         logger.debug(json.dumps(resp.json(), sort_keys=True, indent=4))
+        return resp
+
+    def patch(self, payload, path, params):
+        """Send the data that we want to store
+        Args:
+            payload (str or Path): the path to the payload
+            path (str): the path to the NSO resource
+            params (str): the query parameter
+        Returns:
+            resp (requests return obj):
+        """
+        url = (
+            f"http://{self.ip}:{self.port}/restconf/data/{path}?{params}"
+            if params
+            else f"http://{self.ip}:{self.port}/restconf/data/{path}"
+        )
+        header = {
+            "content-type": "application/yang-data+json",
+            "Accept": "application/yang-data+json",
+        }
+        with open(payload) as json_file:
+            json_data = json.load(json_file)
+        resp = requests.patch(
+            url, data=json.dumps(json_data), headers=header, auth=self.auth
+        )
+        return resp
+
+    def post(self, payload, path, params, action):
+        """Send the data that we want to store
+        Args:
+            payload (str or Path): the path to the payload
+            path (str): the path to the NSO resource
+            params (str): the query parameter
+            action (boolean): set true if action
+        Returns:
+            resp (requests return obj):
+        """
+        restconf_root = "restconf/data" if not action else "restconf/operations"
+        url = (
+            f"http://{self.ip}:{self.port}/{restconf_root}/{path}?{params}"
+            if params
+            else f"http://{self.ip}:{self.port}/{restconf_root}/{path}"
+        )
+        header = {
+            "content-type": "application/yang-data+json",
+            "Accept": "application/yang-data+json",
+        }
+        with open(payload) as json_file:
+            json_data = json.load(json_file)
+        resp = requests.post(
+            url, data=json.dumps(json_data), headers=header, auth=self.auth
+        )
+        return resp
+
+    def delete(self, path):
+        """Delete the instance of a certain NSO path
+        Args:
+            path (str): the path to the NSO resource
+        Returns:
+            resp (requests return obj):
+        """
+
+        url = f"http://{self.ip}:{self.port}/restconf/data/{path}"
+        resp = requests.delete(url, auth=self.auth)
         return resp

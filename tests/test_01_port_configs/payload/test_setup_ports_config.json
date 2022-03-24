@@ -1,0 +1,134 @@
+{
+    "cisco-dc:dc-site": [
+        {
+            "fabric": "avr-dss1-lbox-yaani-fabric",
+            "port-configs": [
+                {
+                    "name": "ETH_PG_1_ACCESS",
+                    "mode": "access",
+                    "port-config": [
+                        {
+                            "name": "ETH100001",
+                            "description": "CUSTOM_DESCRIPTION_ETH100001",
+                            "connection": "host",
+                            "speed": "1G",
+                            "ethernet": {
+                                "node": "AVR-DSS1-BIP-SW-01",
+                                "node-port": [
+                                    "1/1"
+                                ]
+                            },
+                            "port-channel": {},
+                            "vpc-port-channel": {}
+                        }
+                    ]
+                },
+                {
+                    "name": "ETH_PG_1_TRUNK",
+                    "mode": "trunk",
+                    "port-config": [
+                        {
+                            "name": "ETH100002",
+                            "connection": "switch",
+                            "speed": "10G",
+                            "ethernet": {
+                                "node": "AVR-DSS1-BIP-SW-02",
+                                "node-port": [
+                                    "1/1",
+                                    "1/2"
+                                ]
+                            },
+                            "port-channel": {},
+                            "vpc-port-channel": {}
+                        }
+                    ]
+                },
+                {
+                    "name": "PC_PG_1_TRUNK",
+                    "mode": "trunk",
+                    "port-config": [
+                        {
+                            "name": "PC100001",
+                            "connection": "host",
+                            "speed": "100G",
+                            "ethernet": {},
+                            "port-channel": {
+                                "node": "AVR-DSS1-BIP-SW-03",
+                                "node-port": [
+                                    "1/10",
+                                    "1/11"
+                                ]
+                            },
+                            "vpc-port-channel": {}
+                        },
+                        {
+                            "name": "PC100002",
+                            "connection": "switch",
+                            "speed": "10G",
+                            "ethernet": {},
+                            "port-channel": {
+                                "node": "AVR-DSS1-BIP-SW-04",
+                                "node-port": [
+                                    "1/10",
+                                    "1/11"
+                                ]
+                            },
+                            "vpc-port-channel": {}
+                        }
+                    ]
+                },
+                {
+                    "name": "VPC_PG_1_ACCESS",
+                    "mode": "access",
+                    "port-config": [
+                        {
+                            "name": "VPC100001",
+                            "description": "CUSTOM_DESCRIPTION_VPC100001",
+                            "connection": "host",
+                            "speed": "1G",
+                            "ethernet": {},
+                            "port-channel": {},
+                            "vpc-port-channel": {
+                                "port-channel-id": 10,
+                                "node-group": 1,
+                                "node-1-port": [
+                                    "1/10",
+                                    "1/11"
+                                ],
+                                "node-2-port": [
+                                    "1/10",
+                                    "1/11"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "VPC_PG_1_TRUNK",
+                    "mode": "trunk",
+                    "port-config": [
+                        {
+                            "name": "VPC100002",
+                            "connection": "switch",
+                            "speed": "10G",
+                            "ethernet": {},
+                            "port-channel": {},
+                            "vpc-port-channel": {
+                                "port-channel-id": 20,
+                                "node-group": 1,
+                                "node-1-port": [
+                                    "1/12",
+                                    "1/13"
+                                ],
+                                "node-2-port": [
+                                    "1/12",
+                                    "1/13"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

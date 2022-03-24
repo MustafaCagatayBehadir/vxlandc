@@ -1,0 +1,87 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+    <devices xmlns="http://tail-f.com/ns/ncs">
+        <?foreach {port}?>
+        <?set PORT_MODE = {string(mode)}?>
+        <?set VLAN_ID = {string(vlan)}?>
+        <device>
+            <name>{leaf-id}</name>
+            <config>
+                <interface xmlns="http://tail-f.com/ned/cisco-nx">
+                    <Ethernet>
+                        <name>{interface-id}</name>
+                        <switchport>
+                            <?if {$PORT_MODE = 'access'}?>
+                            <access>
+                                <vlan>{$VLAN_ID}</vlan>
+                            </access>
+                            <?else ?>
+                            <trunk>
+                                <allowed>
+                                    <vlan>
+                                        <ids>{$VLAN_ID}</ids>
+                                    </vlan>
+                                </allowed>
+                            </trunk>
+                            <?end ?>
+                        </switchport>
+                    </Ethernet>
+                </interface>
+            </config>
+        </device>
+        <?end ?>
+        <?foreach {direct-pc}?>
+        <device>
+            <name>{leaf-id}</name>
+            <config>
+                <interface xmlns="http://tail-f.com/ned/cisco-nx">
+                    <port-channel>
+                        <name>{port-channel-id}</name>
+                        <switchport>
+                            <?if {mode = 'access'}?>
+                            <access>
+                                <vlan>{vlan}</vlan>
+                            </access>
+                            <?else ?>
+                            <trunk>
+                                <allowed>
+                                    <vlan>
+                                        <ids>{vlan}</ids>
+                                    </vlan>
+                                </allowed>
+                            </trunk>
+                            <?end ?>
+                        </switchport>
+                    </port-channel>
+                </interface>
+            </config>
+        </device>
+        <?end ?>
+        <?foreach {virtual-pc}?>
+        <device>
+            <name>{leaf-id}</name>
+            <config>
+                <interface xmlns="http://tail-f.com/ned/cisco-nx">
+                    <port-channel>
+                        <name>{port-channel-id}</name>
+                        <switchport>
+                            <?if {mode = 'access'}?>
+                            <access>
+                                <vlan>{vlan}</vlan>
+                            </access>
+                            <?else ?>
+                            <trunk>
+                                <allowed>
+                                    <vlan>
+                                        <ids>{vlan}</ids>
+                                    </vlan>
+                                </allowed>
+                            </trunk>
+                            <?end ?>
+                        </switchport>
+                    </port-channel>
+                </interface>
+            </config>
+        </device>
+        <?end ?>
+    </devices>
+</config-template>

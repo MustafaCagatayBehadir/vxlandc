@@ -1,0 +1,124 @@
+submodule cisco-dc-nano-services {
+
+    belongs-to cisco-dc {
+        prefix "cisco-dc";
+    }
+
+    yang-version 1.1;
+
+    import tailf-common {
+        prefix tailf;
+    }
+    import tailf-ncs {
+        prefix ncs;
+    }
+
+    description
+      "Cisco Datacenter Nano Service";
+
+    revision 2022-01-17 {
+        description
+          "Initial revision.";
+    }
+
+    identity id-allocated {
+        base ncs:plan-state;
+    }
+
+    identity port-configured {
+        base ncs:plan-state;
+    }
+
+    identity bridge-domain-configured {
+        base ncs:plan-state;
+    }
+
+    ncs:plan-outline port-config-nano-plan {
+        description
+          "Port Config Service Plan";
+
+        ncs:component-type "ncs:self" {
+            ncs:state "ncs:init";
+
+            ncs:state "cisco-dc:id-allocated" {
+                ncs:create {
+                    ncs:nano-callback;
+                }
+            }
+
+            ncs:state "cisco-dc:port-configured" {
+                ncs:create {
+                    ncs:pre-condition {
+                        ncs:all {
+                            ncs:monitor  "$SERVICE/plan/component[type='ncs:self'][name='self']/state[name='cisco-dc:id-allocated']" {
+                                ncs:trigger-expr "status = 'reached'";
+                            }
+                            ncs:monitor "$SERVICE" {
+                                ncs:trigger-expr "approved = 'true'";
+                            }
+                        }
+                    }
+                    ncs:nano-callback;
+                }
+            }
+            ncs:state "ncs:ready";
+        }
+    }
+
+    ncs:service-behavior-tree port-config-servicepoint {
+        description
+          "Port Config Service Behavior Tree";
+        ncs:plan-outline-ref "port-config-nano-plan";
+
+        ncs:selector {
+            ncs:create-component "'self'" {
+                ncs:component-type-ref "ncs:self";
+            }
+        }
+    }
+
+    ncs:plan-outline bridge-domain-config-nano-plan {
+        description
+          "Fabric Service Plan";
+
+        ncs:component-type "ncs:self" {
+            ncs:state "ncs:init";
+
+            ncs:state "cisco-dc:id-allocated" {
+                ncs:create {
+                    ncs:nano-callback;
+                }
+            }
+
+            ncs:state "cisco-dc:bridge-domain-configured" {
+                ncs:create {
+                    ncs:pre-condition {
+                        ncs:all {
+                            ncs:monitor  "$SERVICE/plan/component[type='ncs:self'][name='self']/state[name='cisco-dc:id-allocated']" {
+                                ncs:trigger-expr "status = 'reached'";
+                            }
+                            ncs:monitor "$SERVICE" {
+                                ncs:trigger-expr "approved = 'true'";
+                            }
+                        }
+                    }
+                    ncs:nano-callback;
+                }
+            }
+
+            ncs:state "ncs:ready";
+        }
+    }
+
+    ncs:service-behavior-tree bridge-domain-config-servicepoint {
+        description
+          "Bridge Domain Service Behavior Tree";
+        ncs:plan-outline-ref "bridge-domain-config-nano-plan";
+
+        ncs:selector {
+            ncs:create-component "'self'" {
+                ncs:component-type-ref "ncs:self";
+            }
+        }
+    }
+}

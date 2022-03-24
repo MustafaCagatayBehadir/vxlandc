@@ -1,0 +1,193 @@
+module cisco-dc {
+
+    yang-version 1.1;
+    namespace "http://turkcell.com.tr/cisco-dc";
+    prefix cisco-dc;
+
+    import ietf-inet-types {
+        prefix inet;
+    }
+    import tailf-common {
+        prefix tailf;
+    }
+    import tailf-ncs {
+        prefix ncs;
+    }
+
+    include cisco-dc-common {
+        revision-date "2022-01-17";
+    }
+
+    include cisco-dc-nano-services {
+        revision-date "2022-01-17";
+    }
+
+    include cisco-dc-site {
+        revision-date "2022-01-17";
+    }
+
+    include cisco-dc-tenant {
+        revision-date "2022-01-17";
+    }
+
+    include cisco-dc-port-config {
+        revision-date "2022-01-17";
+    }
+
+    description
+      "Cisco VXLAN EVPN Datacenter";
+
+    revision 2022-03-15 {
+        description
+          "Initial revision.";
+    }
+
+    list dc-site {
+        tailf:info "Specify DataCenter site fabric name";
+
+        key fabric;
+
+        uses site-configs;
+
+        list tenant-service {
+            description
+              "List of Data Center customer definitions";
+            tailf:info "Deploy a tenant service";
+
+            key name;
+
+            uses tenant-service;
+
+            list bridge-domain {
+                tailf:info "Define Bridge Domain Name";
+
+                uses ncs:nano-plan-data;
+                uses ncs:service-data;
+                ncs:servicepoint bridge-domain-config-servicepoint;
+
+                key name;
+
+                uses bridge-domain;
+            }
+        }
+
+        list port-configs {
+            tailf:info "Deploy different type of port services [ethernet, port-channel, virtual-port-channel]";
+
+            key name;
+
+            uses port-configs;
+
+            list port-config {
+                tailf:info "Port config service for VXLAN-EVPN configurations.";
+                description
+                  "Port config service for VXLAN-EVPN configurations.";
+
+                uses ncs:nano-plan-data;
+                uses ncs:service-data;
+                ncs:servicepoint port-config-servicepoint;
+                key name;
+
+                uses port-config-service;
+            }
+        }
+    }
+
+    container dc-actions {
+        tailf:info "Supported DC actions";
+        description
+          "Supported DC actions";
+
+        container site-discovery {
+            tailf:action discover-site {
+                tailf:actionpoint discover-site;
+                description
+                  "Action to add devices to NSO and create fabric environment";
+                input {
+                    leaf site {
+                        tailf:info "Site name for discovery";
+                        type leafref {
+                            path "/cisco-dc:dc-site/cisco-dc:fabric";
+                        }
+                    }
+                    leaf spine {
+                        must "contains(., 'SPN')" {
+                            error-message
+                              "Node must be a spine node";
+                            tailf:dependency ".";
+                        }
+                        tailf:info "Spine name for discover the fabric";
+                        type leafref {
+                            path "/ncs:devices/ncs:device/ncs:name";
+                        }
+                    }
+                }
+                output {
+                    leaf success {
+                        type boolean;
+                    }
+                }
+            }
+        }
+
+        container resource-pools {
+            tailf:action create-site-resource-pools {
+                tailf:actionpoint create-site-resource-pools;
+                description
+                  "Action to create resource-pools for selected site";
+                input {
+                    list id-pool {
+                        key "id";
+
+                        leaf id {
+                            tailf:info "Pool Name. Can be l2-vxlan-vni | l3-vxlan-vni | network-vlan | vrf-vlan";
+                            type enumeration {
+                                enum l2-vxlan-vni;
+                                enum l3-vxlan-vni;
+                                enum l2-network-vlan;
+                                enum l3-vrf-vlan;
+                                enum port-channel-id;
+                            }
+                        }
+
+                        leaf start {
+                            type uint32;
+                            mandatory true;
+                        }
+
+                        leaf end {
+                            type uint32;
+                            mandatory true;
+                            must ". >= ../start" {
+                                error-message
+                                  "range end must be greater or equal to range start";
+                                tailf:dependency "../start";
+                            }
+                        }
+
+                        leaf scope {
+                            tailf:info "Id Pool Scope. Can be fabric | local";
+                            type enumeration {
+                                enum fabric;
+                                enum local;
+                            }
+                        }
+                    }
+
+                    leaf site {
+                        tailf:info "Site name";
+                        type leafref {
+                            path "/cisco-dc:dc-site/cisco-dc:fabric";
+                        }
+                    }
+                }
+
+                output {
+                    leaf success {
+                        type boolean;
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,16 @@
+{
+    "port-config": [
+        {
+            "name": "ETH100003",
+            "description": "CUSTOM_DESCRIPTION_ETH100001",
+            "connection": "host",
+            "speed": "1G",
+            "ethernet": {
+                "node": "AVR-DSS1-BIP-SW-01",
+                "node-port": [
+                    "1/1"
+                ]
+            }
+        }
+    ]
+}

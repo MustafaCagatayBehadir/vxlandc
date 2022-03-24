@@ -1,0 +1,38 @@
+{
+    "tailf-ned-cisco-nx:vni": [
+        {
+            "id": 60003,
+            "l2": [
+                null
+            ],
+            "rd": "auto",
+            "route-target": [
+                {
+                    "method": "import",
+                    "rt": "auto"
+                },
+                {
+                    "method": "export",
+                    "rt": "auto"
+                }
+            ]
+        },
+        {
+            "id": 60005,
+            "l2": [
+                null
+            ],
+            "rd": "auto",
+            "route-target": [
+                {
+                    "method": "import",
+                    "rt": "auto"
+                },
+                {
+                    "method": "export",
+                    "rt": "auto"
+                }
+            ]
+        }
+    ]
+}

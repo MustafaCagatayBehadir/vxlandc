@@ -1,0 +1,118 @@
+{
+    "vxlandc-core:vxlandc": {
+        "sites": {
+            "site": [
+                {
+                    "fabric": "avr-dss1-lbox-yaani-fabric",
+                    "tenants": {
+                        "tenant": [
+                            {
+                                "name": "0001_TURKCELL",
+                                "l2access:l2-fabric-services": {
+                                    "l2-fabric-service": [
+                                        {
+                                            "name": "L2-VLAN-SERVICE-1",
+                                            "endpoint-groups": {
+                                                "external-tenant-endpoint-group": [
+                                                    {
+                                                        "tenant": "0002_TURKCELL",
+                                                        "name": "ETH_PG_1_TRUNK",
+                                                        "mode": "trunk"
+                                                    },
+                                                    {
+                                                        "tenant": "0002_TURKCELL",
+                                                        "name": "VPC_PG_1_TRUNK",
+                                                        "mode": "trunk"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "name": "L2-VLAN-SERVICE-2",
+                                            "endpoint-groups": {
+                                                "external-tenant-endpoint-group": [
+                                                    {
+                                                        "tenant": "0002_TURKCELL",
+                                                        "name": "ETH_PG_1_TRUNK",
+                                                        "mode": "trunk"
+                                                    },
+                                                    {
+                                                        "tenant": "0002_TURKCELL",
+                                                        "name": "PC_PG_1_TRUNK",
+                                                        "mode": "trunk"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "name": "L2-VLAN-SERVICE-3",
+                                            "endpoint-groups": {
+                                                "external-tenant-endpoint-group": [
+                                                    {
+                                                        "tenant": "0002_TURKCELL",
+                                                        "name": "ETH_PG_1_ACCESS",
+                                                        "mode": "access"
+                                                    },
+                                                    {
+                                                        "tenant": "0002_TURKCELL",
+                                                        "name": "VPC_PG_1_ACCESS",
+                                                        "mode": "access"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "name": "L2-VLAN-SERVICE-4",
+                                            "endpoint-groups": {
+                                                "tenant-endpoint-group": [
+                                                    {
+                                                        "name": "ETH_PG_1_TRUNK",
+                                                        "mode": "trunk"
+                                                    },
+                                                    {
+                                                        "name": "VPC_PG_1_TRUNK",
+                                                        "mode": "trunk"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "name": "L2-VLAN-SERVICE-5",
+                                            "endpoint-groups": {
+                                                "tenant-endpoint-group": [
+                                                    {
+                                                        "name": "ETH_PG_1_TRUNK",
+                                                        "mode": "trunk"
+                                                    },
+                                                    {
+                                                        "name": "PC_PG_1_TRUNK",
+                                                        "mode": "trunk"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "name": "L2-VLAN-SERVICE-6",
+                                            "endpoint-groups": {
+                                                "tenant-endpoint-group": [
+                                                    {
+                                                        "name": "ETH_PG_1_ACCESS",
+                                                        "mode": "access"
+                                                    },
+                                                    {
+                                                        "name": "VPC_PG_1_ACCESS",
+                                                        "mode": "access"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+}

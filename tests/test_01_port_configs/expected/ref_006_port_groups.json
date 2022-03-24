@@ -1,0 +1,42 @@
+{
+    "cisco-dc:port-groups": {
+        "port-group": [
+            {
+                "name": "ETH_PG_1_ACCESS",
+                "port": [
+                    "ETH100001"
+                ],
+                "mode": "access"
+            },
+            {
+                "name": "ETH_PG_1_TRUNK",
+                "port": [
+                    "ETH100002"
+                ],
+                "mode": "trunk"
+            },
+            {
+                "name": "PC_PG_1_TRUNK",
+                "port": [
+                    "PC100001",
+                    "PC100002"
+                ],
+                "mode": "trunk"
+            },
+            {
+                "name": "VPC_PG_1_ACCESS",
+                "port": [
+                    "VPC100001"
+                ],
+                "mode": "access"
+            },
+            {
+                "name": "VPC_PG_1_TRUNK",
+                "port": [
+                    "VPC100002"
+                ],
+                "mode": "trunk"
+            }
+        ]
+    }
+}

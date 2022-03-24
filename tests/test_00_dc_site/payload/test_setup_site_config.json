@@ -1,0 +1,77 @@
+{
+    "cisco-dc:dc-site": [
+        {
+            "fabric": "avr-dss1-lbox-yaani-fabric",
+            "node": [
+                {
+                    "hostname": "AVR-DSS1-BIP-BLF-SW-01",
+                    "node-role": "border-leaf",
+                    "node-type": "standalone"
+                },
+                {
+                    "hostname": "AVR-DSS1-BIP-BLF-SW-02",
+                    "node-role": "border-leaf",
+                    "node-type": "standalone"
+                },
+                {
+                    "hostname": "AVR-DSS1-BIP-SPN-SW-01",
+                    "node-role": "spine"
+                },
+                {
+                    "hostname": "AVR-DSS1-BIP-SPN-SW-02",
+                    "node-role": "spine"
+                },
+                {
+                    "hostname": "AVR-DSS1-BIP-SW-01",
+                    "node-role": "access-leaf",
+                    "node-type": "vpc"
+                },
+                {
+                    "hostname": "AVR-DSS1-BIP-SW-02",
+                    "node-role": "access-leaf",
+                    "node-type": "vpc"
+                },
+                {
+                    "hostname": "AVR-DSS1-BIP-SW-03",
+                    "node-role": "access-leaf",
+                    "node-type": "standalone"
+                },
+                {
+                    "hostname": "AVR-DSS1-BIP-SW-04",
+                    "node-role": "access-leaf",
+                    "node-type": "standalone"
+                },
+                {
+                    "hostname": "AVR-DSS1-BIP-SW-05",
+                    "node-role": "access-leaf",
+                    "node-type": "vpc"
+                },
+                {
+                    "hostname": "AVR-DSS1-BIP-SW-06",
+                    "node-role": "access-leaf",
+                    "node-type": "vpc"
+                }
+            ],
+            "node-group": [
+                {
+                    "id": 1,
+                    "node-1": "AVR-DSS1-BIP-SW-01",
+                    "node-2": "AVR-DSS1-BIP-SW-02"
+                },
+                {
+                    "id": 2,
+                    "node-1": "AVR-DSS1-BIP-SW-05",
+                    "node-2": "AVR-DSS1-BIP-SW-06"
+                }
+            ],
+            "connections": {
+                "uplink-to-dci-gw-01": 501,
+                "uplink-to-dci-gw-02": 502
+            },
+            "fabric-parameters": {
+                "as-number": 64541,
+                "mcast-group": "239.255.0.0"
+            }
+        }
+    ]
+}

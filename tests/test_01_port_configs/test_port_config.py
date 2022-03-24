@@ -136,7 +136,7 @@ class PortConfigsTests:
          payload_path / 'test_007_config_03.json',
          'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs=VPC_PG_1_ACCESS')
     ], indirect=['expected'])
-    def test_007_interface_already_used(self, expected, post_payload, post_path):
+    def test_006_interface_already_used(self, expected, post_payload, post_path):
         resp = self.nso.post(payload=post_payload,
                              path=post_path, params='', action=False)
         assert resp.status_code == 400

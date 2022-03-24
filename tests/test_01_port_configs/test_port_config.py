@@ -126,14 +126,14 @@ class PortConfigsTests:
         assert json.loads(get_resp.text) == expected
 
     @mark.parametrize('expected, post_payload, post_path', [
-        (expected_path / 'ref_007_port_ETH100003_error.json',
-         payload_path / 'test_007_config_01.json',
+        (expected_path / 'ref_006_port_ETH100003_error.json',
+         payload_path / 'test_006_config_01.json',
          'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs=ETH_PG_1_ACCESS'),
-        (expected_path / 'ref_007_port_PC100003_error.json',
-         payload_path / 'test_007_config_02.json',
+        (expected_path / 'ref_006_port_PC100003_error.json',
+         payload_path / 'test_006_config_02.json',
          'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs=PC_PG_1_TRUNK'),
-        (expected_path / 'ref_007_port_VPC100003_error.json',
-         payload_path / 'test_007_config_03.json',
+        (expected_path / 'ref_006_port_VPC100003_error.json',
+         payload_path / 'test_006_config_03.json',
          'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs=VPC_PG_1_ACCESS')
     ], indirect=['expected'])
     def test_006_interface_already_used(self, expected, post_payload, post_path):

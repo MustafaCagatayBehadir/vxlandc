@@ -1,0 +1,225 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+    <?save-context service?>
+    <?set DESCRIPTION = {concat(string(name), ":", string(mode), ":", string(speed))}?>
+    <?if {boolean(description)}?>
+    <?set DESCRIPTION = {string(description)}?>
+    <?end ?>
+    <devices xmlns="http://tail-f.com/ns/ncs">
+        <?if {type = 'ethernet'}?>
+        <device>
+            <name>{ethernet/node}</name>
+            <config>
+                <interface xmlns="http://tail-f.com/ned/cisco-nx">
+                    <Ethernet>
+                        <name>{node-port}</name>
+                        <?switch-context service?>
+                        <enable>
+                            <switchport>true</switchport>
+                        </enable>
+                        <switchport>
+                            <?if {mode = 'trunk'}?>
+                            <mode>trunk</mode>
+                            <?end ?>
+                        </switchport>
+                        <?if {shutdown}?>
+                        <shutdown />
+                        <?else ?>
+                        <shutdown tags="delete" />
+                        <?end ?>
+                        <description>{$DESCRIPTION}</description>
+                        <mtu>9216</mtu>
+                        <spanning-tree>
+                            <?if {connection = 'host'}?>
+                            <bpduguard>enable</bpduguard>
+                            <?else ?>
+                            <guard>root</guard>
+                            <?end ?>
+                            <port>
+                                <type>edge</type>
+                                <?if {mode = 'trunk'}?>
+                                <trunk />
+                                <?end ?>
+                            </port>
+                        </spanning-tree>
+                        <storm-control>
+                            <broadcast>
+                                <level>{bum}</level>
+                            </broadcast>
+                            <unicast>
+                                <level>{bum}</level>
+                            </unicast>
+                            <multicast>
+                                <level>{bum}</level>
+                            </multicast>
+                            <action>
+                                <?if {storm-control-action-trap or (speed != '1G')}?>
+                                <trap />
+                                <?else ?>
+                                <shutdown />
+                                <?end ?>
+                            </action>
+                        </storm-control>
+                        <?if {string(deref(ethernet/node)/../node-type) = 'vpc'}?>
+                        <vpc>
+                            <orphan-port>suspend</orphan-port>
+                        </vpc>
+                        <?end ?>
+                    </Ethernet>
+                </interface>
+            </config>
+        </device>
+        <?elif {type = 'port-channel'}?>
+        <?set MEMBER_DESCRIPTION = {concat(string(name), ":", "MEMBER")}?>
+        <device>
+            <name>{port-channel/node}</name>
+            <config>
+                <interface xmlns="http://tail-f.com/ned/cisco-nx">
+                    <port-channel>
+                        <name>{allocated-port-channel-id}</name>
+                        <?switch-context service?>
+                        <enable>
+                            <switchport>true</switchport>
+                        </enable>
+                        <switchport>
+                            <mode>{mode}</mode>
+                        </switchport>
+                        <?if {shutdown}?>
+                        <shutdown />
+                        <?else ?>
+                        <shutdown tags="delete" />
+                        <?end ?>
+                        <description>{$DESCRIPTION}</description>
+                        <mtu>9216</mtu>
+                        <spanning-tree>
+                            <?if {connection = 'host'}?>
+                            <bpduguard>enable</bpduguard>
+                            <?else ?>
+                            <guard>root</guard>
+                            <?end ?>
+                            <port>
+                                <type>edge</type>
+                                <?if {mode = 'trunk'}?>
+                                <trunk />
+                                <?end ?>
+                            </port>
+                        </spanning-tree>
+                        <storm-control>
+                            <broadcast>
+                                <level>{bum}</level>
+                            </broadcast>
+                            <unicast>
+                                <level>{bum}</level>
+                            </unicast>
+                            <multicast>
+                                <level>{bum}</level>
+                            </multicast>
+                            <action>
+                                <?if {storm-control-action-trap or (speed != '1G')}?>
+                                <trap />
+                                <?else ?>
+                                <shutdown />
+                                <?end ?>
+                            </action>
+                        </storm-control>
+                        <?if {string(deref(ethernet/node)/../node-type) = 'vpc'}?>
+                        <vpc>
+                            <orphan-port>suspend</orphan-port>
+                        </vpc>
+                        <?end ?>
+                    </port-channel>
+                    <Ethernet>
+                        <name>{node-port}</name>
+                        <?switch-context service?>
+                        <channel-group>
+                            <id>{port-channel/allocated-port-channel-id}</id>
+                            <mode>active</mode>
+                        </channel-group>
+                        <?if {shutdown}?>
+                        <shutdown />
+                        <?else ?>
+                        <shutdown tags="delete" />
+                        <?end ?>
+                        <description>{$MEMBER_DESCRIPTION}</description>
+                        <mtu>9216</mtu>
+                    </Ethernet>
+                </interface>
+            </config>
+        </device>
+        <?else ?>
+        <?set MEMBER_DESCRIPTION = {concat(string(name), ":", "MEMBER")}?>
+        <device>
+            <name>{vpc-port-channel/node/name}</name>
+            <config>
+                <interface xmlns="http://tail-f.com/ned/cisco-nx">
+                    <port-channel>
+                        <name>{allocated-port-channel-id}</name>
+                        <?switch-context service?>
+                        <enable>
+                            <switchport>true</switchport>
+                        </enable>
+                        <switchport>
+                            <mode>{mode}</mode>
+                        </switchport>
+                        <?if {shutdown}?>
+                        <shutdown />
+                        <?else ?>
+                        <shutdown tags="delete" />
+                        <?end ?>
+                        <description>{$DESCRIPTION}</description>
+                        <mtu>9216</mtu>
+                        <spanning-tree>
+                            <?if {connection = 'host'}?>
+                            <bpduguard>enable</bpduguard>
+                            <?else ?>
+                            <guard>root</guard>
+                            <?end ?>
+                            <port>
+                                <type>edge</type>
+                                <?if {mode = 'trunk'}?>
+                                <trunk />
+                                <?end ?>
+                            </port>
+                        </spanning-tree>
+                        <storm-control>
+                            <broadcast>
+                                <level>{bum}</level>
+                            </broadcast>
+                            <unicast>
+                                <level>{bum}</level>
+                            </unicast>
+                            <multicast>
+                                <level>{bum}</level>
+                            </multicast>
+                            <action>
+                                <?if {storm-control-action-trap or (speed != '1G')}?>
+                                <trap />
+                                <?else ?>
+                                <shutdown />
+                                <?end ?>
+                            </action>
+                        </storm-control>
+                        <vpc>
+                            <port-channel-number>{vpc-port-channel/allocated-port-channel-id}</port-channel-number>
+                        </vpc>
+                    </port-channel>
+                    <Ethernet>
+                        <name>{node-port}</name>
+                        <?switch-context service?>
+                        <channel-group>
+                            <id>{vpc-port-channel/allocated-port-channel-id}</id>
+                            <mode>active</mode>
+                        </channel-group>
+                        <?if {shutdown}?>
+                        <shutdown />
+                        <?else ?>
+                        <shutdown tags="delete" />
+                        <?end ?>
+                        <description>{$MEMBER_DESCRIPTION}</description>
+                        <mtu>9216</mtu>
+                    </Ethernet>
+                </interface>
+            </config>
+        </device>
+        <?end ?>
+    </devices>
+</config-template>

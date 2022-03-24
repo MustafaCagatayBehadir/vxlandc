@@ -1,27 +1,51 @@
 <config-template xmlns="http://tail-f.com/ns/config/1.0">
+    <?save-context service?>
+    <?set NETWORK_VLAN_NAME = {concat(string(tenant), ':', string(name), ':', 'network-vlan')}?>
+    <?set VRF_VLAN_NAME = {concat(string(tenant), ':', string(name), ':', 'vrf-vlan')}?>
+    <?set VRF = {string(vrf)}?>
+    <?set MCAST_GROUP = {string(mcast-group)}?>
+    <?set AS_NUMBER = {string(as-number)}?>
+    <?set L3_SERVICE = {bd-subnet}?>
     <devices xmlns="http://tail-f.com/ns/ncs">
+        <?foreach {device}?>
+        <?save-context device?>
         <device>
-            <name>{$DEVICE}</name>
+            <name>{leaf-id}</name>
             <config>
                 <vlan xmlns="http://tail-f.com/ned/cisco-nx">
                     <vlan-list>
-                        <id>{$NETWORK_VLAN_ID}</id>
+                        <id>{network-vlan}</id>
                         <name>{$NETWORK_VLAN_NAME}</name>
-                        <vn-segment>{$L2VNI_ID}</vn-segment>
+                        <vn-segment>{l2vni}</vn-segment>
                     </vlan-list>
-                    <?if {boolean(bd-subnet)}?>
+                    <?if {boolean($L3_SERVICE)}?>
                     <vlan-list>
-                        <id>{$VRF_VLAN_ID}</id>
+                        <id>{vrf-vlan}</id>
                         <name>{$VRF_VLAN_NAME}</name>
-                        <vn-segment>{$L3VNI_ID}</vn-segment>
+                        <vn-segment>{l3vni}</vn-segment>
                     </vlan-list>
                     <?end ?>
                 </vlan>
-                <?if {boolean(bd-subnet)}?>
+                <evpn xmlns="http://tail-f.com/ned/cisco-nx">
+                    <vni>
+                        <id>{l2vni}</id>
+                        <l2 />
+                        <rd>auto</rd>
+                        <route-target>
+                            <method>import</method>
+                            <rt>auto</rt>
+                        </route-target>
+                        <route-target>
+                            <method>export</method>
+                            <rt>auto</rt>
+                        </route-target>
+                    </vni>
+                </evpn>
+                <?if {boolean($L3_SERVICE)}?>
                 <vrf xmlns="http://tail-f.com/ned/cisco-nx">
                     <context>
-                        <id>{vrf}</id>
-                        <vni>{$L3VNI_ID}</vni>
+                        <id>{$VRF}</id>
+                        <vni>{l3vni}</vni>
                         <rd>auto</rd>
                         <address-family>
                             <ipv4>
@@ -55,12 +79,51 @@
                         </address-family>
                     </context>
                 </vrf>
+                <router xmlns="http://tail-f.com/ned/cisco-nx">
+                    <bgp>
+                        <id>{$AS_NUMBER}</id>
+                        <vrf>
+                            <name>{$VRF}</name>
+                            <address-family>
+                                <proto>ipv4</proto>
+                                <type>unicast</type>
+                                <advertise>
+                                    <l2vpn>evpn</l2vpn>
+                                </advertise>
+                                <maximum-paths>
+                                    <ibgp>2</ibgp>
+                                </maximum-paths>
+                                <redistribute>
+                                    <direct>
+                                        <route-map>fabric-rmap-redist-subnet</route-map>
+                                    </direct>
+                                </redistribute>
+                            </address-family>
+                            <address-family>
+                                <proto>ipv6</proto>
+                                <type>unicast</type>
+                                <advertise>
+                                    <l2vpn>evpn</l2vpn>
+                                </advertise>
+                                <maximum-paths>
+                                    <ibgp>2</ibgp>
+                                </maximum-paths>
+                                <redistribute>
+                                    <direct>
+                                        <route-map>fabric-rmap-redist-subnet</route-map>
+                                    </direct>
+                                </redistribute>
+                            </address-family>
+                        </vrf>
+                    </bgp>
+                </router>
                 <interface xmlns="http://tail-f.com/ned/cisco-nx">
                     <Vlan>
-                        <name>{$NETWORK_VLAN_ID}</name>
+                        <name>{network-vlan}</name>
                         <vrf>
-                            <member>{vrf}</member>
+                            <member>{$VRF}</member>
                         </vrf>
+                        <?switch-context service?>
                         <?foreach {bd-subnet}?>
                         <ip>
                             <?if {string(preferred) = 'yes'}?>
@@ -76,41 +139,43 @@
                             </secondary-addr>
                             <?end ?>
                         </ip>
-                        <?end?>
+                        <?end ?>
+                        <?switch-context device?>
                         <fabric>
                             <forwarding>
                                 <mode>anycast-gateway</mode>
                             </forwarding>
                         </fabric>
                     </Vlan>
+                    <Vlan>
+                        <name>{vrf-vlan}</name>
+                        <vrf>
+                            <member>{$VRF}</member>
+                        </vrf>
+                        <ip>
+                            <forward />
+                            <redirects>false</redirects>
+                        </ip>
+                        <ipv6>
+                            <redirects>false</redirects>
+                        </ipv6>
+                    </Vlan>
                 </interface>
                 <?end ?>
-                <evpn xmlns="http://tail-f.com/ned/cisco-nx">
-                    <vni>
-                        <id>{$L2VNI_ID}</id>
-                        <l2 />
-                        <rd>auto</rd>
-                        <route-target>
-                            <method>import</method>
-                            <rt>auto</rt>
-                        </route-target>
-                        <route-target>
-                            <method>export</method>
-                            <rt>auto</rt>
-                        </route-target>
-                    </vni>
-                </evpn>
                 <interface xmlns="http://tail-f.com/ned/cisco-nx">
                     <nve>
                         <name>1</name>
                         <member>
                             <vni>
-                                <id>{$L2VNI_ID}</id>
-                                <mcast-group>{mcast-group}</mcast-group>
+                                <id>{l2vni}</id>
+                                <mcast-group>{$MCAST_GROUP}</mcast-group>
+                                <?if {boolean($L3_SERVICE)}?>
+                                <suppress-arp />
+                                <?end ?>
                             </vni>
-                            <?if {boolean(bd-subnet)}?>
+                            <?if {boolean($L3_SERVICE)}?>
                             <vni>
-                                <id>{$L3VNI_ID}</id>
+                                <id>{l3vni}</id>
                                 <associate-vrf />
                             </vni>
                             <?end ?>
@@ -119,5 +184,6 @@
                 </interface>
             </config>
         </device>
+        <?end ?>
     </devices>
 </config-template>

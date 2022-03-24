@@ -2,7 +2,6 @@ from multiprocessing import pool
 import ncs
 from .resource_manager import id_allocator
 from . import utils
-from collections import defaultdict
 
 
 class BridgeDomainServiceSelfComponent(ncs.application.NanoService):
@@ -32,18 +31,29 @@ def _id_requested(root, bd, tctx, log):
         tctx: transaction context (TransCtxRef)
         log: log object(self.log)
     """
-    svc_xpath = "/cisco-dc:dc-site[fabric='{}']/tenant-service[name='{}']/bridge-domain[name='{}']"
-    svc_xpath = svc_xpath.format(bd.site, bd.tenant, bd.name)
     resource_pools = root.cisco_dc__dc_site[bd.site].resource_pools
     id = [(bd.l2vni.vlan_id if bd.l2vni.vlan_id else -1, resource_pools.l2_network_vlan),
           (bd.l3vni.vlan_id if bd.l3vni.vlan_id else -1, resource_pools.l3_vrf_vlan),
           (bd.l2vni.vni_id if bd.l2vni.vni_id else -1, resource_pools.l2_vxlan_vni),
           (bd.l3vni.vni_id if bd.l3vni.vni_id else -1, resource_pools.l3_vxlan_vni)]
     for requested_id, pool_name in id:
-        id_allocator.id_request(bd, svc_xpath, tctx.username, pool_name,
-                                f'{bd.site}:{bd.tenant}:{bd.name}', False, requested_id)
-        log.info(
-            f'Id is requested from pool {pool_name} for service {bd.name}')
+        if pool_name in (resource_pools.l2_network_vlan, resource_pools.l2_vxlan_vni):
+            svc_xpath = "/cisco-dc:dc-site[fabric='{}']/tenant-service[name='{}']/bridge-domain[name='{}']"
+            svc_xpath = svc_xpath.format(bd.site, bd.tenant, bd.name)
+            allocation_name = f'{bd.site}:{bd.tenant}:{bd.name}'
+            id_allocator.id_request(
+                bd, svc_xpath, tctx.username, pool_name, allocation_name, False, requested_id)
+            log.info(
+                f'Id is requested from pool {pool_name} for service {bd.name}')
+        else:
+            if bd.vrf:
+                svc_xpath = "/cisco-dc:dc-site[fabric='{}']/tenant-service[name='{}']/vrf[name='{}']"
+                svc_xpath = svc_xpath.format(bd.site, bd.tenant, bd.vrf)
+                allocation_name = f'{bd.site}:{bd.tenant}:{bd.vrf}'
+                id_allocator.id_request(
+                    bd, svc_xpath, tctx.username, pool_name, allocation_name, False, requested_id)
+                log.info(
+                    f'Id is requested from pool {pool_name} for service {bd.name}')
 
 
 def _configure_bridge_domain(root, bd, tctx, log):
@@ -56,124 +66,130 @@ def _configure_bridge_domain(root, bd, tctx, log):
         log: log object (self.log)
 
     """
-    bd_parameters = defaultdict(dict)
-    vlan_parameters = defaultdict(dict)
-    _create_service_parameters(root, bd, tctx, bd_parameters, vlan_parameters, log)
-    _create_bd_config(root, bd, bd_parameters, vlan_parameters, log)
+    id_parameters = dict()
+    _create_service_parameters(
+        root, bd, tctx, id_parameters, log)
+    _set_hidden_leaves(root, bd, id_parameters, log)
+    _create_bd_config(bd)
 
 
-def _create_service_parameters(root, bd, tctx, bd_parameters, vlan_parameters, log):
+def _create_service_parameters(root, bd, tctx, id_parameters, log):
     """Function to create vlan parameters and bd parameters
 
     Args:
         root: Maagic object pointing to the root of the CDB
         bd: service node
-        bd_parameters: collections defaultdict object (defaultdict(dict))
-        vlan_parameters: collections defaultdict object (defaultdict(dict))
+        id_parameters: dict object
         log: log object (self.log)
 
     """
-    id_parameters = dict()
     resource_pools = root.cisco_dc__dc_site[bd.site].resource_pools
     id = [('network-vlan', resource_pools.l2_network_vlan),
           ('vrf-vlan', resource_pools.l3_vrf_vlan),
           ('l2vni', resource_pools.l2_vxlan_vni),
           ('l3vni', resource_pools.l3_vxlan_vni)]
     for parameter, pool_name in id:
-        id_parameters[parameter] = id_allocator.id_read(
-            tctx.username, root, pool_name, f'{bd.site}:{bd.tenant}:{bd.name}')
+        if pool_name in (resource_pools.l2_network_vlan, resource_pools.l2_vxlan_vni):
+            allocation_name = f'{bd.site}:{bd.tenant}:{bd.name}'
+            id_parameters[parameter] = id_allocator.id_read(
+                tctx.username, root, pool_name, allocation_name)
+        else:
+            if bd.vrf:
+                allocation_name = f'{bd.site}:{bd.tenant}:{bd.vrf}'
+                id_parameters[parameter] = id_allocator.id_read(
+                    tctx.username, root, pool_name, allocation_name)
     log.info('Id Parameters :', id_parameters)
-    port_groups = root.cisco_dc__dc_site[bd.site].port_configs
-    attached_port_groups = bd.port_group
-    for port_group in attached_port_groups:
-        ports = port_groups[port_group.name].port_config
-        for port in ports:
-            vlan_dict = vlan_parameters[port.name]
-            vlan_dict['mode'] = port.mode
-            if port.port_type == 'ethernet':
-                eth = port.ethernet
-                node = eth.node
-                vlan_dict['port-type'] = 'ethernet'
-                vlan_dict['node'] = node
-                vlan_dict['node-port'] = eth.node_port.as_list()
-                vlan_dict['vlan-id'] = id_parameters['network-vlan']
-                if not bd_parameters.get(node):
-                    bd_parameters[node] = id_parameters
-            elif port.port_type == 'port-channel':
-                pc = port.port_channel
-                node = pc.node
-                vlan_dict['port-type'] = 'port-channel'
-                vlan_dict['port-channel-id'] = pc.allocated_port_channel_id
-                vlan_dict['node'] = node
-                vlan_dict['node-port'] = pc.node_port.as_list()
-                vlan_dict['vlan-id'] = id_parameters['network-vlan']
-                if not bd_parameters.get(node):
-                    bd_parameters[node] = id_parameters
-            elif port.port_type == 'vpc-port-channel':
-                vpc = port.vpc_port_channel
-                node_group_id = vpc.node_group
-                vlan_dict['port-type'] = 'vpc-port-channel'
-                vlan_dict['port-channel-id'] = vpc.allocated_port_channel_id
-                vlan_dict['node-group'] = node_group_id
-                vlan_dict['node-1-port'] = vpc.node_1_port.as_list()
-                vlan_dict['node-2-port'] = vpc.node_2_port.as_list()
-                vlan_dict['vlan-id'] = id_parameters['network-vlan']
-                node_1, node_2 = utils.get_vpc_nodes_from_port(root, port)
-                if not bd_parameters.get(node_1):
-                    bd_parameters[node_1] = id_parameters
-                if not bd_parameters.get(node_2):
-                    bd_parameters[node_2] = id_parameters
-    log.debug(f'bridge-Domain: {bd.name}, bd-parameters:{bd_parameters}, vlan-parameters: {vlan_parameters}')
 
 
-def _create_bd_config(root, bd, bd_parameters, vlan_parameters, log):
-    """Function to create bridge-domain configuration
+def _set_hidden_leaves(root, bd, id_parameters, log):
+    """Function to create hidden leaves for template operations
 
     Args:
         root: Maagic object pointing to the root of the CDB
         bd: service node
-        bd_parameters: collections defaultdict object (defaultdict(dict))
-        vlan_parameters: collections defaultdict object (defaultdict(dict))
+        id_parameters: dict object
         log: log object (self.log)
 
     """
-    vars = ncs.template.Variables()
-    network_vlan_name, vrf_vlan_name = f'{bd.name}-network-vlan', f'{bd.name}-vrf-vlan'
-    vars.add('NETWORK_VLAN_NAME', network_vlan_name)
-    vars.add('VRF_VLAN_NAME', vrf_vlan_name)
-    for device, bd_dict in bd_parameters.items():
-        vars.add('DEVICE', device)
-        vars.add('NETWORK_VLAN_ID', bd_dict['network-vlan'])
-        vars.add('VRF_VLAN_ID', bd_dict['vrf-vlan'])
-        vars.add('L2VNI_ID', bd_dict['l2vni'])
-        vars.add('L3VNI_ID', bd_dict['l3vni'])
-        utils.apply_template(bd, 'cisco-dc-services-fabric-bd-l2vni-service', vars)
-        log.debug(f'Device {device} bridge-bomain {bd.name} l2nvi configuration is applied.')
-    for port_name, vlan_dict in vlan_parameters.items():
-        vars.add('PORT_MODE', vlan_dict['mode'])
-        vars.add('PORT_TYPE', vlan_dict['port-type'])
-        vars.add('PO_ID', '')
-        if vlan_dict['port-type'] == 'ethernet':
-            vars.add('DEVICE', vlan_dict['node'])
-            vars.add('VLAN_ID', vlan_dict['vlan-id'])
-            for port in vlan_dict['node-port']:
-                vars.add('ETH_ID', port)
-                utils.apply_template(bd, 'cisco-dc-services-fabric-bd-vlan-service', vars)
-        elif vlan_dict['port-type'] == 'port-channel':
-            vars.add('DEVICE', vlan_dict['node'])
-            vars.add('VLAN_ID', vlan_dict['vlan-id'])
-            vars.add('ETH_ID', '')
-            vars.add('PO_ID', vlan_dict['port-channel-id'])
-            utils.apply_template(bd, 'cisco-dc-services-fabric-bd-vlan-service', vars)
-        elif vlan_dict['port-type'] == 'vpc-port-channel':
-            vars.add('PO_ID', vlan_dict['port-channel-id'])
-            vars.add('ETH_ID', '')
-            vars.add('PO_ID', vlan_dict['port-channel-id'])
-            for device in utils.get_vpc_nodes_from_bd(root, bd, vlan_dict):
-                vars.add('DEVICE', device)
-                vars.add('VLAN_ID', vlan_dict['vlan-id'])
-                utils.apply_template(bd, 'cisco-dc-services-fabric-bd-vlan-service', vars)
-        log.debug(f'Port {port_name} bridge-bomain {bd.name} vlan configuration is applied.')
-            
+    port_groups = root.cisco_dc__dc_site[bd.site].port_configs
+    attached_port_groups = bd.port_group
+    for attached_port_group in attached_port_groups:
+        attached_port = attached_port_group.port
+        port_group = port_groups[attached_port_group.name]
+        ports = port_group.port_config
+        if (bd.tenant, bd.name) not in port_group.bd_service:
+            port_group.bd_service.create(bd.tenant, bd.name)
+        for port in ports:
+            if port.type == 'ethernet':
+                eth = port.ethernet
+                node = eth.node
+                if port.name not in attached_port:
+                    attached_port.create(port.name)
+                if (node, port.name) not in bd.port:
+                    sa = bd.port.create(node, port.name)
+                    sa.interface_id = eth.node_port
+                    sa.mode = port.mode.string
+                    sa.vlan = id_parameters['network-vlan']
+                if node not in bd.device:
+                    leaf = bd.device.create(node)
+                    if bd.vrf:
+                        leaf.network_vlan, leaf.vrf_vlan, leaf.l2vni, leaf.l3vni = id_parameters.values()
+                    else:
+                        leaf.network_vlan, leaf.l2vni = id_parameters.values()
+            elif port.type == 'port-channel':
+                pc = port.port_channel
+                node = pc.node
+                if port.name not in attached_port:
+                    attached_port.create(port.name)
+                if (node, port.name) not in bd.direct_pc:
+                    direct_pc = bd.direct_pc.create(node, port.name)
+                    direct_pc.port_channel_id = pc.allocated_port_channel_id
+                    direct_pc.mode = port.mode.string
+                    direct_pc.vlan = id_parameters['network-vlan']
+                if node not in bd.device:
+                    leaf = bd.device.create(node)
+                    if bd.vrf:
+                        leaf.network_vlan, leaf.vrf_vlan, leaf.l2vni, leaf.l3vni = id_parameters.values()
+                    else:
+                        leaf.network_vlan, leaf.l2vni = id_parameters.values()
+            elif port.type == 'vpc-port-channel':
+                vpc = port.vpc_port_channel
+                node_1, node_2 = utils.get_vpc_nodes_from_port(root, port)
+                if port.name not in attached_port:
+                    attached_port.create(port.name)
+                if (node_1, port.name) not in bd.virtual_pc:
+                    virtual_pc = bd.virtual_pc.create(node_1, port.name)
+                    virtual_pc.port_channel_id = vpc.allocated_port_channel_id
+                    virtual_pc.mode = port.mode.string
+                    virtual_pc.vlan = id_parameters['network-vlan']
+                if (node_2, port.name) not in bd.virtual_pc:
+                    virtual_pc = bd.virtual_pc.create(node_2, port.name)
+                    virtual_pc.port_channel_id = vpc.allocated_port_channel_id
+                    virtual_pc.mode = port.mode.string
+                    virtual_pc.vlan = id_parameters['network-vlan']
+                if node_1 not in bd.device:
+                    leaf = bd.device.create(node_1)
+                    if bd.vrf:
+                        leaf.network_vlan, leaf.vrf_vlan, leaf.l2vni, leaf.l3vni = id_parameters.values()
+                    else:
+                        leaf.network_vlan, leaf.l2vni = id_parameters.values()
+                if node_2 not in bd.device:
+                    leaf = bd.device.create(node_2)
+                    if bd.vrf:
+                        leaf.network_vlan, leaf.vrf_vlan, leaf.l2vni, leaf.l3vni = id_parameters.values()
+                    else:
+                        leaf.network_vlan, leaf.l2vni = id_parameters.values()
+            log.info(
+                f'Port {port.name} bridge-bomain {bd.name} hidden configuration is applied.')
 
 
+def _create_bd_config(bd):
+    """Function to create bridge-domain configuration
+
+    Args:
+        bd: service node
+
+    """
+    template = ncs.template.Template(bd)
+    template.apply('cisco-dc-services-fabric-bd-l2vni-service')
+    template.apply('cisco-dc-services-fabric-bd-vlan-service')

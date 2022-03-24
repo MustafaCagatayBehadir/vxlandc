@@ -239,6 +239,7 @@ submodule cisco-dc-port-config {
                     }
 
                     list node {
+                        tailf:hidden "dc";
 
                         key name;
 
@@ -248,7 +249,6 @@ submodule cisco-dc-port-config {
                         }
 
                         leaf allocated-port-channel-id {
-                            tailf:hidden "Just for convenience";
                             type uint16 {
                                 range "1..500";
                             }

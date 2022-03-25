@@ -40,16 +40,11 @@ submodule cisco-dc-port-config {
         }
 
         list bd-service {
-            tailf:hidden "Attach bridge domain defined in infra";
-            key "tenant bd";
+            // tailf:hidden "Attach bridge domain defined in infra";
+            key "kp";
 
-            leaf tenant {
-                tailf:info "Specify tenant name";
-                type string;
-            }
-
-            leaf bd {
-                tailf:info "Specify bridge domain name";
+            leaf kp {
+                tailf:info "Specify keypath name";
                 type string;
             }
         }
@@ -100,6 +95,7 @@ submodule cisco-dc-port-config {
 
             case ethernet {
                 container ethernet {
+                    when "not(current()/../port-channel) and not(current()/../vpc-port-channel)";
                     tailf:info "Single Attach Port Type";
 
                     leaf node {
@@ -135,6 +131,7 @@ submodule cisco-dc-port-config {
 
             case port-channel {
                 container port-channel {
+                    when "not(current()/../ethernet) and not(current()/../vpc-port-channel)";
                     tailf:info "Port Channel Port Type";
 
                     leaf port-channel-id {
@@ -183,6 +180,7 @@ submodule cisco-dc-port-config {
 
             case vpc-port-channel {
                 container vpc-port-channel {
+                    when "not(current()/../ethernet) and not(current()/../port-channel)";
                     tailf:info "VPC Port Channel Port Type";
 
                     leaf port-channel-id {

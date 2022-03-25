@@ -117,62 +117,92 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
         attached_port = attached_port_group.port
         port_group = port_groups[attached_port_group.name]
         ports = port_group.port_config
-        if (bd.tenant, bd.name) not in port_group.bd_service:
-            port_group.bd_service.create(bd.tenant, bd.name)
+        if (bd._path) not in port_group.bd_service:
+            port_group.bd_service.create(bd._path)
         for port in ports:
             if port.type == 'ethernet':
                 eth = port.ethernet
                 node = eth.node
                 if port.name not in attached_port:
                     attached_port.create(port.name)
+
                 if (node, port.name) not in bd.port:
                     sa = bd.port.create(node, port.name)
                     sa.interface_id = eth.node_port
-                    sa.mode = port.mode.string
+                    sa.mode = port.mode
                     sa.vlan = id_parameters['network-vlan']
+                else:
+                    sa = bd.port[node, port.name]
+                    sa.interface_id = eth.node_port
+                    sa.mode = port.mode
+                    sa.vlan = id_parameters['network-vlan']
+
+
                 if node not in bd.device:
                     leaf = bd.device.create(node)
                     if bd.vrf:
                         leaf.network_vlan, leaf.vrf_vlan, leaf.l2vni, leaf.l3vni = id_parameters.values()
                     else:
                         leaf.network_vlan, leaf.l2vni = id_parameters.values()
+
             elif port.type == 'port-channel':
                 pc = port.port_channel
                 node = pc.node
                 if port.name not in attached_port:
                     attached_port.create(port.name)
+
                 if (node, port.name) not in bd.direct_pc:
                     direct_pc = bd.direct_pc.create(node, port.name)
                     direct_pc.port_channel_id = pc.allocated_port_channel_id
-                    direct_pc.mode = port.mode.string
+                    direct_pc.mode = port.mode
                     direct_pc.vlan = id_parameters['network-vlan']
+                else:
+                    direct_pc = bd.direct_pc[node, port.name]
+                    direct_pc.port_channel_id = pc.allocated_port_channel_id
+                    direct_pc.mode = port.mode
+                    direct_pc.vlan = id_parameters['network-vlan']                           
+
                 if node not in bd.device:
                     leaf = bd.device.create(node)
                     if bd.vrf:
                         leaf.network_vlan, leaf.vrf_vlan, leaf.l2vni, leaf.l3vni = id_parameters.values()
                     else:
                         leaf.network_vlan, leaf.l2vni = id_parameters.values()
+                        
             elif port.type == 'vpc-port-channel':
                 vpc = port.vpc_port_channel
                 node_1, node_2 = utils.get_vpc_nodes_from_port(root, port)
                 if port.name not in attached_port:
                     attached_port.create(port.name)
+
                 if (node_1, port.name) not in bd.virtual_pc:
                     virtual_pc = bd.virtual_pc.create(node_1, port.name)
                     virtual_pc.port_channel_id = vpc.allocated_port_channel_id
-                    virtual_pc.mode = port.mode.string
+                    virtual_pc.mode = port.mode
                     virtual_pc.vlan = id_parameters['network-vlan']
+                else:
+                    virtual_pc = bd.virtual_pc[node_1, port.name]
+                    virtual_pc.port_channel_id = vpc.allocated_port_channel_id
+                    virtual_pc.mode = port.mode
+                    virtual_pc.vlan = id_parameters['network-vlan']                    
+
                 if (node_2, port.name) not in bd.virtual_pc:
                     virtual_pc = bd.virtual_pc.create(node_2, port.name)
-                    virtual_pc.port_channel_id = vpc.allocated_port_channel_id
-                    virtual_pc.mode = port.mode.string
+                    virtual_pc.mode = port.mode
                     virtual_pc.vlan = id_parameters['network-vlan']
+                else:
+                    virtual_pc = bd.virtual_pc[node_2, port.name]
+                    virtual_pc.port_channel_id = vpc.allocated_port_channel_id
+                    virtual_pc.mode = port.mode
+                    virtual_pc.vlan = id_parameters['network-vlan']   
+
                 if node_1 not in bd.device:
                     leaf = bd.device.create(node_1)
                     if bd.vrf:
                         leaf.network_vlan, leaf.vrf_vlan, leaf.l2vni, leaf.l3vni = id_parameters.values()
                     else:
                         leaf.network_vlan, leaf.l2vni = id_parameters.values()
+                
                 if node_2 not in bd.device:
                     leaf = bd.device.create(node_2)
                     if bd.vrf:

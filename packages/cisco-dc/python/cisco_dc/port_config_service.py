@@ -110,23 +110,21 @@ def _set_hidden_leaves(root, port, tctx, id_parameters, log):
             'port-channel-id')
         node_1, node_2 = utils.get_vpc_nodes_from_port(root, port)
         vpc_nodes = [(node_1, port.vpc_port_channel.node_1_port),
-                    (node_2, port.vpc_port_channel.node_2_port)]
+                     (node_2, port.vpc_port_channel.node_2_port)]
         for node, node_port in vpc_nodes:
             vpc_node = port.vpc_port_channel.node.create(node)
             vpc_node.node_port = node_port
     port.bum = utils.get_bum(port.speed)
-    kp = '/dc-site{}/tenant-service{}/bridge-domain{}'
     bd_services = root.cisco_dc__dc_site[port.site].port_configs[port.port_group].bd_service
     for bd_service in bd_services:
-        bd = ncs.maagic.get_node(tctx, kp.format(
-            port.site, bd_service.tenant, bd_service.bd))
+        bd = ncs.maagic.cd(root, bd_service.kp)
         if port.port_type == 'ethernet':
             eth = port.ethernet
             if (eth.node, port.name) not in bd.port:
-                bd_port = bd.port.create(eth.node, eth.name)
+                bd_port = bd.port.create(eth.node, port.name)
                 bd_port.interface_id = eth.node_port
             else:
-                bd.port[eth.node, eth.name].interface_id = eth.node_port
+                bd.port[eth.node, port.name].interface_id = eth.node_port
         elif port.port_type == 'port-channel':
             pc = port.port_channel
             if (pc.node, port.name) not in bd.direct_pc:
@@ -150,6 +148,7 @@ def _set_hidden_leaves(root, port, tctx, id_parameters, log):
             else:
                 bd_virtual_pc[node_2,
                               port.name].port_channel_id = vpc.allocated_port_channel_id
+        log.info(f'Bridge-domain {bd.name} is activated by port {port.name}')
 
 
 def _create_port_config(port):

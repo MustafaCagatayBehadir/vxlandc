@@ -1,0 +1,26 @@
+{
+    "cisco-dc:dc-site": [
+        {
+            "fabric": "avr-dss1-lbox-yaani-fabric",
+            "tenant-service": [
+                {
+                    "name": "0001_TURKCELL",
+                    "bridge-domain": [
+                        {
+                            "name": "BD-SERVICE-1",
+                            "approved": true
+                        },
+                        {
+                            "name": "BD-SERVICE-2",
+                            "approved": true
+                        },
+                        {
+                            "name": "BD-SERVICE-3",
+                            "approved": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

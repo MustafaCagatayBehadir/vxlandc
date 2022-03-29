@@ -2,7 +2,7 @@
     "tailf-ned-cisco-nx:member": {
         "vni": [
             {
-                "id": 60004,
+                "id": 60001,
                 "mcast-group": "239.255.0.0"
             }
         ]

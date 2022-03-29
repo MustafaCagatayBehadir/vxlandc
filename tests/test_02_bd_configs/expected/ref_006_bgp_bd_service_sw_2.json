@@ -1,0 +1,39 @@
+{
+    "tailf-ned-cisco-nx:vrf": [
+        {
+            "name": "tcell-grt",
+            "address-family": [
+                {
+                    "proto": "ipv4",
+                    "type": "unicast",
+                    "advertise": {
+                        "l2vpn": "evpn"
+                    },
+                    "maximum-paths": {
+                        "ibgp": 2
+                    },
+                    "redistribute": {
+                        "direct": {
+                            "route-map": "fabric-rmap-redist-subnet"
+                        }
+                    }
+                },
+                {
+                    "proto": "ipv6",
+                    "type": "unicast",
+                    "advertise": {
+                        "l2vpn": "evpn"
+                    },
+                    "maximum-paths": {
+                        "ibgp": 2
+                    },
+                    "redistribute": {
+                        "direct": {
+                            "route-map": "fabric-rmap-redist-subnet"
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

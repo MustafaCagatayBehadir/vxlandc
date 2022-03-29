@@ -1,0 +1,71 @@
+{
+    "cisco-dc:dc-site": [
+        {
+            "fabric": "avr-dss1-lbox-yaani-fabric",
+            "tenant-service": [
+                {
+                    "name": "0001_TURKCELL",
+                    "vrf": [
+                        {
+                            "name": "tcell-grt"
+                        }
+                    ],
+                    "bridge-domain": [
+                        {
+                            "name": "BD-SERVICE-1",
+                            "port-group": [
+                                {
+                                    "name": "ETH_PG_1_ACCESS",
+                                    "mode": "access"
+                                },
+                                {
+                                    "name": "ETH_PG_1_TRUNK",
+                                    "mode": "trunk"
+                                }
+                            ],
+                            "bd-subnet": [
+                                {
+                                    "address": "10.0.0.1/24",
+                                    "preferred": "yes"
+                                }
+                            ],
+                            "vrf": "tcell-grt"
+                        },
+                        {
+                            "name": "BD-SERVICE-2",
+                            "port-group": [
+                                {
+                                    "name": "PC_PG_1_TRUNK",
+                                    "mode": "trunk"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "BD-SERVICE-3",
+                            "port-group": [
+                                {
+                                    "name": "VPC_PG_1_ACCESS",
+                                    "mode": "access"
+                                },
+                                {
+                                    "name": "VPC_PG_1_TRUNK",
+                                    "mode": "trunk"
+                                }
+                            ],
+                            "bd-subnet": [
+                                {
+                                    "address": "10.0.1.1/24",
+                                    "preferred": "yes"
+                                },
+                                {
+                                    "address": "10.0.2.1/24"
+                                }
+                            ],
+                            "vrf": "tcell-grt"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

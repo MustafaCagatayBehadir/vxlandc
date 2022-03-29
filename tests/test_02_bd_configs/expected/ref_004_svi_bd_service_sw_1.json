@@ -1,0 +1,59 @@
+{
+    "tailf-ned-cisco-nx:Vlan": [
+        {
+            "name": 2,
+            "vrf": {
+                "member": "tcell-grt"
+            },
+            "ip": {
+                "address": {
+                    "ipaddr": "10.0.0.1/24"
+                }
+            },
+            "fabric": {
+                "forwarding": {
+                    "mode": "anycast-gateway"
+                }
+            }
+        },
+        {
+            "name": 4,
+            "vrf": {
+                "member": "tcell-grt"
+            },
+            "ip": {
+                "address": {
+                    "ipaddr": "10.0.1.1/24"
+                },
+                "secondary-addr": {
+                    "address": [
+                        {
+                            "ipaddr": "10.0.2.1/24",
+                            "secaddr": "secondary"
+                        }
+                    ]
+                }
+            },
+            "fabric": {
+                "forwarding": {
+                    "mode": "anycast-gateway"
+                }
+            }
+        },
+        {
+            "name": 3101,
+            "vrf": {
+                "member": "tcell-grt"
+            },
+            "ip": {
+                "forward": [
+                    null
+                ],
+                "redirects": false
+            },
+            "ipv6": {
+                "redirects": false
+            }
+        }
+    ]
+}

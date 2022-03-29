@@ -5,9 +5,9 @@
                 "id": 1
             },
             {
-                "id": 6,
-                "name": "L2-VLAN-SERVICE-5",
-                "vn-segment": 60004
+                "id": 3,
+                "name": "0001_TURKCELL:BD-SERVICE-2:network-vlan",
+                "vn-segment": 60001
             }
         ]
     }

@@ -6,18 +6,18 @@
             },
             {
                 "id": 2,
-                "name": "L2-VLAN-SERVICE-1",
+                "name": "0001_TURKCELL:BD-SERVICE-1:network-vlan",
                 "vn-segment": 60000
             },
             {
-                "id": 3,
-                "name": "L2-VLAN-SERVICE-2",
-                "vn-segment": 60001
+                "id": 4,
+                "name": "0001_TURKCELL:BD-SERVICE-3:network-vlan",
+                "vn-segment": 60002
             },
             {
-                "id": 4,
-                "name": "L2-VLAN-SERVICE-3",
-                "vn-segment": 60002
+                "id": 3101,
+                "name": "0001_TURKCELL:tcell-grt:vrf-vlan",
+                "vn-segment": 80000
             }
         ]
     }

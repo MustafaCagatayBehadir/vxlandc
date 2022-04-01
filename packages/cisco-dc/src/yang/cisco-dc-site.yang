@@ -9,15 +9,19 @@ submodule cisco-dc-site {
     import ietf-inet-types {
         prefix inet;
     }
+
     import tailf-common {
         prefix tailf;
     }
+
     import tailf-ncs {
         prefix ncs;
     }
+
     import resource-allocator {
         prefix ralloc;
     }
+    
     import id-allocator {
         prefix idalloc;
     }

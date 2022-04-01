@@ -84,17 +84,6 @@ class BDConfigsTests:
         assert json.loads(resp.text) == expected
 
     @mark.parametrize('expected, path', [
-        (expected_path / 'ref_004_svi_bd_service_sw_1.json',
-         'tailf-ncs:devices/device=AVR-DSS1-BIP-SW-01/config/tailf-ned-cisco-nx:interface/Vlan'),
-        (expected_path / 'ref_004_svi_bd_service_sw_2.json',
-         'tailf-ncs:devices/device=AVR-DSS1-BIP-SW-02/config/tailf-ned-cisco-nx:interface/Vlan')      
-    ], indirect=['expected'])
-    def test_005_vrf(self, expected, path):
-        resp = self.nso.get(path=path)
-        assert resp.status_code == 200
-        assert json.loads(resp.text) == expected
-
-    @mark.parametrize('expected, path', [
         (expected_path / 'ref_005_vrf_bd_service_sw_1.json',
          'tailf-ncs:devices/device=AVR-DSS1-BIP-SW-01/config/tailf-ned-cisco-nx:vrf'),
         (expected_path / 'ref_005_vrf_bd_service_sw_2.json',
@@ -116,7 +105,7 @@ class BDConfigsTests:
         assert resp.status_code == 200
         assert json.loads(resp.text) == expected  
 
-    @classmethod
-    def teardown_class(cls):
-        cls.nso.delete(path="cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric")
-        cls.nso.delete(path="resource-allocator:resource-pools")
+    # @classmethod
+    # def teardown_class(cls):
+    #     cls.nso.delete(path="cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric")
+    #     cls.nso.delete(path="resource-allocator:resource-pools")

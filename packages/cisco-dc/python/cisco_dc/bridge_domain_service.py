@@ -1,4 +1,3 @@
-from multiprocessing import pool
 import ncs
 from .resource_manager import id_allocator
 from . import utils
@@ -6,7 +5,7 @@ from . import utils
 
 class BridgeDomainServiceSelfComponent(ncs.application.NanoService):
     """
-    NanoService callback handler for the self component of tenant service.
+    NanoService callback handler for the self component of bridge-domain service.
     """
     @ncs.application.NanoService.create
     def cb_nano_create(self, tctx, root, service, plan, component, state,
@@ -33,27 +32,15 @@ def _id_requested(root, bd, tctx, log):
     """
     resource_pools = root.cisco_dc__dc_site[bd.site].resource_pools
     id = [(bd.l2vni.vlan_id if bd.l2vni.vlan_id else -1, resource_pools.l2_network_vlan),
-          (bd.l3vni.vlan_id if bd.l3vni.vlan_id else -1, resource_pools.l3_vrf_vlan),
-          (bd.l2vni.vni_id if bd.l2vni.vni_id else -1, resource_pools.l2_vxlan_vni),
-          (bd.l3vni.vni_id if bd.l3vni.vni_id else -1, resource_pools.l3_vxlan_vni)]
+          (bd.l2vni.vni_id if bd.l2vni.vni_id else -1, resource_pools.l2_vxlan_vni)]
     for requested_id, pool_name in id:
-        if pool_name in (resource_pools.l2_network_vlan, resource_pools.l2_vxlan_vni):
-            svc_xpath = "/cisco-dc:dc-site[fabric='{}']/tenant-service[name='{}']/bridge-domain[name='{}']"
-            svc_xpath = svc_xpath.format(bd.site, bd.tenant, bd.name)
-            allocation_name = f'{bd.site}:{bd.tenant}:{bd.name}'
-            id_allocator.id_request(
-                bd, svc_xpath, tctx.username, pool_name, allocation_name, False, requested_id)
-            log.info(
-                f'Id is requested from pool {pool_name} for service {bd.name}')
-        else:
-            if bd.vrf:
-                svc_xpath = "/cisco-dc:dc-site[fabric='{}']/tenant-service[name='{}']/vrf[name='{}']"
-                svc_xpath = svc_xpath.format(bd.site, bd.tenant, bd.vrf)
-                allocation_name = f'{bd.site}:{bd.tenant}:{bd.vrf}'
-                id_allocator.id_request(
-                    bd, svc_xpath, tctx.username, pool_name, allocation_name, False, requested_id)
-                log.info(
-                    f'Id is requested from pool {pool_name} for service {bd.name}')
+        svc_xpath = "/cisco-dc:dc-site[fabric='{}']/tenant-service[name='{}']/bridge-domain[name='{}']"
+        svc_xpath = svc_xpath.format(bd.site, bd.tenant, bd.name)
+        allocation_name = f'{bd.site}:{bd.tenant}:{bd.name}'
+        id_allocator.id_request(
+            bd, svc_xpath, tctx.username, pool_name, allocation_name, False, requested_id)
+        log.info(
+            f'Id is requested from pool {pool_name} for service {bd.name}')
 
 
 def _configure_bridge_domain(root, bd, tctx, log):
@@ -85,19 +72,11 @@ def _create_service_parameters(root, bd, tctx, id_parameters, log):
     """
     resource_pools = root.cisco_dc__dc_site[bd.site].resource_pools
     id = [('network-vlan', resource_pools.l2_network_vlan),
-          ('vrf-vlan', resource_pools.l3_vrf_vlan),
-          ('l2vni', resource_pools.l2_vxlan_vni),
-          ('l3vni', resource_pools.l3_vxlan_vni)]
+          ('l2vni', resource_pools.l2_vxlan_vni)]
     for parameter, pool_name in id:
-        if pool_name in (resource_pools.l2_network_vlan, resource_pools.l2_vxlan_vni):
-            allocation_name = f'{bd.site}:{bd.tenant}:{bd.name}'
-            id_parameters[parameter] = id_allocator.id_read(
-                tctx.username, root, pool_name, allocation_name)
-        else:
-            if bd.vrf:
-                allocation_name = f'{bd.site}:{bd.tenant}:{bd.vrf}'
-                id_parameters[parameter] = id_allocator.id_read(
-                    tctx.username, root, pool_name, allocation_name)
+        allocation_name = f'{bd.site}:{bd.tenant}:{bd.name}'
+        id_parameters[parameter] = id_allocator.id_read(
+            tctx.username, root, pool_name, allocation_name)
     log.info('Id Parameters :', id_parameters)
 
 
@@ -140,10 +119,12 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
 
                 if node not in bd.device:
                     leaf = bd.device.create(node)
-                    if bd.vrf:
-                        leaf.network_vlan, leaf.vrf_vlan, leaf.l2vni, leaf.l3vni = id_parameters.values()
-                    else:
-                        leaf.network_vlan, leaf.l2vni = id_parameters.values()
+                    leaf.network_vlan, leaf.l2vni = id_parameters.values()
+                
+                if bd.vrf:
+                    vrf = root.cisco_dc__dc_site[bd.site].vrf_config[bd.vrf]
+                    if node not in vrf.device:
+                        vrf.device.create(node)
 
             elif port.type == 'port-channel':
                 pc = port.port_channel
@@ -164,10 +145,12 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
 
                 if node not in bd.device:
                     leaf = bd.device.create(node)
-                    if bd.vrf:
-                        leaf.network_vlan, leaf.vrf_vlan, leaf.l2vni, leaf.l3vni = id_parameters.values()
-                    else:
-                        leaf.network_vlan, leaf.l2vni = id_parameters.values()
+                    leaf.network_vlan, leaf.l2vni = id_parameters.values()
+
+                if bd.vrf:
+                    vrf = root.cisco_dc__dc_site[bd.site].vrf_config[bd.vrf]
+                    if node not in vrf.device:
+                        vrf.device.create(node)
                         
             elif port.type == 'vpc-port-channel':
                 vpc = port.vpc_port_channel
@@ -194,21 +177,25 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
                     virtual_pc = bd.virtual_pc[node_2, port.name]
                     virtual_pc.port_channel_id = vpc.allocated_port_channel_id
                     virtual_pc.mode = port.mode
-                    virtual_pc.vlan = id_parameters['network-vlan']   
+                    virtual_pc.vlan = id_parameters['network-vlan']  
 
                 if node_1 not in bd.device:
                     leaf = bd.device.create(node_1)
-                    if bd.vrf:
-                        leaf.network_vlan, leaf.vrf_vlan, leaf.l2vni, leaf.l3vni = id_parameters.values()
-                    else:
-                        leaf.network_vlan, leaf.l2vni = id_parameters.values()
+                    leaf.network_vlan, leaf.l2vni = id_parameters.values()
+
+                if bd.vrf:
+                    vrf = root.cisco_dc__dc_site[bd.site].vrf_config[bd.vrf]
+                    if node_1 not in vrf.device:
+                        vrf.device.create(node_1)                
                 
                 if node_2 not in bd.device:
                     leaf = bd.device.create(node_2)
-                    if bd.vrf:
-                        leaf.network_vlan, leaf.vrf_vlan, leaf.l2vni, leaf.l3vni = id_parameters.values()
-                    else:
-                        leaf.network_vlan, leaf.l2vni = id_parameters.values()
+                    leaf.network_vlan, leaf.l2vni = id_parameters.values()
+
+                if bd.vrf:
+                    vrf = root.cisco_dc__dc_site[bd.site].vrf_config[bd.vrf]
+                    if node_2 not in vrf.device:
+                        vrf.device.create(node_2)  
             log.info(
                 f'Port {port.name} bridge-bomain {bd.name} hidden configuration is applied.')
 

@@ -32,10 +32,23 @@ submodule cisco-dc-routepolicy {
             type dc-string;
         }
 
+        leaf route-policy-type {
+            tailf:info "Type of route-policy can be vrf or tenant";
+            type enumeration {
+                enum vrf;
+                enum bridge-domain;
+            }
+            mandatory true;
+        }
+
         leaf tenant {
-            tailf:hidden "Just for convenience";
-            type dc-string;
-            tailf:default-ref "../../cisco-dc:name";
+            when "current()/../route-policy-type = 'bridge-domain'";
+            tailf:info "Specify tenant name";
+            type leafref {
+                tailf:no-leafref-check;
+                path "/cisco-dc:dc-site[fabric=current()/../../fabric]/cisco-dc:tenant-service/cisco-dc:name";
+            }
+            mandatory true;
         }
 
         container rules-set {
@@ -48,7 +61,7 @@ submodule cisco-dc-routepolicy {
                     tailf:info "Specify rule name";
                     type dc-string;
                 }
-                must "count(current()/../../../dc-route-policy[rules-set/match-rules/name = current()/name][tenant = current()/../../tenant]) <= 1" {
+                must "current()/../../route-policy-type = 'vrf' or count(current()/../../../dc-route-policy[rules-set/match-rules/name = current()/name][tenant = current()/../../tenant]) <= 1" {
                     error-message
                       "match-rules can not be shared with multiple dc-route-policy services of same tenant";
                 }
@@ -58,6 +71,7 @@ submodule cisco-dc-routepolicy {
 
                     case community {
                         leaf-list community {
+                            when "not(current()/../route-destination-ip) and not(current()/../tag)";
                             tailf:info "Specify community list\n"
                             + "example: [ extended:as4-nn2:4:15 regular:as2-nn2:4:15 ]";
                             type route-target;
@@ -66,6 +80,7 @@ submodule cisco-dc-routepolicy {
 
                     case prefix-list {
                         list route-destination-ip {
+                            when "not(current()/../community) and not(current()/../tag)";
                             tailf:info "Specify route destination ip";
                             key ip;
                             leaf ip {
@@ -98,6 +113,7 @@ submodule cisco-dc-routepolicy {
 
                     case tag {
                         leaf tag {
+                            when "not(current()/../community) and not(current()/../route-destination-ip)";
                             tailf:info "Match Route Tag. <0..4294967295>";
                             type uint32;
                         }
@@ -113,7 +129,7 @@ submodule cisco-dc-routepolicy {
                     tailf:info "Specify rule name";
                     type dc-string;
                 }
-                must "count(current()/../../../dc-route-policy[rules-set/set-rules/name = current()/name][tenant = current()/../../tenant]) <= 1" {
+                must "current()/../../route-policy-type = 'vrf' or count(current()/../../../dc-route-policy[rules-set/set-rules/name = current()/name][tenant = current()/../../tenant]) <= 1" {
                     error-message
                       "set-rules can not be shared with multiple dc-route-policy services of same tenant";
                 }
@@ -184,13 +200,14 @@ submodule cisco-dc-routepolicy {
                 tailf:info "Specify route-policy name.";
                 type dc-string;
             }
-            must "count(current()/../../dc-route-policy[route-policy/profile = current()/profile][tenant = current()/../tenant]) <= 1" {
+            must "current()/../route-policy-type = 'vrf' or count(current()/../../dc-route-policy[route-policy/profile = current()/profile][tenant = current()/../tenant]) <= 1" {
                 error-message
                   "route-policy can not be shared with multiple dc-route-policy services of same tenant";
             }
+
             list match-and-set-group {
                 tailf:info "Attach match/set rules name";
-                key set-rules;
+                key order;
 
                 leaf order {
                     tailf:info "Specify order of the policy context, valid range is from 5 to 1000.";
@@ -209,6 +226,7 @@ submodule cisco-dc-routepolicy {
                     }
                     default permit;
                 }
+
                 leaf set-rules {
                     tailf:info "Attach Set rule name";
                     type leafref {

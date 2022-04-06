@@ -44,23 +44,7 @@ submodule cisco-dc-tenant {
             tailf:hidden "dc";
             type uint32;
         }
-
-        list vrf {
-            tailf:info "Specify VRF's";
-            key name;
-
-            leaf name {
-                tailf:info "Define VRF name";
-                type dc-string;
-            }
-
-            leaf id {
-                tailf:hidden "dc";
-                type uint32;
-            }
-        }
     }
-
     grouping bridge-domain {
 
         leaf name {
@@ -86,21 +70,7 @@ submodule cisco-dc-tenant {
                 type vxlan-id;
             }
         }
-
-        container l3vni {
-            tailf:info "Layer 3 VNI Configuration Parameters";
-
-            leaf vlan-id {
-                tailf:info "Vlan id is allocated by resource-manager, use this field to overwrite the default behavior.";
-                type vlan;
-            }
-
-            leaf vni-id {
-                tailf:info "Vni id is allocated by resource-manager, use this field to overwrite the default behavior.";
-                type vxlan-id;
-            }
-        }
-
+        
         list port-group {
             tailf:info "Attach port group defined in fabric";
 
@@ -246,18 +216,8 @@ submodule cisco-dc-tenant {
                 type vlan;
             }
 
-            leaf vrf-vlan {
-                tailf:info "Define vrf vlan value";
-                type vlan;
-            }
-
             leaf l2vni {
                 tailf:info "L2 Vni id is allocated by resource-manager";
-                type vxlan-id;
-            }
-
-            leaf l3vni {
-                tailf:info "L3 Vni id is allocated by resource-manager";
                 type vxlan-id;
             }
         }
@@ -285,7 +245,7 @@ submodule cisco-dc-tenant {
             when "../bd-subnet";
             tailf:info "Associate VRF on Bridge Domain";
             type leafref {
-                path "../../cisco-dc:vrf/cisco-dc:name";
+                path "../../../cisco-dc:vrf-config/cisco-dc:name";
             }
             mandatory true;
         }

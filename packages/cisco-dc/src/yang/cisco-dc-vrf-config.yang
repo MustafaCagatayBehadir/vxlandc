@@ -1,0 +1,138 @@
+submodule cisco-dc-vrf-config {
+    belongs-to cisco-dc {
+        prefix "cisco-dc";
+    }
+
+    yang-version 1.1;
+
+    import ietf-inet-types {
+        prefix inet;
+    }
+
+    import tailf-common {
+        prefix tailf;
+    }
+
+    import tailf-ncs {
+        prefix ncs;
+    }
+
+    include cisco-dc-common {
+        revision-date "2022-01-17";
+    }
+
+    revision 2022-01-17 {
+        description
+          "Initial Revision.";
+    }
+
+    grouping vrf-config-service {
+
+        leaf name {
+            tailf:info "Define VRF name";
+            type dc-string;
+        }
+
+        container l3vni {
+            tailf:info "Layer 3 VNI Configuration Parameters";
+
+            leaf vlan-id {
+                tailf:info "Vlan id is allocated by resource-manager, use this field to overwrite the default behavior.";
+                type vlan;
+            }
+
+            leaf vni-id {
+                tailf:info "Vni id is allocated by resource-manager, use this field to overwrite the default behavior.";
+                type vxlan-id;
+            }
+        }
+
+        container direct {
+            presence
+              "present if direct redistribution is needed";
+
+            leaf address-family-ipv4-policy {
+                tailf:info "Attach route policy name under ipv4 address-family";
+                type leafref {
+                    path "../../../cisco-dc:dc-route-policy/cisco-dc:route-policy/cisco-dc:profile";
+                }
+            }
+
+            leaf address-family-ipv6-policy {
+                tailf:info "Attach route policy name under ipv6 address-family";
+                type leafref {
+                    path "../../../cisco-dc:dc-route-policy/cisco-dc:route-policy/cisco-dc:profile";
+                }
+            }
+        }
+
+        container static {
+            presence
+              "present if static redistribution is needed";
+
+            leaf address-family-ipv4-policy {
+                tailf:info "Attach route policy name under ipv4 address-family";
+                type leafref {
+                    path "../../../cisco-dc:dc-route-policy/cisco-dc:route-policy/cisco-dc:profile";
+                }
+            }
+
+            leaf address-family-ipv6-policy {
+                tailf:info "Attach route policy name under ipv6 address-family";
+                type leafref {
+                    path "../../../cisco-dc:dc-route-policy/cisco-dc:route-policy/cisco-dc:profile";
+                }
+            }
+        }
+
+        list device {
+            // tailf:hidden "Attach device defined in infra";
+            key "leaf-id";
+
+            leaf leaf-id {
+                tailf:info "Define Leaf Node ID";
+                type string;
+            }
+
+            leaf vrf-vlan {
+                tailf:info "Define network vlan value";
+                type vlan;
+                tailf:default-ref "../../cisco-dc:vlan-id";
+            }
+
+            leaf l3vni {
+                tailf:info "L2 Vni id is allocated by resource-manager";
+                type vxlan-id;
+                tailf:default-ref "../../cisco-dc:vni-id";
+            }
+        }
+
+        leaf vlan-id {
+            tailf:hidden "dc";
+            type vlan;
+        }
+
+        leaf vni-id {
+            tailf:hidden "dc";
+            type vxlan-id;
+        }
+
+        leaf site {
+            tailf:hidden "Just for convenience";
+            type string;
+            tailf:default-ref "../../cisco-dc:fabric";
+        }
+
+        leaf as-number {
+            tailf:hidden "Just for convenience";
+            type inet:as-number;
+            tailf:default-ref "../../cisco-dc:fabric-parameters/cisco-dc:as-number";
+        }
+
+        leaf approved {
+            tailf:info "Approved will set to true if id is allocated";
+            type boolean;
+            default false;
+        }
+    }
+}

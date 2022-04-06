@@ -33,6 +33,14 @@ submodule cisco-dc-nano-services {
         base ncs:plan-state;
     }
 
+    identity vrf-configured {
+        base ncs:plan-state;
+    }    
+
+    identity route-policy-configured {
+        base ncs:plan-state;
+    }
+
     ncs:plan-outline port-config-nano-plan {
         description
           "Port Config Service Plan";
@@ -114,6 +122,80 @@ submodule cisco-dc-nano-services {
         description
           "Bridge Domain Service Behavior Tree";
         ncs:plan-outline-ref "bridge-domain-config-nano-plan";
+
+        ncs:selector {
+            ncs:create-component "'self'" {
+                ncs:component-type-ref "ncs:self";
+            }
+        }
+    }
+
+    ncs:plan-outline vrf-config-nano-plan {
+        description
+          "Fabric VRF Service Plan";
+
+        ncs:component-type "ncs:self" {
+            ncs:state "ncs:init";
+
+            ncs:state "cisco-dc:id-allocated" {
+                ncs:create {
+                    ncs:nano-callback;
+                }
+            }
+
+            ncs:state "cisco-dc:vrf-configured" {
+                ncs:create {
+                    ncs:pre-condition {
+                        ncs:all {
+                            ncs:monitor  "$SERVICE/plan/component[type='ncs:self'][name='self']/state[name='cisco-dc:id-allocated']" {
+                                ncs:trigger-expr "status = 'reached'";
+                            }
+                            ncs:monitor "$SERVICE" {
+                                ncs:trigger-expr "approved = 'true'";
+                            }
+                        }
+                    }
+                    ncs:nano-callback;
+                }
+            }
+
+            ncs:state "ncs:ready";
+        }
+    }
+
+    ncs:service-behavior-tree vrf-config-servicepoint {
+        description
+          "Bridge Domain Service Behavior Tree";
+        ncs:plan-outline-ref "vrf-config-nano-plan";
+
+        ncs:selector {
+            ncs:create-component "'self'" {
+                ncs:component-type-ref "ncs:self";
+            }
+        }
+    }    
+
+    ncs:plan-outline route-policy-config-nano-plan {
+        description
+          "Route Policy Service Plan";
+
+        ncs:component-type "ncs:self" {
+            ncs:state "ncs:init";
+
+            ncs:state "cisco-dc:route-policy-configured" {
+                ncs:create {
+                    ncs:nano-callback;
+                }
+            }
+
+            ncs:state "ncs:ready";
+        }
+    }
+
+    ncs:service-behavior-tree route-policy-config-servicepoint {
+        description
+          "Route Policy Service Behavior Tree";
+        ncs:plan-outline-ref "route-policy-config-nano-plan";
 
         ncs:selector {
             ncs:create-component "'self'" {

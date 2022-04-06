@@ -34,6 +34,10 @@ module cisco-dc {
         revision-date "2022-01-17";
     }
 
+    include cisco-dc-vrf-config {
+        revision-date "2022-01-17";
+    }
+
     include cisco-dc-routepolicy {
         revision-date "2022-01-17";
     }
@@ -61,17 +65,6 @@ module cisco-dc {
             key name;
 
             uses tenant-service;
-
-            list dc-route-policy {
-                tailf:info "Deploy tenant policy service";
-
-                uses ncs:service-data;
-                ncs:servicepoint dc-routepolicy-servicepoint;
-
-                key name;
-
-                uses routepolicy-service;
-            }
 
             list bridge-domain {
                 tailf:info "Define Bridge Domain Name";
@@ -105,6 +98,33 @@ module cisco-dc {
 
                 uses port-config-service;
             }
+        }
+
+        list vrf-config {
+            tailf:info "Vrf config service for VXLAN-EVPN configurations.";
+            description
+              "Vrf config service for VXLAN-EVPN configurations.";
+
+            uses ncs:nano-plan-data;
+            uses ncs:service-data;
+            ncs:servicepoint vrf-config-servicepoint;
+            key name;
+
+            uses vrf-config-service;
+        }
+
+        list dc-route-policy {
+            tailf:info "Deploy tenant policy service";
+            description
+              "Datacenter route-policies for VXLAN-EVPN configurations.";
+
+            uses ncs:nano-plan-data;
+            uses ncs:service-data;
+            ncs:servicepoint route-policy-config-servicepoint;
+
+            key name;
+
+            uses routepolicy-service;
         }
     }
 

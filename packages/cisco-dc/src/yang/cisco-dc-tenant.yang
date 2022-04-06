@@ -9,9 +9,11 @@ submodule cisco-dc-tenant {
     import ietf-inet-types {
         prefix inet;
     }
+
     import tailf-common {
         prefix tailf;
     }
+    
     import tailf-ncs {
         prefix ncs;
     }
@@ -254,12 +256,6 @@ submodule cisco-dc-tenant {
             tailf:hidden "Just for convenience";
             type string;
             tailf:default-ref "../../../cisco-dc:fabric";
-        }
-
-        leaf as-number {
-            tailf:hidden "Just for convenience";
-            type inet:as-number;
-            tailf:default-ref "../../../cisco-dc:fabric-parameters/cisco-dc:as-number";
         }
 
         leaf mcast-group {

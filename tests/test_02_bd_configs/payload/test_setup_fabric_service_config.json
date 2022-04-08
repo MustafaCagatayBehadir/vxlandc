@@ -5,11 +5,6 @@
             "tenant-service": [
                 {
                     "name": "0001_TURKCELL",
-                    "vrf": [
-                        {
-                            "name": "tcell-grt"
-                        }
-                    ],
                     "bridge-domain": [
                         {
                             "name": "BD-SERVICE-1",

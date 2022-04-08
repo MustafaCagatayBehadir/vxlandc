@@ -35,7 +35,7 @@ submodule cisco-dc-nano-services {
 
     identity vrf-configured {
         base ncs:plan-state;
-    }    
+    }
 
     identity route-policy-configured {
         base ncs:plan-state;
@@ -146,13 +146,8 @@ submodule cisco-dc-nano-services {
             ncs:state "cisco-dc:vrf-configured" {
                 ncs:create {
                     ncs:pre-condition {
-                        ncs:all {
-                            ncs:monitor  "$SERVICE/plan/component[type='ncs:self'][name='self']/state[name='cisco-dc:id-allocated']" {
-                                ncs:trigger-expr "status = 'reached'";
-                            }
-                            ncs:monitor "$SERVICE" {
-                                ncs:trigger-expr "approved = 'true'";
-                            }
+                        ncs:monitor  "$SERVICE/plan/component[type='ncs:self'][name='self']/state[name='cisco-dc:id-allocated']" {
+                            ncs:trigger-expr "status = 'reached'";
                         }
                     }
                     ncs:nano-callback;
@@ -173,7 +168,7 @@ submodule cisco-dc-nano-services {
                 ncs:component-type-ref "ncs:self";
             }
         }
-    }    
+    }
 
     ncs:plan-outline route-policy-config-nano-plan {
         description

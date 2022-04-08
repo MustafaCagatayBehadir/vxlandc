@@ -118,7 +118,6 @@ module cisco-dc {
             description
               "Datacenter route-policies for VXLAN-EVPN configurations.";
 
-            uses ncs:nano-plan-data;
             uses ncs:service-data;
             ncs:servicepoint route-policy-config-servicepoint;
 

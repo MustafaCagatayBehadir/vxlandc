@@ -87,7 +87,17 @@ submodule cisco-dc-vrf-config {
 
         list device {
             // tailf:hidden "Attach device defined in infra";
-            key "leaf-id";
+            key "tenant bridge-domain leaf-id";
+
+            leaf tenant {
+                tailf:info "Specify tenant name as Service";
+                type dc-string;
+            }
+
+            leaf bridge-domain {
+                tailf:info "Specify bridge domain name";
+                type dc-string;
+            }
 
             leaf leaf-id {
                 tailf:info "Define Leaf Node ID";
@@ -127,12 +137,6 @@ submodule cisco-dc-vrf-config {
             tailf:hidden "Just for convenience";
             type inet:as-number;
             tailf:default-ref "../../cisco-dc:fabric-parameters/cisco-dc:as-number";
-        }
-
-        leaf approved {
-            tailf:info "Approved will set to true if id is allocated";
-            type boolean;
-            default false;
         }
     }
 }

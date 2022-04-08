@@ -43,8 +43,7 @@ class Main(ncs.application.Application):
                                    'cisco-dc:vrf-configured', vrf_config_service.VrfServiceSelfComponent)
 
         # Route Policy Registration
-        self.register_nano_service('route-policy-config-servicepoint', 'ncs:self',
-                                   'cisco-dc:route-policy-configured', dc_routepolicy.DcRoutePolicySelfComponent)
+        self.register_service('route-policy-config-servicepoint', dc_routepolicy.DcRoutePolicyServiceCallback)
 
         ############################################################################################
 

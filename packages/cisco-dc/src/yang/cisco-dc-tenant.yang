@@ -41,11 +41,6 @@ submodule cisco-dc-tenant {
             type string;
             tailf:info "Tenant Description";
         }
-
-        leaf id {
-            tailf:hidden "dc";
-            type uint32;
-        }
     }
     grouping bridge-domain {
 
@@ -98,20 +93,6 @@ submodule cisco-dc-tenant {
                     enum trunk;
                 }
                 mandatory true;
-            }
-
-            list port {
-                tailf:info "Attach port defined in fabric";
-
-                key name;
-
-                leaf name {
-                    tailf:info "Port Name";
-                    type leafref {
-                        path "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../../../../fabric]/cisco-dc:port-configs[cisco-dc:name=current()/../../name]"
-                        + "/cisco-dc:port-config/cisco-dc:name";
-                    }
-                }
             }
         }
 

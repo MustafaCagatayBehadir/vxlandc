@@ -16,7 +16,7 @@
             },
             {
                 "id": 3101,
-                "name": "0001_TURKCELL:tcell-grt:vrf-vlan",
+                "name": "tcell-grt:vrf-vlan",
                 "vn-segment": 80000
             }
         ]

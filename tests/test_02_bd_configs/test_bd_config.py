@@ -17,6 +17,11 @@ class BDConfigsTests:
     @classmethod
     def setup_class(cls):
         cls.nso.patch(
+            payload=cls.payload_path / "test_setup_vrf_service_config.json",
+            path="",
+            params="",
+        )
+        cls.nso.patch(
             payload=cls.payload_path / "test_setup_fabric_service_config.json",
             path="",
             params="",

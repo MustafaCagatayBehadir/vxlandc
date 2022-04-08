@@ -4,7 +4,7 @@
     <?set AS_NUMBER = {string(as-number)}?>
     <devices xmlns="http://tail-f.com/ns/ncs">
         <?foreach {device}?>
-        <device>
+            <device>
             <name>{leaf-id}</name>
             <config>
                 <vlan xmlns="http://tail-f.com/ned/cisco-nx">

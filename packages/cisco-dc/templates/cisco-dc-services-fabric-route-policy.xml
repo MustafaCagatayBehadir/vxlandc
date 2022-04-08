@@ -1,0 +1,74 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+    <devices xmlns="http://tail-f.com/ns/ncs">
+        <?foreach {route-policy}?>
+            <?save-context route-policy?>
+            <?foreach {vrf-rp}?>
+                <device>
+                    <name>{leaf-id}</name>
+                    <?switch-context route-policy?>
+                    <config>
+                        <?foreach {match-and-set-group}?>
+                            <route-map xmlns="http://tail-f.com/ned/cisco-nx">
+                                <name>{profile}</name>
+                                    <sequence>{order}</sequence>
+                                    <operation>{action}</operation>
+                                    <match>
+                                        <?foreach {match-rules}?>
+                                            <?set MATCH_RULE = {string(name)}?>
+                                            <?set-context-node {deref(name)/..}?>
+                                            <?if {community}?>
+                                                <community>{community}</community>
+                                            <?elif {tag}?>
+                                                <tag>{tag}</tag>
+                                            <?else?>
+                                                <ip>
+                                                    <address>
+                                                        <prefix-list>{$MATCH_RULE}</prefix-list>
+                                                    </address>
+                                                </ip>
+                                            <?end?>
+                                        <?end?>
+                                    </match>
+                                    <set>
+                                        <?set-context-node {deref(set-rules)/..}?>
+                                        <?if {aspath-asn}?>
+                                            <as-path>
+                                                <prepend>
+                                                    <as-list>{aspath-asn/asn}</as-list>
+                                                    <last-as>{aspath-asn/lastnum}</last-as>
+                                                </prepend>
+                                            </as-path>
+                                        <?end?>
+                                        <?foreach {additional-community}?>
+                                            <community>
+                                                <community-number>{community}</community-number>
+                                                <?if {string(criteria) = 'append'}?>
+                                                    <additive />
+                                                <?end?>
+                                            </community>
+                                        <?end?>
+                                        <?if {nh-address}?>
+                                            <ip>
+                                                <next-hop>
+                                                    <next-hop-addr>{nh-address}</next-hop-addr>
+                                                </next-hop>
+                                            </ip>
+                                        <?end?>
+                                        <?if {local-preference}?>
+                                            <local-preference>{local-preference}</local-preference>
+                                        <?end?>
+                                        <?if {tag}?>
+                                            <tag>{tag}</tag>
+                                        <?end?>
+                                        <?if {weight}?>
+                                            <weight>{weight}</weight>
+                                        <?end?>
+                                    </set>
+                            </route-map>
+                        <?end?>
+                    </config>
+                </device>
+            <?end?>
+        <?end?>
+    </devices>
+</config-template>

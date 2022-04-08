@@ -1,0 +1,11 @@
+{
+    "cisco-dc:dc-site": [
+        {
+            "fabric": "avr-dss1-lbox-yaani-fabric",
+            "vrf-config": [
+                {
+                    "name": "tcell-grt"                }
+            ]
+        }
+    ]
+}

@@ -1,16 +1,19 @@
 import ncs
 
 
-class DcRoutePolicySelfComponent(ncs.application.NanoService):
-    """
-    NanoService callback handler for the self component of route-policy service.
-    """
-    @ncs.application.NanoService.create
-    def cb_nano_create(self, tctx, root, service, plan, component, state,
-                       proplist, component_proplist):
-        '''Nano service create callback'''
-        self.log.info('Nano create(state=', state, ')')
+class DcRoutePolicyServiceCallback(ncs.application.Service):
+    @ncs.application.Service.create
+    def cb_create(self, tctx, root, service, proplist):
+        self.log.info('Service create(service=', service._path, ')')
+        _create_route_map_config(service)
+        
 
-        # State functions
-        if state == 'cisco-dc:route-policy-configured':
-            pass
+def _create_route_map_config(route_map):
+    """Function to create route-map configuration
+
+    Args:
+        route-map: service node
+
+    """
+    template = ncs.template.Template(route_map)
+    template.apply('cisco-dc-services-fabric-route-policy')

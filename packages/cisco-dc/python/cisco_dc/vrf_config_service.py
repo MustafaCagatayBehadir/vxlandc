@@ -15,7 +15,7 @@ class VrfServiceSelfComponent(ncs.application.NanoService):
         # State functions
         if state == 'cisco-dc:id-allocated':
             _id_requested(root, service, tctx, self.log)
-        
+
         elif state == 'cisco-dc:vrf-configured':
             _configure_vrf(root, service, tctx, self.log)
 
@@ -89,14 +89,55 @@ def _set_hidden_leaves(root, vrf, id_parameters, log):
 
     """
     vrf.vlan_id, vrf.vni_id = id_parameters.values()
+    if vrf.direct.exists():
+        if vrf.direct.address_family_ipv4_policy:
+            dc_route_policies = root.cisco_dc__dc_site[vrf.site].dc_route_policy
+            for dc_route_policy in dc_route_policies:
+                if vrf.direct.address_family_ipv4_policy in dc_route_policy.route_policy:
+                    route_policy = dc_route_policy.route_policy[vrf.direct.address_family_ipv4_policy]
+                    for device in vrf.device:
+                        if (vrf.name, device.leaf_id) not in route_policy.vrf_rp:
+                            route_policy.vrf_rp.create(
+                                vrf.name, device.leaf_id)
+
+        if vrf.direct.address_family_ipv6_policy:
+            dc_route_policies = root.cisco_dc__dc_site[vrf.site].dc_route_policy
+            for dc_route_policy in dc_route_policies:
+                if vrf.direct.address_family_ipv6_policy in dc_route_policy.route_policy:
+                    route_policy = dc_route_policy.route_policy[vrf.direct.address_family_ipv6_policy]
+                    for device in vrf.device:
+                        if (vrf.name, device.leaf_id) not in route_policy.vrf_rp:
+                            route_policy.vrf_rp.create(
+                                vrf.name, device.leaf_id)
+
+    if vrf.static.exists():
+        if vrf.static.address_family_ipv4_policy:
+            dc_route_policies = root.cisco_dc__dc_site[vrf.site].dc_route_policy
+            for dc_route_policy in dc_route_policies:
+                if vrf.static.address_family_ipv4_policy in dc_route_policy.route_policy:
+                    route_policy = dc_route_policy.route_policy[vrf.static.address_family_ipv4_policy]
+                    for device in vrf.device:
+                        if (vrf.name, device.leaf_id) not in dc_route_policy.vrf_rp:
+                            route_policy.vrf_rp.create(
+                                vrf.name, device.leaf_id)
+
+        if vrf.static.address_family_ipv6_policy:
+            dc_route_policies = root.cisco_dc__dc_site[vrf.site].dc_route_policy
+            for dc_route_policy in dc_route_policies:
+                if vrf.static.address_family_ipv6_policy in dc_route_policy.route_policy:
+                    route_policy = dc_route_policy.route_policy[vrf.static.address_family_ipv6_policy]
+                    for device in vrf.device:
+                        if (vrf.name, device.leaf_id) not in dc_route_policy.vrf_rp:
+                            route_policy.vrf_rp.create(
+                                vrf.name, device.leaf_id)
 
 
-def _create_vrf_config(bd):
+def _create_vrf_config(vrf):
     """Function to create vrf configuration
 
     Args:
-        bd: service node
+        vrf: service node
 
     """
-    template = ncs.template.Template(bd)
+    template = ncs.template.Template(vrf)
     template.apply('cisco-dc-services-fabric-bd-l3vni-service')

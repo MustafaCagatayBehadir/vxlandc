@@ -32,17 +32,17 @@ submodule cisco-dc-routepolicy {
             type dc-string;
         }
 
-        leaf route-policy-type {
+        leaf dc-route-policy-type {
             tailf:info "Type of route-policy can be vrf or tenant";
             type enumeration {
                 enum vrf;
-                enum bridge-domain;
+                enum tenant;
             }
             mandatory true;
         }
 
         leaf tenant {
-            when "current()/../route-policy-type = 'bridge-domain'";
+            when "current()/../dc-route-policy-type = 'tenant'";
             tailf:info "Specify tenant name";
             type leafref {
                 tailf:no-leafref-check;
@@ -61,7 +61,7 @@ submodule cisco-dc-routepolicy {
                     tailf:info "Specify rule name";
                     type dc-string;
                 }
-                must "current()/../../route-policy-type = 'vrf' or count(current()/../../../dc-route-policy[rules-set/match-rules/name = current()/name][tenant = current()/../../tenant]) <= 1" {
+                must "current()/../../dc-route-policy-type = 'vrf' or count(current()/../../../dc-route-policy[rules-set/match-rules/name = current()/name][tenant = current()/../../tenant]) <= 1" {
                     error-message
                       "match-rules can not be shared with multiple dc-route-policy services of same tenant";
                 }
@@ -129,14 +129,15 @@ submodule cisco-dc-routepolicy {
                     tailf:info "Specify rule name";
                     type dc-string;
                 }
-                must "current()/../../route-policy-type = 'vrf' or count(current()/../../../dc-route-policy[rules-set/set-rules/name = current()/name][tenant = current()/../../tenant]) <= 1" {
+                must "current()/../../dc-route-policy-type = 'vrf' or count(current()/../../../dc-route-policy[rules-set/set-rules/name = current()/name][tenant = current()/../../tenant]) <= 1" {
                     error-message
                       "set-rules can not be shared with multiple dc-route-policy services of same tenant";
                 }
 
-                list aspath-asn {
+                container aspath-asn {
                     tailf:info "Specify AS Path";
-                    key asn;
+                    presence
+                      "presence if AS Path prepend is needed.";
 
                     leaf asn {
                         tailf:info "Set autonomous system (AS) number.";
@@ -200,7 +201,7 @@ submodule cisco-dc-routepolicy {
                 tailf:info "Specify route-policy name.";
                 type dc-string;
             }
-            must "current()/../route-policy-type = 'vrf' or count(current()/../../dc-route-policy[route-policy/profile = current()/profile][tenant = current()/../tenant]) <= 1" {
+            must "current()/../dc-route-policy-type = 'vrf' or count(current()/../../dc-route-policy[route-policy/profile = current()/profile][tenant = current()/../tenant]) <= 1" {
                 error-message
                   "route-policy can not be shared with multiple dc-route-policy services of same tenant";
             }
@@ -242,6 +243,21 @@ submodule cisco-dc-routepolicy {
                             path "../../../../cisco-dc:rules-set/cisco-dc:match-rules/cisco-dc:name";
                         }
                     }
+                }
+            }
+
+            list vrf-rp {
+                // tailf:hidden "Attach vrf defined in infra";
+                key "vrf leaf-id";
+
+                leaf vrf {
+                    tailf:info "Attach vrf name";
+                    type dc-string;
+                }
+
+                leaf leaf-id {
+                    tailf:info "Define Leaf Node ID";
+                    type string;
                 }
             }
         }

@@ -169,33 +169,4 @@ submodule cisco-dc-nano-services {
             }
         }
     }
-
-    ncs:plan-outline route-policy-config-nano-plan {
-        description
-          "Route Policy Service Plan";
-
-        ncs:component-type "ncs:self" {
-            ncs:state "ncs:init";
-
-            ncs:state "cisco-dc:route-policy-configured" {
-                ncs:create {
-                    ncs:nano-callback;
-                }
-            }
-
-            ncs:state "ncs:ready";
-        }
-    }
-
-    ncs:service-behavior-tree route-policy-config-servicepoint {
-        description
-          "Route Policy Service Behavior Tree";
-        ncs:plan-outline-ref "route-policy-config-nano-plan";
-
-        ncs:selector {
-            ncs:create-component "'self'" {
-                ncs:component-type-ref "ncs:self";
-            }
-        }
-    }
 }

@@ -6,7 +6,6 @@ from . import port_config_service
 from . import bridge_domain_service
 from . import vrf_config_service
 from . import validate_callback
-from . import dc_routepolicy
 
 # ---------------------------------------------
 # COMPONENT THREAD THAT WILL BE STARTED BY NCS.
@@ -41,9 +40,6 @@ class Main(ncs.application.Application):
 
         self.register_nano_service('vrf-config-servicepoint', 'ncs:self',
                                    'cisco-dc:vrf-configured', vrf_config_service.VrfServiceSelfComponent)
-
-        # Route Policy Registration
-        self.register_service('route-policy-config-servicepoint', dc_routepolicy.DcRoutePolicyServiceCallback)
 
         ############################################################################################
 

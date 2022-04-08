@@ -1,35 +1,39 @@
-<config-template xmlns="http://tail-f.com/ns/config/1.0">
+<config-template xmlns="http://tail-f.com/ns/config/1.0" servicepoint="route-policy-config-servicepoint">
     <devices xmlns="http://tail-f.com/ns/ncs">
+
         <?foreach {route-policy}?>
             <?save-context route-policy?>
-            <?foreach {vrf-rp}?>
-                <device>
-                    <name>{leaf-id}</name>
-                    <?switch-context route-policy?>
-                    <config>
-                        <?foreach {match-and-set-group}?>
-                            <route-map xmlns="http://tail-f.com/ned/cisco-nx">
-                                <name>{profile}</name>
-                                    <sequence>{order}</sequence>
-                                    <operation>{action}</operation>
-                                    <match>
-                                        <?foreach {match-rules}?>
-                                            <?set MATCH_RULE = {string(name)}?>
-                                            <?set-context-node {deref(name)/..}?>
-                                            <?if {community}?>
-                                                <community>{community}</community>
-                                            <?elif {tag}?>
-                                                <tag>{tag}</tag>
-                                            <?else?>
-                                                <ip>
-                                                    <address>
-                                                        <prefix-list>{$MATCH_RULE}</prefix-list>
-                                                    </address>
-                                                </ip>
-                                            <?end?>
+            <?set RPL = {string(profile)}?>
+            <device>
+                <name>{vrf-rp/leaf-id}</name>
+                <?switch-context route-policy?>
+                <config>
+                    <?foreach {match-and-set-group}?>
+                        <?save-context match-and-set-group?>
+                        <route-map xmlns="http://tail-f.com/ned/cisco-nx">
+                            <name>{$RPL}</name>
+                                <sequence>{order}</sequence>
+                                <operation>{action}</operation>
+                                <match>
+                                    <?foreach {match-rules}?>
+                                        <?set MATCH_RULE = {string(name)}?>
+                                        <?set-context-node {deref(name)/..}?>
+                                        <?if {community}?>
+                                            <community>{community}</community>
+                                        <?elif {tag}?>
+                                            <tag>{tag}</tag>
+                                        <?else?>
+                                            <ip>
+                                                <address>
+                                                    <prefix-list>{$MATCH_RULE}</prefix-list>
+                                                </address>
+                                            </ip>
                                         <?end?>
-                                    </match>
-                                    <set>
+                                    <?end?>
+                                </match>
+                                <set>
+                                    <?switch-context match-and-set-group?>
+                                    <?if {set-rules}?>
                                         <?set-context-node {deref(set-rules)/..}?>
                                         <?if {aspath-asn}?>
                                             <as-path>
@@ -63,12 +67,12 @@
                                         <?if {weight}?>
                                             <weight>{weight}</weight>
                                         <?end?>
-                                    </set>
-                            </route-map>
-                        <?end?>
-                    </config>
-                </device>
-            <?end?>
+                                    <?end?>
+                                </set>
+                        </route-map>
+                    <?end?>
+                </config>
+            </device>
         <?end?>
     </devices>
 </config-template>

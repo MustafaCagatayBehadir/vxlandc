@@ -117,7 +117,7 @@ def _set_hidden_leaves(root, vrf, id_parameters, log):
                 if vrf.static.address_family_ipv4_policy in dc_route_policy.route_policy:
                     route_policy = dc_route_policy.route_policy[vrf.static.address_family_ipv4_policy]
                     for device in vrf.device:
-                        if (vrf.name, device.leaf_id) not in dc_route_policy.vrf_rp:
+                        if (vrf.name, device.leaf_id) not in route_policy.vrf_rp:
                             route_policy.vrf_rp.create(
                                 vrf.name, device.leaf_id)
 
@@ -127,7 +127,7 @@ def _set_hidden_leaves(root, vrf, id_parameters, log):
                 if vrf.static.address_family_ipv6_policy in dc_route_policy.route_policy:
                     route_policy = dc_route_policy.route_policy[vrf.static.address_family_ipv6_policy]
                     for device in vrf.device:
-                        if (vrf.name, device.leaf_id) not in dc_route_policy.vrf_rp:
+                        if (vrf.name, device.leaf_id) not in route_policy.vrf_rp:
                             route_policy.vrf_rp.create(
                                 vrf.name, device.leaf_id)
 

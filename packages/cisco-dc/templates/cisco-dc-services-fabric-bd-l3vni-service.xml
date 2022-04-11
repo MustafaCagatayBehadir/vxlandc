@@ -1,4 +1,5 @@
 <config-template xmlns="http://tail-f.com/ns/config/1.0">
+    <?save-context service?>
     <?set VRF = {string(name)}?>
     <?set VRF_VLAN_NAME = {concat($VRF, ':', 'vrf-vlan')}?>
     <?set AS_NUMBER = {string(as-number)}?>
@@ -7,17 +8,18 @@
             <device>
             <name>{leaf-id}</name>
             <config>
+                <?switch-context service?>
                 <vlan xmlns="http://tail-f.com/ned/cisco-nx">
                     <vlan-list>
-                        <id>{vrf-vlan}</id>
+                        <id>{vlan-id}</id>
                         <name>{$VRF_VLAN_NAME}</name>
-                        <vn-segment>{l3vni}</vn-segment>
+                        <vn-segment>{vni-id}</vn-segment>
                     </vlan-list>
                 </vlan>
                 <vrf xmlns="http://tail-f.com/ned/cisco-nx">
                     <context>
                         <id>{$VRF}</id>
-                        <vni>{l3vni}</vni>
+                        <vni>{vni-id}</vni>
                         <rd>auto</rd>
                         <address-family>
                             <ipv4>
@@ -66,9 +68,20 @@
                                     <ibgp>2</ibgp>
                                 </maximum-paths>
                                 <redistribute>
-                                    <direct>
-                                        <route-map>fabric-rmap-redist-subnet</route-map>
-                                    </direct>
+                                    <?if {direct}?>
+                                        <direct>
+                                            <?if {direct/address-family-ipv4-policy}?>
+                                                <route-map>{direct/address-family-ipv4-policy}</route-map>
+                                            <?end?>
+                                        </direct>
+                                    <?end?>
+                                    <?if {static}?>
+                                        <static>
+                                            <?if {static/address-family-ipv4-policy}?>
+                                                <route-map>{static/address-family-ipv4-policy}</route-map>
+                                            <?end?>
+                                        </static>                                    
+                                    <?end?>
                                 </redistribute>
                             </address-family>
                             <address-family>
@@ -81,9 +94,20 @@
                                     <ibgp>2</ibgp>
                                 </maximum-paths>
                                 <redistribute>
-                                    <direct>
-                                        <route-map>fabric-rmap-redist-subnet</route-map>
-                                    </direct>
+                                    <?if {direct}?>
+                                        <direct>
+                                            <?if {direct/address-family-ipv6-policy}?>
+                                                <route-map>{direct/address-family-ipv6-policy}</route-map>
+                                            <?end?>
+                                        </direct>
+                                    <?end?>
+                                    <?if {static}?>
+                                        <static>
+                                            <?if {static/address-family-ipv6-policy}?>
+                                                <route-map>{static/address-family-ipv6-policy}</route-map>
+                                            <?end?>
+                                        </static>                                    
+                                    <?end?>
                                 </redistribute>
                             </address-family>
                         </vrf>
@@ -91,7 +115,7 @@
                 </router>
                 <interface xmlns="http://tail-f.com/ned/cisco-nx">
                     <Vlan>
-                        <name>{vrf-vlan}</name>
+                        <name>{vlan-id}</name>
                         <vrf>
                             <member>{$VRF}</member>
                         </vrf>
@@ -109,7 +133,7 @@
                         <name>1</name>
                         <member>
                             <vni>
-                                <id>{l3vni}</id>
+                                <id>{vni-id}</id>
                                 <associate-vrf />
                             </vni>
                         </member>

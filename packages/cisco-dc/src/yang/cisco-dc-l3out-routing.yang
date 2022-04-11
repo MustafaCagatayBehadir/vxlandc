@@ -35,10 +35,120 @@ submodule cisco-dc-l3out-routing {
             list bgp {
                 tailf:info "Define bgp routes";
                 key peer-address;
-
                 leaf peer-address {
-                    tailf:info "Specify peer address value";
                     type inet:ip-address;
+                }
+
+                container source-interface {
+                    tailf:info "Attach source interface connection\n"
+                    + "it can be ether connection OR lookback";
+                    choice interface {
+                        mandatory true;
+                        case connection {
+                            leaf external-connection {
+                                tailf:info "attach external connection";
+                                type empty;
+                            }
+                        }
+                        case loopback {
+                            container loopback {
+                                leaf id {
+                                    tailf:info "Specify loopback id";
+                                    type uint8 {
+                                        range 100..200;
+                                    }
+                                }
+
+                                leaf address {
+                                    tailf:info "A.B.C.D/L;;Prefix or X:X::X/L;;Prefix for L3 Loopback Subnet";
+                                    type tailf:ip-address-and-prefix-length;
+                                }
+
+                                leaf leaf-id {
+                                    tailf:info "Specify device name";
+                                    type leafref {
+                                        path "/ncs:devices/ncs:device/ncs:name";
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                leaf remote-as {
+                    tailf:info "Specify remote asn number";
+                    type uint32;
+                }
+
+                leaf local-as {
+                    tailf:info "Specify local asn number";
+                    type uint32;
+                }
+
+                leaf-list peer-af-controls {
+                    tailf:info "Peer AF controls";
+                    type enumeration {
+                        enum send-com;
+                        enum send-ext-com;
+                        enum nh-self;
+                        enum dis-peer-as-check;
+                        enum allow-self-as;
+                        enum as-override;
+                    }
+                }
+
+                leaf peer-control {
+                    tailf:info "Peer control";
+                    type enumeration {
+                        enum dis-conn-check;
+                        enum bfd;
+                    }
+                }
+
+                leaf password {
+                    tailf:info "Specify the BGP password";
+                    type tailf:aes-cfb-128-encrypted-string;
+                }
+
+                leaf weight {
+                    tailf:info "Specify weight";
+                    type uint16;
+                }
+
+                leaf ttl {
+                    tailf:info "Specify ttl value";
+                    type uint8;
+                }
+
+                list peer-route-policy {
+                    tailf:info "Attach route policy name, please make sure, its defined under dc-route-policy";
+                    key direction;
+
+                    leaf direction {
+                        tailf:info "Define direction on route-policy";
+                        type enumeration {
+                            enum "import";
+                            enum "export";
+                        }
+                    }
+
+                    leaf profile {
+                        type string;
+                    }
+                }
+
+                container timers {
+                    tailf:info "Specify keepalive and hold timers";
+                    presence
+                      true;
+                    leaf keepalive {
+                        type uint16;
+                        default 8;
+                    }
+                    leaf holdtime {
+                        type uint16;
+                        default 24;
+                    }
                 }
             }
         }

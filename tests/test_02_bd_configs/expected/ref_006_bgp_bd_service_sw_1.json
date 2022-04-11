@@ -11,11 +11,6 @@
                     },
                     "maximum-paths": {
                         "ibgp": 2
-                    },
-                    "redistribute": {
-                        "direct": {
-                            "route-map": "fabric-rmap-redist-subnet"
-                        }
                     }
                 },
                 {
@@ -26,11 +21,6 @@
                     },
                     "maximum-paths": {
                         "ibgp": 2
-                    },
-                    "redistribute": {
-                        "direct": {
-                            "route-map": "fabric-rmap-redist-subnet"
-                        }
                     }
                 }
             ]

@@ -123,6 +123,7 @@ submodule cisco-dc-tenant {
             leaf vlan {
                 tailf:info "Define vlan value";
                 type vlan;
+                tailf:default-ref "../../cisco-dc:vlan-id";
             }
         }
 
@@ -153,6 +154,7 @@ submodule cisco-dc-tenant {
             leaf vlan {
                 tailf:info "Define vlan value";
                 type vlan;
+                tailf:default-ref "../../cisco-dc:vlan-id";
             }
         }
 
@@ -182,6 +184,7 @@ submodule cisco-dc-tenant {
             leaf vlan {
                 tailf:info "Define vlan value";
                 type vlan;
+                tailf:default-ref "../../cisco-dc:vlan-id";
             }
         }
 
@@ -197,11 +200,13 @@ submodule cisco-dc-tenant {
             leaf network-vlan {
                 tailf:info "Define network vlan value";
                 type vlan;
+                tailf:default-ref "../../cisco-dc:vlan-id";
             }
 
             leaf l2vni {
                 tailf:info "L2 Vni id is allocated by resource-manager";
                 type vxlan-id;
+                tailf:default-ref "../../cisco-dc:vni-id";
             }
         }
 
@@ -231,6 +236,16 @@ submodule cisco-dc-tenant {
                 path "../../../cisco-dc:vrf-config/cisco-dc:name";
             }
             mandatory true;
+        }
+
+        leaf vlan-id {
+            tailf:hidden "Just for convenience";
+            type vlan;
+        }
+
+        leaf vni-id {
+            tailf:hidden "Just for convenience";
+            type vxlan-id;
         }
 
         leaf site {

@@ -1,6 +1,5 @@
 <config-template xmlns="http://tail-f.com/ns/config/1.0" servicepoint="route-policy-config-servicepoint">
     <devices xmlns="http://tail-f.com/ns/ncs">
-
         <?foreach {route-policy}?>
             <?save-context route-policy?>
             <?set RPL = {string(profile)}?>

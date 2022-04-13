@@ -129,6 +129,34 @@ def get_vpc_nodes_from_bd(root, bd, vlan_dict):
     return [node_group.node_1, node_group.node_2]
 
 
+def getIpAddress(addr):
+    """Return the Ip part of a 'Ip/Net' string.
+
+    Args:
+        addr: IPv4 or IPv6 address with prefix length
+
+    Returns:
+        String: Ipv4 or IPv6 address
+
+    """
+    parts = addr.split('/')
+    return parts[0]
+
+
+def getIpPrefix(addr):
+    """Return the Net part of a 'Ip/Net' string.
+
+    Args:
+        addr: IPv4 or IPv6 address with prefix length
+
+    Returns:
+        String: Prefix length    
+
+    """
+    parts = addr.split('/')
+    return parts[1]
+
+
 def is_node_vpc(root, port, port_parameters):
     """Function to check if node is Standalone or vPC
 

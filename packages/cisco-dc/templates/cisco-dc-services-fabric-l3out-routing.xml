@@ -1,0 +1,108 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+    <?set VRF = {string(vrf)}?>
+    <devices xmlns="http://tail-f.com/ns/ncs">
+        <?foreach {routing/bgp}?>
+            <?save-context bgp?>
+            <?if {source-interface/loopback}?>
+                <?set DESCRIPTION = {concat($VRF, ':', 'eBGP-Extension-Source-Interface')}?>
+                <?foreach {source-interface/loopback}?>
+                    <?set UPDATE_SOURCE = {concat('loopback', string(id))}?>
+                    <device>
+                        <name>{node}</name>
+                        <config>
+                            <interface xmlns="http://tail-f.com/ned/cisco-nx">
+                                <loopback>
+                                    <name>{id}</name>
+                                    <description>{$DESCRIPTION}</description>
+                                    <vrf>
+                                        <member>{$VRF}</member>
+                                    </vrf>
+                                    <ip>
+                                        <address>
+                                            <ipaddr>{address}</ipaddr>
+                                        </address>
+                                    </ip>
+                                </loopback>
+                            </interface>
+                            <router xmlns="http://tail-f.com/ned/cisco-nx">
+                                <?switch-context bgp?>
+                                <bgp>
+                                    <id>{as-number}</id>
+                                    <vrf>
+                                        <name>{$VRF}</name>
+                                        <neighbor>
+                                            <id>{peer-address}</id>
+                                            <inner-remote-as>
+                                                <remote-as>{remote-as}</remote-as>
+                                            </inner-remote-as>
+                                            <ebgp-multihop>{ttl}</ebgp-multihop>
+                                            <update-source>{$UPDATE_SOURCE}</update-source>
+                                            <?if {timers}?>
+                                                <timers>
+                                                    <keepalive>{timers/keepalive}</keepalive>
+                                                    <holdtime>{timers/holdtime}</holdtime>
+                                                </timers>
+                                            <?end?>
+                                            <address-family>
+                                                <proto>ipv4</proto>
+                                                <type>unicast</type>
+                                            </address-family>
+                                        </neighbor>
+                                    </vrf>
+                                </bgp>
+                            </router>
+                        </config>
+                    </device>
+                <?end?>
+            <?else?>
+                <?set-context-node {source-interface/fabric-external-connection}?>
+                <?set DESCRIPTION = {concat($VRF, ':', 'eBGP-Extension-Source-Interface')}?>
+                <?if {string(connection) = 'uplink-to-dci-gw-01'}?>
+                    <?set DESCRIPTION = {concat($DESCRIPTION, ':', 'DCPE-01')}?>
+                <?else?>
+                    <?set DESCRIPTION = {concat($DESCRIPTION, ':', 'DCPE-02')}?>
+                <?end?>
+                <device>
+                    <name>{node}</name>
+                    <config>
+                        <interface xmlns="http://tail-f.com/ned/cisco-nx">
+                            <port-channel>
+                                <name>{port-channel-id}.{vlan}</name>
+                                <description>{$DESCRIPTION}</description>
+                                <vrf>
+                                    <member>{$VRF}</member>
+                                </vrf>
+                                <ip>
+                                    <address>
+                                        <ipaddr>{address}</ipaddr>
+                                    </address>
+                                </ip>
+                                <mtu>9216</mtu>
+                                <encapsulation>
+                                    <dot1Q>
+                                        <vlan-id>{vlan}</vlan-id>
+                                    </dot1Q>
+                                </encapsulation>
+                            </port-channel>
+                        </interface>
+                        <router xmlns="http://tail-f.com/ned/cisco-nx">
+                            <?switch-context bgp?>
+                            <bgp>
+                                <id>{as-number}</id>
+                                <vrf>
+                                    <name>{$VRF}</name>
+                                    <neighbor>
+                                        <id>{peer-address}</id>
+                                        <inherit>
+                                            <peer>{source-interface/fabric-external-connection/peer-template}</peer>
+                                        </inherit>
+                                    </neighbor>
+                                </vrf>
+                            </bgp>
+                        </router>
+                    </config>
+                </device>
+            <?end?>
+        <?end?>
+    </devices>
+</config-template>

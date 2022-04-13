@@ -56,12 +56,22 @@ submodule cisco-dc-vrf-config {
                 type leafref {
                     path "../../../cisco-dc:dc-route-policy/cisco-dc:route-policy/cisco-dc:profile";
                 }
+                must "deref(current())/../../dc-route-policy-type = 'vrf'" {
+                    tailf:dependency ".";
+                    error-message
+                      "Route policy type should be vrf.";
+                }
             }
 
             leaf address-family-ipv6-policy {
                 tailf:info "Attach route policy name under ipv6 address-family";
                 type leafref {
                     path "../../../cisco-dc:dc-route-policy/cisco-dc:route-policy/cisco-dc:profile";
+                }
+                must "deref(current())/../../dc-route-policy-type = 'vrf'" {
+                    tailf:dependency ".";
+                    error-message
+                      "Route policy type should be vrf.";
                 }
             }
         }
@@ -75,12 +85,22 @@ submodule cisco-dc-vrf-config {
                 type leafref {
                     path "../../../cisco-dc:dc-route-policy/cisco-dc:route-policy/cisco-dc:profile";
                 }
+                must "deref(current())/../../dc-route-policy-type = 'vrf'" {
+                    tailf:dependency ".";
+                    error-message
+                      "Route policy type should be vrf.";
+                }
             }
 
             leaf address-family-ipv6-policy {
                 tailf:info "Attach route policy name under ipv6 address-family";
                 type leafref {
                     path "../../../cisco-dc:dc-route-policy/cisco-dc:route-policy/cisco-dc:profile";
+                }
+                must "deref(current())/../../dc-route-policy-type = 'vrf'" {
+                    tailf:dependency ".";
+                    error-message
+                      "Route policy type should be vrf.";
                 }
             }
         }

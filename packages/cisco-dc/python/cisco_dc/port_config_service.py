@@ -23,6 +23,7 @@ class PortServiceSelfComponent(ncs.application.NanoService):
 
         elif state == 'cisco-dc:port-configured':
             _configure_port(root, service, tctx, self.log)
+            _apply_template(service)
 
 
 def _id_requested(root, port, tctx, log):
@@ -65,7 +66,6 @@ def _configure_port(root, port, tctx, log):
     _create_service_parameters(
         root, port, tctx, id_parameters, log)
     _set_hidden_leaves(root, port, tctx, id_parameters, log)
-    _create_port_config(port)
 
 
 def _create_service_parameters(root, port, tctx, id_parameters, log):
@@ -151,7 +151,7 @@ def _set_hidden_leaves(root, port, tctx, id_parameters, log):
         log.info(f'Bridge-domain {bd.name} is activated by port {port.name}')
 
 
-def _create_port_config(port):
+def _apply_template(port):
     """Function to create port configuration
 
     Args:

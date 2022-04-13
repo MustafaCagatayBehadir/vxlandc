@@ -1,5 +1,6 @@
 import ncs
 from .resource_manager import id_allocator
+from .l3out_routing import _configure_l3out_routing
 from . import utils
 
 
@@ -19,6 +20,8 @@ class BridgeDomainServiceSelfComponent(ncs.application.NanoService):
 
         elif state == 'cisco-dc:bridge-domain-configured':
             _configure_bridge_domain(root, service, tctx, self.log)
+            _configure_l3out_routing(root, service, tctx, self.log)
+            _apply_template(service)
 
 
 def _id_requested(root, bd, tctx, log):
@@ -57,7 +60,6 @@ def _configure_bridge_domain(root, bd, tctx, log):
     _create_service_parameters(
         root, bd, tctx, id_parameters, log)
     _set_hidden_leaves(root, bd, id_parameters, log)
-    _create_bd_config(bd)
 
 
 def _create_service_parameters(root, bd, tctx, id_parameters, log):
@@ -90,6 +92,7 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
         log: log object (self.log)
 
     """
+    bd.vlan_id, bd.vni_id = id_parameters.values()
     port_groups = root.cisco_dc__dc_site[bd.site].port_configs
     attached_port_groups = bd.port_group
     for attached_port_group in attached_port_groups:
@@ -113,8 +116,7 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
                     sa.vlan = id_parameters['network-vlan']
 
                 if node not in bd.device:
-                    leaf = bd.device.create(node)
-                    leaf.network_vlan, leaf.l2vni = id_parameters.values()
+                    bd.device.create(node)
 
                 if bd.vrf:
                     vrf = root.cisco_dc__dc_site[bd.site].vrf_config[bd.vrf]
@@ -136,8 +138,7 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
                     direct_pc.vlan = id_parameters['network-vlan']
 
                 if node not in bd.device:
-                    leaf = bd.device.create(node)
-                    leaf.network_vlan, leaf.l2vni = id_parameters.values()
+                    bd.device.create(node)
 
                 if bd.vrf:
                     vrf = root.cisco_dc__dc_site[bd.site].vrf_config[bd.vrf]
@@ -169,8 +170,7 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
                     virtual_pc.vlan = id_parameters['network-vlan']
 
                 if node_1 not in bd.device:
-                    leaf = bd.device.create(node_1)
-                    leaf.network_vlan, leaf.l2vni = id_parameters.values()
+                    bd.device.create(node_1)
 
                 if bd.vrf:
                     vrf = root.cisco_dc__dc_site[bd.site].vrf_config[bd.vrf]
@@ -178,8 +178,7 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
                         vrf.device.create(bd.tenant, bd.name, node_1)
 
                 if node_2 not in bd.device:
-                    leaf = bd.device.create(node_2)
-                    leaf.network_vlan, leaf.l2vni = id_parameters.values()
+                    bd.device.create(node_2)
 
                 if bd.vrf:
                     vrf = root.cisco_dc__dc_site[bd.site].vrf_config[bd.vrf]
@@ -189,8 +188,8 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
                 f'Port {port.name} bridge-bomain {bd.name} hidden configuration is applied.')
 
 
-def _create_bd_config(bd):
-    """Function to create bridge-domain configuration
+def _apply_template(bd):
+    """Function to apply configurations to devices
 
     Args:
         bd: service node
@@ -199,3 +198,4 @@ def _create_bd_config(bd):
     template = ncs.template.Template(bd)
     template.apply('cisco-dc-services-fabric-bd-l2vni-service')
     template.apply('cisco-dc-services-fabric-bd-vlan-service')
+    template.apply('cisco-dc-services-fabric-l3out-routing')

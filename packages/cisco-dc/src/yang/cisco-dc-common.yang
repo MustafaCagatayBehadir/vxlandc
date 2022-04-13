@@ -48,6 +48,12 @@ submodule cisco-dc-common {
           "Typedef for VxLAN ID.";
     }
 
+    typedef loopback-id {
+        type uint8 {
+            range 100..200;
+        }
+    }
+
     typedef route-target {
         type string {
             pattern

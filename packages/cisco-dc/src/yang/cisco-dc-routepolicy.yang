@@ -45,7 +45,6 @@ submodule cisco-dc-routepolicy {
             when "current()/../dc-route-policy-type = 'tenant'";
             tailf:info "Specify tenant name";
             type leafref {
-                tailf:no-leafref-check;
                 path "/cisco-dc:dc-site[fabric=current()/../../fabric]/cisco-dc:tenant-service/cisco-dc:name";
             }
             mandatory true;

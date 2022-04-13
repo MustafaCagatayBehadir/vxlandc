@@ -18,6 +18,7 @@ class VrfServiceSelfComponent(ncs.application.NanoService):
 
         elif state == 'cisco-dc:vrf-configured':
             _configure_vrf(root, service, tctx, self.log)
+            _apply_template(service)
 
 
 def _id_requested(root, vrf, tctx, log):
@@ -55,7 +56,6 @@ def _configure_vrf(root, vrf, tctx, log):
     id_parameters = dict()
     _create_service_parameters(root, vrf, tctx, id_parameters, log)
     _set_hidden_leaves(root, vrf, id_parameters, log)
-    _create_vrf_config(vrf)
 
 
 def _create_service_parameters(root, vrf, tctx, id_parameters, log):
@@ -132,7 +132,7 @@ def _set_hidden_leaves(root, vrf, id_parameters, log):
                                 vrf.name, device.leaf_id)
 
 
-def _create_vrf_config(vrf):
+def _apply_template(vrf):
     """Function to create vrf configuration
 
     Args:

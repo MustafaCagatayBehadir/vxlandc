@@ -32,8 +32,8 @@ def _set_hidden_leaves(root, bd, log):
                 l3out = bgp.source_interface.fabric_external_connection
                 connections = root.cisco_dc__dc_site[bd.site].connections
 
-                if (bd.tenant, bd.name, l3out.node) not in vrf.device:
-                    vrf.device.create(bd.tenant, bd.name, l3out.node)
+                if (bd._path, l3out.node) not in vrf.device:
+                    vrf.device.create(bd._path, l3out.node)
 
                 if l3out.connection.string == 'uplink-to-dci-gw-01':
                     l3out.port_channel_id = connections.uplink_to_dci_gw_01

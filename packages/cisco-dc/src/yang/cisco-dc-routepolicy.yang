@@ -246,7 +246,7 @@ submodule cisco-dc-routepolicy {
             }
 
             list vrf-rp {
-                // tailf:hidden "Attach vrf defined in infra";
+                tailf:hidden "Attach vrf defined in infra";
                 key "vrf leaf-id";
 
                 leaf vrf {

@@ -106,17 +106,12 @@ submodule cisco-dc-vrf-config {
         }
 
         list device {
-            // tailf:hidden "Attach device defined in infra";
-            key "tenant bridge-domain leaf-id";
+            tailf:hidden "Attach device defined in infra";
+            key "kp leaf-id";
 
-            leaf tenant {
-                tailf:info "Specify tenant name as Service";
-                type dc-string;
-            }
-
-            leaf bridge-domain {
-                tailf:info "Specify bridge domain name";
-                type dc-string;
+            leaf kp {
+                tailf:info "Attach birdge-domain keypath";
+                type string;
             }
 
             leaf leaf-id {

@@ -13,12 +13,24 @@
                     <Ethernet>
                         <name>{node-port}</name>
                         <?switch-context service?>
-                        <enable>
-                            <switchport>true</switchport>
-                        </enable>
                         <switchport>
+                            <mode>{mode}</mode>
                             <?if {mode = 'trunk'}?>
-                                <mode>trunk</mode>
+                                <?foreach {bd-vlan}?>
+                                    <trunk>
+                                        <allowed>
+                                            <vlan>
+                                                <ids>{vlan}</ids>
+                                            </vlan>
+                                        </allowed>
+                                    </trunk>                                
+                                <?end?>
+                            <?else?>
+                                <?foreach {bd-vlan}?>
+                                    <access>
+                                        <vlan>{vlan}</vlan>
+                                    </access>
+                                <?end?>
                             <?end?>
                         </switchport>
                         <?if {shutdown}?>
@@ -77,11 +89,25 @@
                     <port-channel>
                         <name>{allocated-port-channel-id}</name>
                         <?switch-context service?>
-                        <enable>
-                            <switchport>true</switchport>
-                        </enable>
                         <switchport>
                             <mode>{mode}</mode>
+                            <?if {mode = 'trunk'}?>
+                                <?foreach {bd-vlan}?>
+                                    <trunk>
+                                        <allowed>
+                                            <vlan>
+                                                <ids>{vlan}</ids>
+                                            </vlan>
+                                        </allowed>
+                                    </trunk>                                
+                                <?end?>
+                            <?else?>
+                                <?foreach {bd-vlan}?>
+                                    <access>
+                                        <vlan>{vlan}</vlan>
+                                    </access>
+                                <?end?>
+                            <?end?>
                         </switchport>
                         <?if {shutdown}?>
                             <shutdown/>
@@ -154,11 +180,25 @@
                     <port-channel>
                         <name>{allocated-port-channel-id}</name>
                         <?switch-context service?>
-                        <enable>
-                            <switchport>true</switchport>
-                        </enable>
                         <switchport>
                             <mode>{mode}</mode>
+                            <?if {mode = 'trunk'}?>
+                                <?foreach {bd-vlan}?>
+                                    <trunk>
+                                        <allowed>
+                                            <vlan>
+                                                <ids>{vlan}</ids>
+                                            </vlan>
+                                        </allowed>
+                                    </trunk>                                
+                                <?end?>
+                            <?else?>
+                                <?foreach {bd-vlan}?>
+                                    <access>
+                                        <vlan>{vlan}</vlan>
+                                    </access>
+                                <?end?>
+                            <?end?>
                         </switchport>
                         <?if {shutdown}?>
                             <shutdown/>

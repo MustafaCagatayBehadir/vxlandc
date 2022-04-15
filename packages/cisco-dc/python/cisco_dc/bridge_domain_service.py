@@ -101,91 +101,37 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
         if (bd._path) not in port_group.bd_service:
             port_group.bd_service.create(bd._path)
         for port in ports:
+            if (bd._path, bd.vlan_id) not in port.bd_vlan:
+                port.bd_vlan.create(bd._path, bd.vlan_id)
+
             if port.type == 'ethernet':
                 eth = port.ethernet
                 node = eth.node
-                if (node, port.name) not in bd.port:
-                    sa = bd.port.create(node, port.name)
-                    sa.interface_id = eth.node_port
-                    sa.mode = port.mode
-                    sa.vlan = id_parameters['network-vlan']
-                else:
-                    sa = bd.port[node, port.name]
-                    sa.interface_id = eth.node_port
-                    sa.mode = port.mode
-                    sa.vlan = id_parameters['network-vlan']
-
-                if node not in bd.device:
-                    bd.device.create(node)
-
-                if bd.vrf:
-                    vrf = root.cisco_dc__dc_site[bd.site].vrf_config[bd.vrf]
-                    if (bd.tenant, bd.name, node) not in vrf.device:
-                        vrf.device.create(bd.tenant, bd.name, node)
+                if (port._path, node) not in bd.device:
+                    bd.device.create(port._path, node)
 
             elif port.type == 'port-channel':
                 pc = port.port_channel
                 node = pc.node
-                if (node, port.name) not in bd.direct_pc:
-                    direct_pc = bd.direct_pc.create(node, port.name)
-                    direct_pc.port_channel_id = pc.allocated_port_channel_id
-                    direct_pc.mode = port.mode
-                    direct_pc.vlan = id_parameters['network-vlan']
-                else:
-                    direct_pc = bd.direct_pc[node, port.name]
-                    direct_pc.port_channel_id = pc.allocated_port_channel_id
-                    direct_pc.mode = port.mode
-                    direct_pc.vlan = id_parameters['network-vlan']
-
-                if node not in bd.device:
-                    bd.device.create(node)
-
-                if bd.vrf:
-                    vrf = root.cisco_dc__dc_site[bd.site].vrf_config[bd.vrf]
-                    if (bd.tenant, bd.name, node) not in vrf.device:
-                        vrf.device.create(bd.tenant, bd.name, node)
+                if (port._path, node) not in bd.device:
+                    bd.device.create(port._path, node)
 
             elif port.type == 'vpc-port-channel':
                 vpc = port.vpc_port_channel
                 node_1, node_2 = utils.get_vpc_nodes_from_port(root, port)
-                if (node_1, port.name) not in bd.virtual_pc:
-                    virtual_pc = bd.virtual_pc.create(node_1, port.name)
-                    virtual_pc.port_channel_id = vpc.allocated_port_channel_id
-                    virtual_pc.mode = port.mode
-                    virtual_pc.vlan = id_parameters['network-vlan']
-                else:
-                    virtual_pc = bd.virtual_pc[node_1, port.name]
-                    virtual_pc.port_channel_id = vpc.allocated_port_channel_id
-                    virtual_pc.mode = port.mode
-                    virtual_pc.vlan = id_parameters['network-vlan']
+                if (port._path, node_1) not in bd.device:
+                    bd.device.create(port._path, node_1)
+                if (port._path, node_2) not in bd.device:
+                    bd.device.create(port._path, node_2)
+    log.info(
+        f'Port {port.name} bridge-bomain {bd.name} hidden configuration is applied.')
 
-                if (node_2, port.name) not in bd.virtual_pc:
-                    virtual_pc = bd.virtual_pc.create(node_2, port.name)
-                    virtual_pc.mode = port.mode
-                    virtual_pc.vlan = id_parameters['network-vlan']
-                else:
-                    virtual_pc = bd.virtual_pc[node_2, port.name]
-                    virtual_pc.port_channel_id = vpc.allocated_port_channel_id
-                    virtual_pc.mode = port.mode
-                    virtual_pc.vlan = id_parameters['network-vlan']
-
-                if node_1 not in bd.device:
-                    bd.device.create(node_1)
-
-                if bd.vrf:
-                    vrf = root.cisco_dc__dc_site[bd.site].vrf_config[bd.vrf]
-                    if (bd.tenant, bd.name, node_1) not in vrf.device:
-                        vrf.device.create(bd.tenant, bd.name, node_1)
-
-                if node_2 not in bd.device:
-                    bd.device.create(node_2)
-
-                if bd.vrf:
-                    vrf = root.cisco_dc__dc_site[bd.site].vrf_config[bd.vrf]
-                    if (bd.tenant, bd.name, node_2) not in vrf.device:
-                        vrf.device.create(bd.tenant, bd.name, node_2)
-            log.info(
-                f'Port {port.name} bridge-bomain {bd.name} hidden configuration is applied.')
+    if bd.vrf:
+        vrf = root.cisco_dc__dc_site[bd.site].vrf_config[bd.vrf]
+        for device in bd.device:
+            if (bd._path, device.leaf_id) not in vrf.device:
+                vrf.device.create(bd._path, device.leaf_id)
+        log.info(f'Vrf {bd.vrf} is activated by bridge-domain {bd.name}')
 
 
 def _apply_template(bd):
@@ -197,5 +143,4 @@ def _apply_template(bd):
     """
     template = ncs.template.Template(bd)
     template.apply('cisco-dc-services-fabric-bd-l2vni-service')
-    template.apply('cisco-dc-services-fabric-bd-vlan-service')
     template.apply('cisco-dc-services-fabric-l3out-routing')

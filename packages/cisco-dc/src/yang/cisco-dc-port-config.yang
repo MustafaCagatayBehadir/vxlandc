@@ -40,7 +40,7 @@ submodule cisco-dc-port-config {
         }
 
         list bd-service {
-            // tailf:hidden "Attach bridge domain defined in infra";
+            tailf:hidden "Attach bridge domain defined in infra";
             key "kp";
 
             leaf kp {
@@ -260,6 +260,22 @@ submodule cisco-dc-port-config {
                     }
                 }
             }
+        }
+
+        list bd-vlan {
+            tailf:hidden "Attach bridge domain vlan id";
+            key "kp vlan";
+
+            leaf kp {
+                tailf:info "Specify keypath name";
+                type string;
+            }
+
+            leaf vlan {
+                tailf:info "Define vlan value";
+                type vlan;
+            }
+
         }
 
         leaf shutdown {

@@ -120,34 +120,25 @@ def _set_hidden_leaves(root, port, tctx, id_parameters, log):
         bd = ncs.maagic.cd(root, bd_service.kp)
         if port.port_type == 'ethernet':
             eth = port.ethernet
-            if (eth.node, port.name) not in bd.port:
-                bd_port = bd.port.create(eth.node, port.name)
-                bd_port.interface_id = eth.node_port
-            else:
-                bd.port[eth.node, port.name].interface_id = eth.node_port
+            node = eth.node
+            if (port._path, node) not in bd.device:
+                bd.device.create(port._path, node)
+
         elif port.port_type == 'port-channel':
             pc = port.port_channel
-            if (pc.node, port.name) not in bd.direct_pc:
-                bd_direct_pc = bd.direct_pc.create(pc.node, port.name)
-                bd_direct_pc.port_channel_id = pc.allocated_port_channel_id
-            else:
-                bd.direct_pc[pc.node,
-                             port.name].port_channel_id = pc.allocated_port_channel_id
+            node = pc.node
+            if (port._path, node) not in bd.device:
+                bd.device.create(port._path, node)
+
         elif port.port_type == 'vpc-port-channel':
             vpc = port.vpc_port_channel
             node_1, node_2 = utils.get_vpc_nodes_from_port(root, port)
-            if (node_1, port.name) not in bd.virtual_pc:
-                bd_virtual_pc = bd.virtual_pc.create(node_1, port.name)
-                bd_virtual_pc.port_channel_id = vpc.allocated_port_channel_id
-            else:
-                bd_virtual_pc[node_1,
-                              port.name].port_channel_id = vpc.allocated_port_channel_id
-            if (node_2, port.name) not in bd.virtual_pc:
-                bd_virtual_pc = bd.virtual_pc.create(node_2, port.name)
-                bd_virtual_pc.port_channel_id = vpc.allocated_port_channel_id
-            else:
-                bd_virtual_pc[node_2,
-                              port.name].port_channel_id = vpc.allocated_port_channel_id
+            if (port._path, node_1) not in bd.device:
+                bd.device.create(port._path, node_1)
+            if (port._path, node_2) not in bd.device:
+                bd.device.create(port._path, node_2)                
+            
+
         log.info(f'Bridge-domain {bd.name} is activated by port {port.name}')
 
 
@@ -160,7 +151,6 @@ def _apply_template(port):
     """
     template = ncs.template.Template(port)
     template.apply('cisco-dc-services-fabric-port-service')
-
 
 class PortConfigServiceValidator(object):
     def __init__(self, log):

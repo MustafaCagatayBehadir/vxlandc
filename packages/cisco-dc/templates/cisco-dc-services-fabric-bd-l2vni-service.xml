@@ -1,6 +1,6 @@
 <config-template xmlns="http://tail-f.com/ns/config/1.0">
     <?save-context service?>
-    <?set NETWORK_VLAN_NAME = {concat(string(tenant), ':', string(name), ':', 'network-vlan')}?>
+    <?set NETWORK_VLAN_NAME = {concat(string(name), ':', 'network-vlan')}?>
     <?set VRF = {string(vrf)}?>
     <?set MCAST_GROUP = {string(mcast-group)}?>
     <?set L3_SERVICE = {bd-subnet}?>

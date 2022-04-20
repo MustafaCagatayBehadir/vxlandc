@@ -98,12 +98,24 @@ submodule cisco-dc-port-config {
                     when "not(current()/../port-channel) and not(current()/../vpc-port-channel)";
                     tailf:info "Single Attach Port Type";
 
+                    leaf node-copy {
+                        tailf:info "only to suppress compiler warning on must expression";
+                        type string;
+                        tailf:hidden "dc";
+                    }
+
                     leaf node {
                         must "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../site]" 
                              + "/cisco-dc:node[cisco-dc:hostname=current()]/cisco-dc:node-role = 'access-leaf'" {
                             error-message
                               "Node type must be access-leaf";
                         }
+
+                        must "not(../node-copy) or ../node-copy = ." {
+                            error-message
+                              "Node can't be changed ones the port is deployed";
+                        }
+
                         tailf:info "Node Name";
                         type leafref {
                             path "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../site]"
@@ -148,12 +160,24 @@ submodule cisco-dc-port-config {
                         }
                     }
 
+                    leaf node-copy {
+                        tailf:info "only to suppress compiler warning on must expression";
+                        type string;
+                        tailf:hidden "dc";
+                    }
+
                     leaf node {
                         must "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../site]" 
                              + "/cisco-dc:node[cisco-dc:hostname=current()]/cisco-dc:node-role = 'access-leaf'" {
                             error-message
                               "Node type must be access-leaf";
                         }
+
+                        must "not(../node-copy) or ../node-copy = ." {
+                            error-message
+                              "Node can't be changed ones the port is deployed";
+                        }
+
                         tailf:info "Node Name";
                         type leafref {
                             path "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../site]"
@@ -197,7 +221,19 @@ submodule cisco-dc-port-config {
                         }
                     }
 
+                    leaf node-group-copy {
+                        tailf:info "only to suppress compiler warning on must expression";
+                        type string;
+                        tailf:hidden "dc";
+                    }
+
                     leaf node-group {
+
+                        must "not(../node-group-copy) or ../node-group-copy = ." {
+                            error-message
+                              "Node-Group can't be changed ones the port is deployed";
+                        }
+
                         tailf:info "Node Group Name";
                         type leafref {
                             path "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../site]"
@@ -275,7 +311,6 @@ submodule cisco-dc-port-config {
                 tailf:info "Define vlan value";
                 type vlan;
             }
-
         }
 
         leaf shutdown {
@@ -286,6 +321,22 @@ submodule cisco-dc-port-config {
         leaf storm-control-action-trap {
             tailf:info "Change storm control action to trap";
             type empty;
+        }
+
+        leaf bum {
+            tailf:info "BUM is auto-generated, use this field to overwrite the default behavior.";
+            type decimal64 {
+                fraction-digits 2;
+                range "0.0..100.0";
+            }
+        }
+
+        leaf auto-bum {
+            tailf:hidden "Just for convenience";
+            type decimal64 {
+                fraction-digits 2;
+                range "0.0..100.0";
+            }            
         }
 
         leaf site {
@@ -309,13 +360,6 @@ submodule cisco-dc-port-config {
         leaf type {
             tailf:hidden "Just for convenience";
             type string;
-        }
-
-        leaf bum {
-            tailf:hidden "Just for convenience";
-            type decimal64 {
-                fraction-digits 2;
-            }
         }
 
         leaf approved {

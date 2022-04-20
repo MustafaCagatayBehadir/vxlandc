@@ -30,7 +30,7 @@
                     "level": "2.0"
                 },
                 "action": {
-                    "trap": [
+                    "shutdown": [
                         null
                     ]
                 }

@@ -6,12 +6,12 @@
             },
             {
                 "id": 2,
-                "name": "0001_TURKCELL:BD-SERVICE-1:network-vlan",
+                "name": "BD-SERVICE-1:network-vlan",
                 "vn-segment": 60000
             },
             {
                 "id": 4,
-                "name": "0001_TURKCELL:BD-SERVICE-3:network-vlan",
+                "name": "BD-SERVICE-3:network-vlan",
                 "vn-segment": 60002
             },
             {

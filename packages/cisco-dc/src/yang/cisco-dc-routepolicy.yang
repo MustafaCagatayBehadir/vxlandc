@@ -50,6 +50,10 @@ submodule cisco-dc-routepolicy {
             mandatory true;
         }
 
+        tailf:validate "dc-routepolicy-service-validation" {
+            tailf:dependency "./rules-set/match-rules/route-destination-ip";
+        }
+
         container rules-set {
             tailf:info "Define match & set rules";
             list match-rules {

@@ -1,7 +1,7 @@
 {
     "tailf-ned-cisco-nx:port-channel": [
         {
-            "name": "1",
+            "name": "2",
             "enable": {
                 "switchport": true
             },
@@ -30,7 +30,7 @@
                     "level": "2.0"
                 },
                 "action": {
-                    "trap": [
+                    "shutdown": [
                         null
                     ]
                 }

@@ -1,6 +1,18 @@
 {
     "tailf-ned-cisco-nx:Vlan": [
         {
+            "name": 1,
+            "shutdown": [
+                null
+            ],
+            "ip": {
+                "redirects": false
+            },
+            "ipv6": {
+                "redirects": false
+            }
+        },
+        {
             "name": 2,
             "vrf": {
                 "member": "tcell-grt"

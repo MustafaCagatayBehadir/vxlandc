@@ -6,7 +6,7 @@
             "connection": "host",
             "speed": "1G",
             "port-channel": {
-                "node": "AVR-DSS1-BIP-SW-03",
+                "node": "nw_lf_cnx9_003.dsslab_site1",
                 "node-port": [
                     "1/10"
                 ]

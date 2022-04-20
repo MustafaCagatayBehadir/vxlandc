@@ -9,6 +9,25 @@
                 <config>
                     <?foreach {match-and-set-group}?>
                         <?save-context match-and-set-group?>
+                        <?foreach {match-rules}?>
+                            <?set MATCH_RULE = {string(name)}?>
+                            <?set-context-node {deref(name)/..}?>
+                            <?if {route-destination-ip}?>
+                                <?for i=5; {i<=i*count(route-destination-ip)}; i+=5?>
+                                    <ip xmlns="http://tail-f.com/ned/cisco-nx">
+                                        <prefix-list>
+                                            <prefixes>
+                                                <name>PL_0001_TURKCELL</name>
+                                                <seq>
+                                                    <no>{$i}</no>
+                                                    <permit>{ip}</permit>
+                                                </seq>
+                                            </prefixes>
+                                        </prefix-list>
+                                    </ip>
+                                <?end?> 
+                            <?end?>
+                        <?end?>
                         <route-map xmlns="http://tail-f.com/ned/cisco-nx">
                             <name>{$RPL}</name>
                                 <sequence>{order}</sequence>

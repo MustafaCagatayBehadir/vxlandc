@@ -94,6 +94,12 @@ submodule cisco-dc-tenant {
                 }
                 mandatory true;
             }
+
+            must "count(/cisco-dc:dc-site[cisco-dc:fabric=current()/../site]/cisco-dc:tenant-service/cisco-dc:bridge-domain/port-group[cisco-dc:name=current()/name]) = 1 or "
+            + "current()/mode = 'trunk'" {
+                error-message
+                  "Access port-group can not be added more than one bridge-domain.";
+            }
         }
 
         list device {
@@ -139,6 +145,10 @@ submodule cisco-dc-tenant {
                     enum no;
                 }
                 default no;
+                must "count(../../bd-subnet[preferred='yes']) = 1" {
+                    error-message
+                      "One primary address must be selected.";
+                }
             }
         }
 

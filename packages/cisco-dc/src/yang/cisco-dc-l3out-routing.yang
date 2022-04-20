@@ -104,7 +104,7 @@ submodule cisco-dc-l3out-routing {
                             }
                         }
 
-                        case loopback {
+                        case fabric-internal-connection {
                             list loopback {
                                 tailf:info "Associate bgp routing on loopback";
                                 key "id node";

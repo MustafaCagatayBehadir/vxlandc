@@ -1,0 +1,14 @@
+{
+    "cisco-dc:bridge-domain": [
+        {
+            "name": "BD-SERVICE-2",
+            "cisco-dc:bd-subnet": [
+                {
+                    "address": "10.0.3.1/24",
+                    "preferred": "no"
+                }
+            ],
+            "vrf": "tcell-grt"
+        }
+    ]
+}

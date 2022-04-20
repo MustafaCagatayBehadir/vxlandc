@@ -1,8 +1,12 @@
 <config-template xmlns="http://tail-f.com/ns/config/1.0">
     <?save-context service?>
     <?set DESCRIPTION = {concat(string(name), ":", string(mode), ":", string(speed))}?>
+    <?set BUM = {auto-bum}?>
     <?if {boolean(description)}?>
-    <?set DESCRIPTION = {string(description)}?>
+        <?set DESCRIPTION = {string(description)}?>
+    <?end?>
+    <?if {bum}?>
+        <?set BUM = {bum}?>
     <?end?>
     <devices xmlns="http://tail-f.com/ns/ncs">
         <?if {type = 'ethernet'}?>
@@ -13,6 +17,9 @@
                     <Ethernet>
                         <name>{node-port}</name>
                         <?switch-context service?>
+                        <enable>
+                            <switchport>true</switchport>
+                        </enable>              
                         <switchport>
                             <mode>{mode}</mode>
                             <?if {mode = 'trunk'}?>
@@ -55,16 +62,16 @@
                         </spanning-tree>
                         <storm-control>
                             <broadcast>
-                                <level>{bum}</level>
+                                <level>{$BUM}</level>
                             </broadcast>
                             <unicast>
-                                <level>{bum}</level>
+                                <level>{$BUM}</level>
                             </unicast>
                             <multicast>
-                                <level>{bum}</level>
+                                <level>{$BUM}</level>
                             </multicast>
                             <action>
-                                <?if {storm-control-action-trap or (speed != '1G')}?>
+                                <?if {storm-control-action-trap}?>
                                     <trap/>
                                 <?else?>
                                     <shutdown/>
@@ -89,6 +96,9 @@
                     <port-channel>
                         <name>{allocated-port-channel-id}</name>
                         <?switch-context service?>
+                        <enable>
+                            <switchport>true</switchport>
+                        </enable>
                         <switchport>
                             <mode>{mode}</mode>
                             <?if {mode = 'trunk'}?>
@@ -131,16 +141,16 @@
                         </spanning-tree>
                         <storm-control>
                             <broadcast>
-                                <level>{bum}</level>
+                                <level>{$BUM}</level>
                             </broadcast>
                             <unicast>
-                                <level>{bum}</level>
+                                <level>{$BUM}</level>
                             </unicast>
                             <multicast>
-                                <level>{bum}</level>
+                                <level>{$BUM}</level>
                             </multicast>
                             <action>
-                                <?if {storm-control-action-trap or (speed != '1G')}?>
+                                <?if {storm-control-action-trap}?>
                                     <trap/>
                                 <?else?>
                                     <shutdown/>
@@ -180,6 +190,9 @@
                     <port-channel>
                         <name>{allocated-port-channel-id}</name>
                         <?switch-context service?>
+                        <enable>
+                            <switchport>true</switchport>
+                        </enable>
                         <switchport>
                             <mode>{mode}</mode>
                             <?if {mode = 'trunk'}?>
@@ -222,19 +235,19 @@
                         </spanning-tree>
                         <storm-control>
                             <broadcast>
-                                <level>{bum}</level>
+                                <level>{$BUM}</level>
                             </broadcast>
                             <unicast>
-                                <level>{bum}</level>
+                                <level>{$BUM}</level>
                             </unicast>
                             <multicast>
-                                <level>{bum}</level>
+                                <level>{$BUM}</level>
                             </multicast>
                             <action>
-                                <?if {storm-control-action-trap or (speed != '1G')}?>
-                                <trap/>
+                                <?if {storm-control-action-trap}?>
+                                    <trap/>
                                 <?else?>
-                                <shutdown/>
+                                    <shutdown/>
                                 <?end?>
                             </action>
                         </storm-control>

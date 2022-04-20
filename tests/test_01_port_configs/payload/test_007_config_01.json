@@ -1,0 +1,10 @@
+{
+    "port-config": [
+        {
+            "name": "ETH100001",
+            "ethernet": {
+                "node": "nw_lf_cnx9_002.dsslab_site1"
+            }
+        }
+    ]
+}

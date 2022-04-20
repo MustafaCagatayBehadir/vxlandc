@@ -5,6 +5,7 @@ from . import dc_actions
 from . import port_config_service
 from . import bridge_domain_service
 from . import vrf_config_service
+from . import dc_routepolicy
 from . import validate_callback
 
 # ---------------------------------------------
@@ -40,6 +41,10 @@ class Main(ncs.application.Application):
 
         self.register_nano_service('vrf-config-servicepoint', 'ncs:self',
                                    'cisco-dc:vrf-configured', vrf_config_service.VrfServiceSelfComponent)
+
+        # Route-Policy Config Service  Validation
+        self.port_config_val = validate_callback.ValPointRegistrar(
+            self.log, 'routepolicy-config-val', 'dc-routepolicy-service-validation', dc_routepolicy.RoutePolicyConfigServiceValidator(self.log))
 
         ############################################################################################
 

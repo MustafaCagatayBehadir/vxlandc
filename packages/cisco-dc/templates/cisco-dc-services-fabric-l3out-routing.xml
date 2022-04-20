@@ -3,9 +3,9 @@
     <devices xmlns="http://tail-f.com/ns/ncs">
         <?foreach {routing/bgp}?>
             <?save-context bgp?>
-            <?if {source-interface/loopback}?>
+            <?if {source-interface/fabric-internal-connection}?>
                 <?set DESCRIPTION = {concat($VRF, ':', 'eBGP-Extension-Source-Interface')}?>
-                <?foreach {source-interface/loopback}?>
+                <?foreach {source-interface/fabric-internal-connection/loopback}?>
                     <?set UPDATE_SOURCE = {concat('loopback', string(id))}?>
                     <device>
                         <name>{node}</name>

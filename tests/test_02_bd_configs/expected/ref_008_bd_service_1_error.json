@@ -1,0 +1,12 @@
+{
+    "ietf-restconf:errors": {
+        "error": [
+            {
+                "error-type": "application",
+                "error-tag": "invalid-value",
+                "error-path": "/cisco-dc:dc-site[fabric='avr-dss1-lbox-yaani-fabric']/tenant-service[name='0001_TURKCELL']/bridge-domain[name='BD-SERVICE-1']",
+                "error-message": "/dc-site{avr-dss1-lbox-yaani-fabric}/tenant-service{0001_TURKCELL}/bridge-domain{BD-SERVICE-1}/port-group{VPC_PG_1_ACCESS} : Access port-group can not be added more than one bridge-domain."
+            }
+        ]
+    }
+}

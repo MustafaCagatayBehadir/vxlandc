@@ -2,8 +2,11 @@
     "tailf-ned-cisco-nx:Ethernet": [
         {
             "name": "1/10",
+            "enable": {
+                "switchport": true
+            },
             "channel-group": {
-                "id": 1,
+                "id": 2,
                 "mode": "active"
             },
             "description": "PC100002:MEMBER",

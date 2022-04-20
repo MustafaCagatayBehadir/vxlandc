@@ -1,45 +1,43 @@
 {
-    "tailf-ned-cisco-nx:vrf": {
-        "context": [
-            {
-                "id": "tcell-grt",
-                "vni": 80000,
-                "rd": "auto",
-                "address-family": {
-                    "ipv4": {
-                        "unicast": {
-                            "route-target": [
-                                {
-                                    "method": "both",
-                                    "asn": "auto",
-                                    "target-evpn": "evpn"
-                                },
-                                {
-                                    "method": "both",
-                                    "asn": "auto",
-                                    "target-evpn": "non-evpn"
-                                }
-                            ]
-                        }
-                    },
-                    "ipv6": {
-                        "unicast": {
-                            "route-target": [
-                                {
-                                    "method": "both",
-                                    "asn": "auto",
-                                    "target-evpn": "evpn"
-                                },
-                                {
-                                    "method": "both",
-                                    "asn": "auto",
-                                    "target-evpn": "non-evpn"
-                                }
-                            ]
-                        }
+    "tailf-ned-cisco-nx:context": [
+        {
+            "id": "tcell-grt",
+            "vni": 80000,
+            "rd": "auto",
+            "address-family": {
+                "ipv4": {
+                    "unicast": {
+                        "route-target": [
+                            {
+                                "method": "both",
+                                "asn": "auto",
+                                "target-evpn": "evpn"
+                            },
+                            {
+                                "method": "both",
+                                "asn": "auto",
+                                "target-evpn": "non-evpn"
+                            }
+                        ]
+                    }
+                },
+                "ipv6": {
+                    "unicast": {
+                        "route-target": [
+                            {
+                                "method": "both",
+                                "asn": "auto",
+                                "target-evpn": "evpn"
+                            },
+                            {
+                                "method": "both",
+                                "asn": "auto",
+                                "target-evpn": "non-evpn"
+                            }
+                        ]
                     }
                 }
             }
-        ]
-    }
+        }
+    ]
 }

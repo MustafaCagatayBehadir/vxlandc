@@ -1,0 +1,10 @@
+{
+    "port-config": [
+        {
+            "name": "VPC100001",
+            "vpc-port-channel": {
+                "node-group": 2
+            }
+        }
+    ]
+}

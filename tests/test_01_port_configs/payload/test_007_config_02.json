@@ -1,0 +1,10 @@
+{
+    "port-config": [
+        {
+            "name": "PC100001",
+            "port-channel": {
+                "node": "nw_lf_cnx9_004.dsslab_site1"
+            }
+        }
+    ]
+}

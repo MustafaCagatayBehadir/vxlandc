@@ -100,12 +100,15 @@ def _set_hidden_leaves(root, port, tctx, id_parameters, log):
     """
     if port.port_type == 'ethernet':
         port.type = 'ethernet'
+        port.ethernet.node_copy = port.ethernet.node
     elif port.port_type == 'port-channel':
         port.type = 'port-channel'
+        port.port_channel.node_copy = port.port_channel.node
         port.port_channel.allocated_port_channel_id = id_parameters.get(
             'port-channel-id')
     elif port.port_type == 'vpc-port-channel':
         port.type = 'vpc-port-channel'
+        port.vpc_port_channel.node_group_copy = port.vpc_port_channel.node_group
         port.vpc_port_channel.allocated_port_channel_id = id_parameters.get(
             'port-channel-id')
         node_1, node_2 = utils.get_vpc_nodes_from_port(root, port)
@@ -114,7 +117,9 @@ def _set_hidden_leaves(root, port, tctx, id_parameters, log):
         for node, node_port in vpc_nodes:
             vpc_node = port.vpc_port_channel.node.create(node)
             vpc_node.node_port = node_port
-    port.bum = utils.get_bum(port.speed)
+
+    port.auto_bum = utils.get_bum(port.speed) 
+    
     bd_services = root.cisco_dc__dc_site[port.site].port_configs[port.port_group].bd_service
     for bd_service in bd_services:
         bd = ncs.maagic.cd(root, bd_service.kp)

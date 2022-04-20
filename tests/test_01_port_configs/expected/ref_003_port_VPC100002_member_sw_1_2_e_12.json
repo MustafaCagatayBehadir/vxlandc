@@ -2,6 +2,9 @@
     "tailf-ned-cisco-nx:Ethernet": [
         {
             "name": "1/12",
+            "enable": {
+                "switchport": true
+            },
             "channel-group": {
                 "id": 20,
                 "mode": "active"

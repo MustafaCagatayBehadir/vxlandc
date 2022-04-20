@@ -4,7 +4,7 @@
             <?save-context route-policy?>
             <?set RPL = {string(profile)}?>
             <device>
-                <name>{vrf-rp/leaf-id}</name>
+                <name>{device/leaf-id}</name>
                 <?switch-context route-policy?>
                 <config>
                     <?foreach {match-and-set-group}?>
@@ -12,20 +12,20 @@
                         <?foreach {match-rules}?>
                             <?set MATCH_RULE = {string(name)}?>
                             <?set-context-node {deref(name)/..}?>
-                            <?if {route-destination-ip}?>
-                                <?for i=5; {i<=i*count(route-destination-ip)}; i+=5?>
-                                    <ip xmlns="http://tail-f.com/ned/cisco-nx">
-                                        <prefix-list>
-                                            <prefixes>
-                                                <name>PL_0001_TURKCELL</name>
-                                                <seq>
-                                                    <no>{$i}</no>
-                                                    <permit>{ip}</permit>
-                                                </seq>
-                                            </prefixes>
-                                        </prefix-list>
-                                    </ip>
-                                <?end?> 
+                            <?set i = 5?>
+                            <?foreach {route-destination-ip}?>
+                                <ip xmlns="http://tail-f.com/ned/cisco-nx">
+                                    <prefix-list>
+                                        <prefixes>
+                                            <name>PL_0001_TURKCELL</name>
+                                            <seq>
+                                                <no>{$i}</no>
+                                                <permit>{ip}</permit>
+                                            </seq>
+                                        </prefixes>
+                                    </prefix-list>
+                                </ip>
+                                <?set i = {$i+5}?>
                             <?end?>
                         <?end?>
                         <route-map xmlns="http://tail-f.com/ned/cisco-nx">

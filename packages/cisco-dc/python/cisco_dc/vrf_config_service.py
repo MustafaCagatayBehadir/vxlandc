@@ -96,9 +96,9 @@ def _set_hidden_leaves(root, vrf, id_parameters, log):
                 if vrf.direct.address_family_ipv4_policy in dc_route_policy.route_policy:
                     route_policy = dc_route_policy.route_policy[vrf.direct.address_family_ipv4_policy]
                     for device in vrf.device:
-                        if (vrf.name, device.leaf_id) not in route_policy.vrf_rp:
-                            route_policy.vrf_rp.create(
-                                vrf.name, device.leaf_id)
+                        if (vrf._path, device.leaf_id) not in route_policy.device:
+                            route_policy.device.create(
+                                vrf._path, device.leaf_id)
 
         if vrf.direct.address_family_ipv6_policy:
             dc_route_policies = root.cisco_dc__dc_site[vrf.site].dc_route_policy
@@ -106,9 +106,9 @@ def _set_hidden_leaves(root, vrf, id_parameters, log):
                 if vrf.direct.address_family_ipv6_policy in dc_route_policy.route_policy:
                     route_policy = dc_route_policy.route_policy[vrf.direct.address_family_ipv6_policy]
                     for device in vrf.device:
-                        if (vrf.name, device.leaf_id) not in route_policy.vrf_rp:
-                            route_policy.vrf_rp.create(
-                                vrf.name, device.leaf_id)
+                        if (vrf.name, device.leaf_id) not in route_policy.device:
+                            route_policy.device.create(
+                                vrf._path, device.leaf_id)
 
     if vrf.static.exists():
         if vrf.static.address_family_ipv4_policy:
@@ -117,9 +117,9 @@ def _set_hidden_leaves(root, vrf, id_parameters, log):
                 if vrf.static.address_family_ipv4_policy in dc_route_policy.route_policy:
                     route_policy = dc_route_policy.route_policy[vrf.static.address_family_ipv4_policy]
                     for device in vrf.device:
-                        if (vrf.name, device.leaf_id) not in route_policy.vrf_rp:
-                            route_policy.vrf_rp.create(
-                                vrf.name, device.leaf_id)
+                        if (vrf.name, device.leaf_id) not in route_policy.device:
+                            route_policy.device.create(
+                                vrf._path, device.leaf_id)
 
         if vrf.static.address_family_ipv6_policy:
             dc_route_policies = root.cisco_dc__dc_site[vrf.site].dc_route_policy
@@ -127,9 +127,9 @@ def _set_hidden_leaves(root, vrf, id_parameters, log):
                 if vrf.static.address_family_ipv6_policy in dc_route_policy.route_policy:
                     route_policy = dc_route_policy.route_policy[vrf.static.address_family_ipv6_policy]
                     for device in vrf.device:
-                        if (vrf.name, device.leaf_id) not in route_policy.vrf_rp:
-                            route_policy.vrf_rp.create(
-                                vrf.name, device.leaf_id)
+                        if (vrf.name, device.leaf_id) not in route_policy.device:
+                            route_policy.device.create(
+                                vrf._path, device.leaf_id)
 
 
 def _apply_template(vrf):

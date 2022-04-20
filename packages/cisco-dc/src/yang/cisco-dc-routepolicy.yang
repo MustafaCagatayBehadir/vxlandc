@@ -249,13 +249,13 @@ submodule cisco-dc-routepolicy {
                 }
             }
 
-            list vrf-rp {
-                tailf:hidden "Attach vrf defined in infra";
-                key "vrf leaf-id";
+            list device {
+                tailf:hidden "Attach device defined in infra";
+                key "kp leaf-id";
 
-                leaf vrf {
-                    tailf:info "Attach vrf name";
-                    type dc-string;
+                leaf kp {
+                    tailf:info "Attach vrf or bd keypath";
+                    type string;
                 }
 
                 leaf leaf-id {

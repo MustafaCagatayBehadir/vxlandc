@@ -105,33 +105,38 @@ submodule cisco-dc-l3out-routing {
                         }
 
                         case fabric-internal-connection {
-                            list loopback {
-                                tailf:info "Associate bgp routing on loopback";
-                                key "id node";
 
-                                leaf id {
-                                    tailf:info "Specify loopback id";
-                                    type loopback-id;
-                                }
+                            container fabric-internal-connection {
+                                tailf:info "attach internal connection";
+                                list loopback {
+                                    tailf:info "Associate bgp routing on loopback";
+                                    key "id node";
 
-                                leaf node {
-                                    must "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../../../../site]"
-                                    +   "/cisco-dc:node[cisco-dc:hostname=current()]/cisco-dc:node-role = 'access-leaf'" {
-                                        error-message
-                                          "Node type must be access-leaf";
+                                    leaf id {
+                                        tailf:info "Specify loopback id";
+                                        type loopback-id;
                                     }
 
-                                    tailf:info "Node name";
-                                    type leafref {
-                                        path "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../../../../site]"
+                                    leaf node {
+                                        must "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../../../../../site]"
+                                        +   "/cisco-dc:node[cisco-dc:hostname=current()]/cisco-dc:node-role = 'access-leaf'" {
+                                            error-message
+                                              "Node type must be access-leaf";
+                                        }
+
+                                        tailf:info "Node name";
+                                        type leafref {
+                                            path "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../../../../../site]"
                                         + "/cisco-dc:node/cisco-dc:hostname";
+                                        }
+                                        mandatory true;
                                     }
-                                    mandatory true;
-                                }
 
-                                leaf address {
-                                    tailf:info "A.B.C.D/L;;Prefix or X:X::X/L;;Prefix for Loopback";
-                                    type tailf:ip-address-and-prefix-length;
+                                    leaf address {
+                                        tailf:info "A.B.C.D/L;;Prefix or X:X::X/L;;Prefix for Loopback";
+                                        type tailf:ip-address-and-prefix-length;
+                                        mandatory true;
+                                    }
                                 }
                             }
                         }
@@ -141,6 +146,7 @@ submodule cisco-dc-l3out-routing {
                 leaf remote-as {
                     tailf:info "Specify remote asn number";
                     type uint32;
+                    mandatory true;
                 }
 
                 leaf local-as {
@@ -181,6 +187,7 @@ submodule cisco-dc-l3out-routing {
                 leaf ttl {
                     tailf:info "Specify ttl value";
                     type uint8;
+                    default 5;
                 }
 
                 list peer-route-policy {

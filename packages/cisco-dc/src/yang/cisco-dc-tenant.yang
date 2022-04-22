@@ -145,9 +145,17 @@ submodule cisco-dc-tenant {
                     enum no;
                 }
                 default no;
-                must "count(../../bd-subnet[preferred='yes']) = 1" {
+                must "count(../../bd-subnet[preferred='yes']) = 1 or ../address-family = 'ipv6'" {
                     error-message
-                      "One primary address must be selected.";
+                      "One primary address must be selected for address-family ipv4.";
+                }
+            }
+
+            leaf address-family {
+                tailf:hidden "dc";
+                type enumeration {
+                    enum ipv4;
+                    enum ipv6;
                 }
             }
         }

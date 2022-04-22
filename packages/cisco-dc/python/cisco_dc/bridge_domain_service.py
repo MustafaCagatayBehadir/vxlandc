@@ -2,6 +2,7 @@ import ncs
 from .resource_manager import id_allocator
 from .l3out_routing import _configure_l3out_routing
 from . import utils
+from ipaddress import ip_address, IPv4Address, IPv6Address
 
 
 class BridgeDomainServiceSelfComponent(ncs.application.NanoService):
@@ -126,6 +127,10 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
     log.info(
         f'Port {port.name} bridge-bomain {bd.name} hidden configuration is applied.')
 
+    for bd_subnet in bd.bd_subnet:
+        ip = utils.getIpAddress(bd_subnet.address)
+        bd_subnet.address_family = "ipv4" if type(ip_address(ip)) is IPv4Address else "ipv6"
+
     if bd.vrf:
         vrf = root.cisco_dc__dc_site[bd.site].vrf_config[bd.vrf]
         for device in bd.device:
@@ -158,7 +163,7 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
                                     route_policy.device.create(
                                         bd._path, device)
                             log.info(
-                                f'Route-Policy {route_policy.profile} is activated by bridge-domain {bd.name}')
+                                f'Route-Policy {route_policy.profile} is activated by tenant {bd.tenant} bridge-domain {bd.name}')
 
 
 def _apply_template(bd):

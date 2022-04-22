@@ -17,7 +17,7 @@
                                 <ip xmlns="http://tail-f.com/ned/cisco-nx">
                                     <prefix-list>
                                         <prefixes>
-                                            <name>PL_0001_TURKCELL</name>
+                                            <name>{$MATCH_RULE}</name>
                                             <seq>
                                                 <no>{$i}</no>
                                                 <permit>{ip}</permit>

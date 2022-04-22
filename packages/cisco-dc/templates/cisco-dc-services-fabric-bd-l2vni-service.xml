@@ -41,20 +41,32 @@
                                 </vrf>
                                 <?switch-context service?>
                                 <?foreach {bd-subnet}?>
-                                    <ip>
-                                        <?if {string(preferred) = 'yes'}?>
-                                        <address>
-                                            <ipaddr>{address}</ipaddr>
-                                        </address>
-                                        <?else?>
-                                        <secondary-addr>
+                                    <?if {string(address-family) = 'ipv4'}?>
+                                        <ip>
+                                            <?if {string(preferred) = 'yes'}?>
                                             <address>
                                                 <ipaddr>{address}</ipaddr>
-                                                <secaddr>secondary</secaddr>
                                             </address>
-                                        </secondary-addr>
-                                        <?end?>
-                                    </ip>
+                                            <?else?>
+                                            <secondary-addr>
+                                                <address>
+                                                    <ipaddr>{address}</ipaddr>
+                                                    <secaddr>secondary</secaddr>
+                                                </address>
+                                            </secondary-addr>
+                                            <?end?>
+                                            <redirects>false</redirects>
+                                        </ip>
+                                    <?else?>
+                                        <ipv6>
+                                            <address>
+                                                <addresses>
+                                                  <addr>{address}</addr>
+                                                </addresses>
+                                            </address>
+                                            <redirects>false</redirects>
+                                        </ipv6>
+                                    <?end?>
                                 <?end?>
                                 <?switch-context device?>
                                 <fabric>

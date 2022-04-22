@@ -111,7 +111,7 @@ submodule cisco-dc-l3out-routing {
                                 list loopback {
                                     tailf:info "Associate bgp routing on loopback";
                                     key "id node";
-
+                                    
                                     leaf id {
                                         tailf:info "Specify loopback id";
                                         type loopback-id;

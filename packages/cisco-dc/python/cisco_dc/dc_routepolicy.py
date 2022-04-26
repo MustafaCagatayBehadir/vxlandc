@@ -13,6 +13,7 @@ class RoutePolicyConfigService(ncs.application.Service):
     def cb_create(self, tctx, root, service, proplist):
         self.log.info('Service create(service=', service._path, ')')
         _configure_dc_route_policy(root, service, tctx, self.log)
+        _apply_template(service)
 
 
 def _configure_dc_route_policy(root, dc_rpl, tctx, log):
@@ -26,7 +27,6 @@ def _configure_dc_route_policy(root, dc_rpl, tctx, log):
 
     """
     _set_hidden_leaves(root, dc_rpl, log)
-    _apply_template(service)
 
 
 def _set_hidden_leaves(root, dc_rpl, log):
@@ -71,6 +71,7 @@ def _set_hidden_leaves(root, dc_rpl, log):
                 else:
                     raise Exception(
                         f'Route-Policy {route_policy.name} should not contain both ipv4 and ipv6 prefix-lists.')                  
+
 
 def _apply_template(dc_rpl):
     """Function to apply configurations to devices

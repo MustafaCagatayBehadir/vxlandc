@@ -1,3 +1,4 @@
+import ncs
 import _ncs
 import ncs.maapi as maapi
 import ncs.maagic as maagic
@@ -6,57 +7,77 @@ from ipaddress import ip_address, IPv4Address, IPv6Address
 from . import utils
 
 
-class RoutePolicyConfigServiceValidator(object):
-    def __init__(self, log):
-        self.log = log
+class RoutePolicyConfigService(ncs.application.Service):
 
-    def cb_validate(self, tctx, kp, newval):
-        '''
-        Validating dc-route-policy match-rules prefix-lists are not mixed with ipv4 unicast and ipv6 unicast
-        '''
-        try:
-            self.log.debug("Validating dc-routepolicy service")
-            m = maapi.Maapi()
-            th = m.attach(tctx)
+    @ncs.application.Service.create
+    def cb_create(self, tctx, root, service, proplist):
+        self.log.info('Service create(service=', service._path, ')')
+        _configure_dc_route_policy(root, service, tctx, self.log)
 
-            service = maagic.get_node(th, str(kp))
 
-            # raise Exception("IP version overlap config")
-            self._no_ip_version_overlap_validation(th, service)
+def _configure_dc_route_policy(root, dc_rpl, tctx, log):
+    """Function to configure port service
 
-        except Exception as e:
-            self.log.error(e)
-            raise
-        return _ncs.OK
+    Args:
+        root: Maagic object pointing to the root of the CDB
+        dc_rpl: service node
+        tctx: transaction context (TransCtxRef)
+        log: log object (self.log)
 
-    def _no_ip_version_overlap_validation(self, th, dc_route_policy):
-        '''
-        :th: ncs.maapi.Transaction
-        :rpl: ncs.maagic.ListElement
-        :fabric: fabric name string
-        '''
-        for match_rule in dc_route_policy.rules_set.match_rules:
-            if match_rule.match_type == 'prefix-list':
-                self.log.info('Match rule name :', match_rule.name)
-                self._check_no_ip_version_overlap(th, match_rule)
+    """
+    _set_hidden_leaves(root, dc_rpl, log)
+    _apply_template(service)
 
-    def _check_no_ip_version_overlap(self, th, match_rule):
-        '''
-        :th: ncs.maapi.Transaction
-        :match_rule: ncs.maagic.List
-        '''
-        flag_ipv4, flag_ipv6 = False, False
-        route_destination_ip = match_rule.route_destination_ip
-        for prefix in route_destination_ip:
-            self.log.info('Prefix :', prefix.ip)
-            ip = utils.getIpAddress(prefix.ip)
-            if type(ip_address(ip)) is IPv4Address:
-                flag_ipv4 = True
-                self.log.info(f'{ip} is an IPv4 address')
-            elif type(ip_address(ip)) is IPv6Address:
-                flag_ipv6 = True
-                self.log.info(f'{ip} is an IPv6 address')
 
-            if flag_ipv4 and flag_ipv6:
-                raise Exception(
-                    f'Prefix-list {match_rule.name} should not contain both ipv4 and ipv6 addresses.')
+def _set_hidden_leaves(root, dc_rpl, log):
+    """Function to create hidden leaves for template operations
+
+    Args:
+        root: Maagic object pointing to the root of the CDB
+        dc_rpl: service node
+        log: log object (self.log)
+
+    """
+    for match_rule in dc_rpl.rules_set.match_rules:
+        log.info('Match Rule Name :', match_rule.name)
+        if match_rule.match_type == 'prefix-list':
+            for route_destination_ip in match_rule.route_destination_ip:
+                ip = utils.getIpAddress(route_destination_ip.ip)
+                if not match_rule.address_family and type(ip_address(ip)) is IPv4Address:
+                    match_rule.address_family = 'ipv4'
+                elif not match_rule.address_family and type(ip_address(ip)) is IPv6Address:
+                    match_rule.address_family = 'ipv6'
+                elif match_rule.address_family.string == 'ipv4' and type(ip_address(ip)) is IPv4Address:
+                    continue
+                elif match_rule.address_family.string == 'ipv6' and type(ip_address(ip)) is IPv6Address:
+                    continue
+                else:
+                    raise Exception(
+                        f'Prefix-list {match_rule.name} should not contain both ipv4 and ipv6 addresses.')
+
+    for route_policy in dc_rpl.route_policy:
+        log.info('Route Policy Name :', route_policy.profile)
+        for match_and_set_group in route_policy.match_and_set_group:
+            for rpl_match_rule in match_and_set_group.match_rules:
+                match_rule = dc_rpl.rules_set.match_rules[rpl_match_rule.name]
+                if not route_policy.address_family and match_rule.address_family.string == 'ipv4':
+                    route_policy.address_family = 'ipv4'
+                elif not route_policy.address_family and match_rule.address_family.string == 'ipv6':
+                    route_policy.address_family = 'ipv6'
+                elif route_policy.address_family.string == 'ipv4' and match_rule.address_family.string == 'ipv4':
+                    continue
+                elif route_policy.address_family.string == 'ipv6' and match_rule.address_family.string == 'ipv6':
+                    continue
+                else:
+                    raise Exception(
+                        f'Route-Policy {route_policy.name} should not contain both ipv4 and ipv6 prefix-lists.')                  
+
+def _apply_template(dc_rpl):
+    """Function to apply configurations to devices
+
+    Args:
+        dc_rpl: service node
+
+    """
+    template = ncs.template.Template(dc_rpl)
+    template.apply('cisco-dc-services-fabric-routepolicy')

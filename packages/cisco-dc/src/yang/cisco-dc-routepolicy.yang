@@ -50,10 +50,6 @@ submodule cisco-dc-routepolicy {
             mandatory true;
         }
 
-        tailf:validate "dc-routepolicy-service-validation" {
-            tailf:dependency "./rules-set/match-rules/route-destination-ip";
-        }
-
         container rules-set {
             tailf:info "Define match & set rules";
             list match-rules {
@@ -110,6 +106,15 @@ submodule cisco-dc-routepolicy {
                             must "number(current()/from-prefix) <= number(current()/to-prefix)" {
                                 error-message
                                   "from-prefix can not be greater than to prefix";
+                            }
+                        }
+
+                        leaf address-family {
+                            tailf:info "Prefix-List address-family can be IPv4 | IPv6";
+                            tailf:hidden "dc";
+                            type enumeration {
+                                enum ipv4;
+                                enum ipv6;
                             }
                         }
                     }
@@ -249,6 +254,15 @@ submodule cisco-dc-routepolicy {
                 }
             }
 
+            leaf address-family {
+                tailf:info "Prefix-List address-family can be IPv4 | IPv6";
+                tailf:hidden "dc";
+                type enumeration {
+                    enum ipv4;
+                    enum ipv6;
+                }
+            }
+
             list device {
                 tailf:hidden "Attach device defined in infra";
                 key "kp leaf-id";
@@ -263,6 +277,12 @@ submodule cisco-dc-routepolicy {
                     type string;
                 }
             }
+        }
+
+        leaf site {
+            tailf:hidden "Just for convenience";
+            type string;
+            tailf:default-ref "../../cisco-dc:fabric";
         }
     }
 }

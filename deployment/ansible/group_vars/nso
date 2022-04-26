@@ -1,0 +1,9 @@
+---
+
+nso:
+  ncs_vers: 5.5.2.12
+  installer_url: https://earth.tail-f.com:8443/ncs/
+  image: nso-5.5.2.12.linux.x86_64.signed.bin
+  installer: nso-5.5.2.12.linux.x86_64.installer.bin
+
+...

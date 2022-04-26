@@ -1,0 +1,48 @@
+---
+
+- name: set PermitRootLogin no
+  lineinfile:
+    path: "{{ sshdconfig }}"
+    insertafter: "^#PermitRootLogin without-password"
+    line: "PermitRootLogin no"
+    state: present
+  become: true
+
+- name: Restart service sshd
+  service:
+    name: sshd
+    state: restarted
+  become: true
+
+- name: set PermitRootLogin no
+  lineinfile:
+    path: /etc/sudoers
+    insertafter: "^# %wheel"
+    line: "{{ item }}"
+    state: present
+  become: true
+  loop:
+    - ''
+    - '## passwordless sudo for ncsadmin group'
+    - '%ncsadmin        ALL=(ALL)       NOPASSWD: ALL'
+    - ''
+    
+- name: Generate /etc/hosts file
+  template:
+    src=templates/hosts.j2
+    dest=/etc/hosts
+  become: true
+
+- name: Update NTP /etc/ntp.conf file
+  template:
+    src=templates/ntp.conf.j2
+    dest=/etc/ntp.conf
+  become: true
+
+- name: Restart service ntpd
+  service:
+    name: ntpd
+    state: restarted
+  become: true
+
+...

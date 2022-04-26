@@ -1,0 +1,14 @@
+---
+
+- debug:
+    msg: System {{ nso.installer_url }}
+
+- name: Download NSO image file
+  get_url:
+    url: "{{ nso.installer_url }}{{ nso.installer }}"
+    dest: "/tmp/{{ nso.installer }}"
+    validate_certs: no
+    url_username: "{{ cco_user }}"
+    url_password: "{{ cco_pass }}"
+
+...

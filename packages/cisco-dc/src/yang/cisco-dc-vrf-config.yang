@@ -90,6 +90,11 @@ submodule cisco-dc-vrf-config {
                     error-message
                       "Route policy type should be vrf.";
                 }
+                must "deref(current())/../address-family != 'ipv6'" {
+                    tailf:dependency ".";
+                    error-message
+                      "Route policy address-family should not be IPv6.";
+                }
             }
 
             leaf address-family-ipv6-policy {
@@ -101,6 +106,11 @@ submodule cisco-dc-vrf-config {
                     tailf:dependency ".";
                     error-message
                       "Route policy type should be vrf.";
+                }
+                must "deref(current())/../address-family != 'ipv4'" {
+                    tailf:dependency ".";
+                    error-message
+                      "Route policy address-family should not be IPv4.";
                 }
             }
         }

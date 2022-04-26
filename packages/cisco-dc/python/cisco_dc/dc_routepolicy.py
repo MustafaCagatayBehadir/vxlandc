@@ -1,7 +1,4 @@
 import ncs
-import _ncs
-import ncs.maapi as maapi
-import ncs.maagic as maagic
 from ipaddress import ip_address, IPv4Address, IPv6Address
 
 from . import utils

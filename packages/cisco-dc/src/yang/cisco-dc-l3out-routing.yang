@@ -111,7 +111,7 @@ submodule cisco-dc-l3out-routing {
                                 list loopback {
                                     tailf:info "Associate bgp routing on loopback";
                                     key "id node";
-                                    
+
                                     leaf id {
                                         tailf:info "Specify loopback id";
                                         type loopback-id;
@@ -233,6 +233,15 @@ submodule cisco-dc-l3out-routing {
                     tailf:hidden "Just for convenience";
                     type inet:as-number;
                     tailf:default-ref "../../../../../cisco-dc:fabric-parameters/cisco-dc:as-number";
+                }
+
+                leaf address-family {
+                    tailf:info "Prefix-List address-family can be IPv4 | IPv6";
+                    tailf:hidden "dc";
+                    type enumeration {
+                        enum ipv4;
+                        enum ipv6;
+                    }
                 }
             }
 

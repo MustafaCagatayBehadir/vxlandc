@@ -1,7 +1,7 @@
 import ncs
-from ipaddress import ip_address, IPv4Address
-from multiprocessing import connection
+from ipaddress import ip_address, IPv4Address, IPv6Address
 
+from . import utils
 
 def _configure_l3out_routing(root, bd, tctx, log):
     """Function to configure l3out routing
@@ -27,6 +27,12 @@ def _set_hidden_leaves(root, bd, log):
     """
     if bd.routing.exists():
         for bgp in bd.routing.bgp:
+            ip = bgp.peer_address
+            if type(ip_address(ip)) is IPv4Address:
+                bgp.address_family = 'ipv4'
+            elif type(ip_address(ip)) is IPv6Address:
+                bgp.address_family = 'ipv6'
+
             if bgp.source_interface.interface == 'fabric-external-connection':
                 vrf = root.cisco_dc__dc_site[bd.site].vrf_config[bd.vrf]
                 l3out = bgp.source_interface.fabric_external_connection

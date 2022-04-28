@@ -20,7 +20,8 @@
             "ip": {
                 "address": {
                     "ipaddr": "10.0.0.1/24"
-                }
+                },
+                "redirects": false
             },
             "fabric": {
                 "forwarding": {
@@ -44,7 +45,8 @@
                             "secaddr": "secondary"
                         }
                     ]
-                }
+                },
+                "redirects": false
             },
             "fabric": {
                 "forwarding": {

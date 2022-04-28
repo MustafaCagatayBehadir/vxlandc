@@ -1,0 +1,41 @@
+{
+    "cisco-dc:dc-site": [
+        {
+            "fabric": "avr-dss1-lbox-yaani-fabric",
+            "dc-route-policy": [
+                {
+                    "name": "DC_RP_0001_TURKCELL",
+                    "dc-route-policy-type": "vrf",
+                    "rules-set": {
+                        "match-rules": [
+                            {
+                                "name": "MR_0001_TURKCELL_TAG_12345",
+                                "tag": 12345
+                            }
+                        ]
+                    },
+                    "route-policy": [
+                        {
+                            "profile": "RP_0001_TURKCELL",
+                            "match-and-set-group": [
+                                {
+                                    "order": 5,
+                                    "action": "permit",
+                                    "match-rules": [
+                                        {
+                                            "name": "MR_0001_TURKCELL_TAG_12345"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "order": 1000,
+                                    "action": "deny"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,19 @@
+{
+    "tailf-ned-cisco-nx:route-map": [
+        {
+            "name": "RP_0001_TURKCELL",
+            "sequence": 5,
+            "operation": "permit",
+            "match": {
+                "tag": [
+                    12345
+                ]
+            }
+        },
+        {
+            "name": "RP_0001_TURKCELL",
+            "sequence": 1000,
+            "operation": "deny"
+        }
+    ]
+}

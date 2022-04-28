@@ -72,22 +72,23 @@ def _set_hidden_leaves(root, dc_rpl, log):
                         continue
                     else:
                         raise Exception(
-                            f'Route-Policy {route_policy.name} should not contain both ipv4 and ipv6 prefix-lists.')
+                            f'Route-Policy {route_policy.profile} should not contain both ipv4 and ipv6 prefix-lists.')
 
         for match_and_set_group in route_policy.match_and_set_group:
             if match_and_set_group.set_rule:
                 set_rule = dc_rpl.rules_set.set_rules[match_and_set_group.set_rule]
-                if not route_policy.address_family and set_rule.address_family.string == 'ipv4':
-                    route_policy.address_family = 'ipv4'
-                elif not route_policy.address_family and set_rule.address_family.string == 'ipv6':
-                    route_policy.address_family = 'ipv6'
-                elif route_policy.address_family.string == 'ipv4' and set_rule.address_family.string == 'ipv4':
-                    continue
-                elif route_policy.address_family.string == 'ipv6' and set_rule.address_family.string == 'ipv6':
-                    continue
-                else:
-                    raise Exception(
-                        f'Route-Policy {route_policy.name} should not contain both ipv4 prefix-lists and ipv6 next-hop vice versa.')
+                if set_rule.nh_address:
+                    if not route_policy.address_family and set_rule.address_family.string == 'ipv4':
+                        route_policy.address_family = 'ipv4'
+                    elif not route_policy.address_family and set_rule.address_family.string == 'ipv6':
+                        route_policy.address_family = 'ipv6'
+                    elif route_policy.address_family.string == 'ipv4' and set_rule.address_family.string == 'ipv4':
+                        continue
+                    elif route_policy.address_family.string == 'ipv6' and set_rule.address_family.string == 'ipv6':
+                        continue
+                    else:
+                        raise Exception(
+                            f'Route-Policy {route_policy.profile} should not contain both ipv4 prefix-lists and ipv6 next-hop vice versa.')
 
 
 def _apply_template(dc_rpl):

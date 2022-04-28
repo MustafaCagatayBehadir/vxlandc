@@ -86,16 +86,18 @@ module cisco-dc {
         }
 
         list port-configs {
-            tailf:info "Deploy different type of port services [ethernet, port-channel, virtual-port-channel]";
+            tailf:info "Deploy port groups configurations.";
+            description
+              "List of port groups definitions";
 
             key name;
 
             uses port-configs;
 
             list port-config {
-                tailf:info "Port config service for VXLAN-EVPN configurations.";
+                tailf:info "Deploy different type of port services [ethernet, port-channel, virtual-port-channel].";
                 description
-                  "Port config service for VXLAN-EVPN configurations.";
+                  "Deploy different type of port services [ethernet, port-channel, virtual-port-channel]";
 
                 uses ncs:nano-plan-data;
                 uses ncs:service-data;

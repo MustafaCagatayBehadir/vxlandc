@@ -51,8 +51,8 @@
                                 </match>
                                 <set>
                                     <?switch-context match-and-set-group?>
-                                    <?if {set-rules}?>
-                                        <?set-context-node {deref(set-rules)/..}?>
+                                    <?if {set-rule}?>
+                                        <?set-context-node {deref(set-rule)/..}?>
                                         <?if {aspath-asn}?>
                                             <as-path>
                                                 <prepend>

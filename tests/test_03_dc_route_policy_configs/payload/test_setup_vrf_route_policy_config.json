@@ -1,0 +1,16 @@
+{
+    "cisco-dc:dc-site": [
+        {
+            "fabric": "avr-dss1-lbox-yaani-fabric",
+            "vrf-config": [
+                {
+                    "name": "tcell-grt",
+                    "direct": {
+                        "address-family-ipv4-policy": "RP_0001_TURKCELL",
+                        "address-family-ipv6-policy": "RP_0001_TURKCELL"
+                    }
+                }
+            ]
+        }
+    ]
+}

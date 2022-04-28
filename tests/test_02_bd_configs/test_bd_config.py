@@ -135,8 +135,3 @@ class BDConfigsTests:
         resp = self.nso.patch(payload=post_payload, path=post_path, params='')
         assert resp.status_code == 400
         assert json.loads(resp.text) == expected
-
-    # @classmethod
-    # def teardown_class(cls):
-    #     cls.nso.delete(path="cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric")
-    #     cls.nso.delete(path="resource-allocator:resource-pools")

@@ -212,6 +212,14 @@ submodule cisco-dc-l3out-routing {
                             error-message
                               "Route policy type should be tenant and route policy tenant must match bridge-domain tenant.";
                         }
+
+                        must "not(deref(current())/../address-family) or "
+                        + "deref(current())/../address-family = 'ipv4' and ../../address-family = 'ipv4' or "
+                        + "deref(current())/../address-family = 'ipv6' and ../../address-family = 'ipv6'" {
+                            tailf:dependency ".";
+                            error-message
+                              "Route policy address-family should match the bgp neighbor address-family.";                            
+                        }
                     }
                 }
 

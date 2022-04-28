@@ -49,8 +49,46 @@
                                                     <holdtime>{timers/holdtime}</holdtime>
                                                 </timers>
                                             <?end?>
+                                            <?if {address-family = 'ipv4'}?>
+                                                <address-family>
+                                                    <proto>ipv4</proto>
+                                                    <type>unicast</type>
+                                                    <?foreach {peer-route-policy}?>
+                                                        <?if {string(direction) = 'import'}?>
+                                                            <route-map>
+                                                                <direction>in</direction>
+                                                                <name>{profile}</name>
+                                                            </route-map>
+                                                        <?else?>
+                                                            <route-map>
+                                                                <direction>out</direction>
+                                                                <name>{profile}</name>
+                                                            </route-map>                                                   
+                                                        <?end?>                                                       
+                                                    <?end?>
+                                                    <?foreach {peer-af-controls}?>
+                                                        <?if {current() = 'send-com'}?>
+                                                            <send-community/>
+                                                        <?elif {current() = 'send-ext-com'}?>
+                                                            <send-community>
+                                                                <attr>extended</attr>
+                                                            </send-community>
+                                                        <?elif {current() = 'nh-self'}?>
+                                                            <next-hop-self/>
+                                                        <?elif {current() = 'dis-peer-as-check'}?>
+                                                            <disable-peer-as-check/>
+                                                        <?elif {current() = 'allow-self-as'}?>
+                                                            <allowas-in>
+                                                                <occurrences>3</occurrences>
+                                                            </allowas-in>
+                                                        <?else?>
+                                                            <as-override/>
+                                                        <?end?>
+                                                    <?end?>
+                                                </address-family>
+                                            <?else?>
                                             <address-family>
-                                                <proto>ipv4</proto>
+                                                <proto>ipv6</proto>
                                                 <type>unicast</type>
                                                 <?foreach {peer-route-policy}?>
                                                     <?if {string(direction) = 'import'}?>
@@ -85,6 +123,7 @@
                                                     <?end?>
                                                 <?end?>
                                             </address-family>
+                                            <?end?>                                           
                                         </neighbor>
                                     </vrf>
                                 </bgp>

@@ -36,7 +36,6 @@ def _set_hidden_leaves(root, dc_rpl, log):
 
     """
     for match_rule in dc_rpl.rules_set.match_rules:
-        log.info('Match Rule Name :', match_rule.name)
         if match_rule.match_type == 'prefix-list':
             for route_destination_ip in match_rule.route_destination_ip:
                 ip = utils.getIpAddress(route_destination_ip.ip)
@@ -52,22 +51,43 @@ def _set_hidden_leaves(root, dc_rpl, log):
                     raise Exception(
                         f'Prefix-list {match_rule.name} should not contain both ipv4 and ipv6 addresses.')
 
+    for set_rule in dc_rpl.rules_set.set_rules:
+        if set_rule.nh_address:
+            ip = set_rule.nh_address
+            set_rule.address_family = 'ipv4' if type(
+                ip_address(ip)) is IPv4Address else 'ipv6'
+
     for route_policy in dc_rpl.route_policy:
-        log.info('Route Policy Name :', route_policy.profile)
         for match_and_set_group in route_policy.match_and_set_group:
             for rpl_match_rule in match_and_set_group.match_rules:
                 match_rule = dc_rpl.rules_set.match_rules[rpl_match_rule.name]
-                if not route_policy.address_family and match_rule.address_family.string == 'ipv4':
+                if match_rule.match_type == 'prefix-list':
+                    if not route_policy.address_family and match_rule.address_family.string == 'ipv4':
+                        route_policy.address_family = 'ipv4'
+                    elif not route_policy.address_family and match_rule.address_family.string == 'ipv6':
+                        route_policy.address_family = 'ipv6'
+                    elif route_policy.address_family.string == 'ipv4' and match_rule.address_family.string == 'ipv4':
+                        continue
+                    elif route_policy.address_family.string == 'ipv6' and match_rule.address_family.string == 'ipv6':
+                        continue
+                    else:
+                        raise Exception(
+                            f'Route-Policy {route_policy.name} should not contain both ipv4 and ipv6 prefix-lists.')
+
+        for match_and_set_group in route_policy.match_and_set_group:
+            if match_and_set_group.set_rule:
+                set_rule = dc_rpl.rules_set.set_rules[match_and_set_group.set_rule]
+                if not route_policy.address_family and set_rule.address_family.string == 'ipv4':
                     route_policy.address_family = 'ipv4'
-                elif not route_policy.address_family and match_rule.address_family.string == 'ipv6':
+                elif not route_policy.address_family and set_rule.address_family.string == 'ipv6':
                     route_policy.address_family = 'ipv6'
-                elif route_policy.address_family.string == 'ipv4' and match_rule.address_family.string == 'ipv4':
+                elif route_policy.address_family.string == 'ipv4' and set_rule.address_family.string == 'ipv4':
                     continue
-                elif route_policy.address_family.string == 'ipv6' and match_rule.address_family.string == 'ipv6':
+                elif route_policy.address_family.string == 'ipv6' and set_rule.address_family.string == 'ipv6':
                     continue
                 else:
                     raise Exception(
-                        f'Route-Policy {route_policy.name} should not contain both ipv4 and ipv6 prefix-lists.')                  
+                        f'Route-Policy {route_policy.name} should not contain both ipv4 prefix-lists and ipv6 next-hop vice versa.')
 
 
 def _apply_template(dc_rpl):

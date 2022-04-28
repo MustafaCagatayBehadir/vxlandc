@@ -1,84 +1,188 @@
 ---
 
-- name: Add the ulimit level value for NSO
-  lineinfile:
-    path: /etc/init.d/ncs
-    insertafter: ncs=${ncsdir}/bin/ncs
-    line: "ulimit -n 64000"
-    state: present
-  become: true
+# - name: Add the ulimit level value for NSO
+#   lineinfile:
+#     path: /etc/init.d/ncs
+#     insertafter: ncs=${ncsdir}/bin/ncs
+#     line: "ulimit -n 64000"
+#     state: present
+#   become: true
 
-- name: Add the ulimit value for the operating system
-  lineinfile:
-    path:  /etc/security/limits.conf
-    insertbefore: "# End of file"
-    line: "{{ item }}"
-    state: present
-  become: true
-  loop:
-    - ''
-    - '* soft nproc 65535'
-    - '* hard nproc 65535'
-    - '* soft nofile 65535'
-    - '* hard nofile 65535'
-    - '* hard memlock 65536'
-    - '* soft memlock 65536'
+# - name: Add the ulimit value for the operating system
+#   lineinfile:
+#     path:  /etc/security/limits.conf
+#     insertbefore: "# End of file"
+#     line: "{{ item }}"
+#     state: present
+#   become: true
+#   loop:
+#     - ''
+#     - '* soft nproc 65535'
+#     - '* hard nproc 65535'
+#     - '* soft nofile 65535'
+#     - '* hard nofile 65535'
+#     - '* hard memlock 65536'
+#     - '* soft memlock 65536'
 
-- name: Make java 1.8.0 as an alternative with low priority
-  alternatives:
-    name: java
-    link: /usr/bin/java
-    path: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.322.b06-1.el7_9.x86_64/jre/bin/java
-    priority: 50
-  become: true
+# - name: Make java 1.8.0 as an alternative with low priority
+#   alternatives:
+#     name: java
+#     link: /usr/bin/java
+#     path: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.322.b06-1.el7_9.x86_64/jre/bin/java
+#     priority: 50
+#   become: true
 
-- name: correct java version selected
-  alternatives:
-    name: java
-    link: /usr/bin/java
-    path: /usr/lib/jvm/java-11-openjdk-11.0.14.1.1-1.el7_9.x86_64/bin/java
-    priority: 60
-  become: true
+# - name: correct java version selected
+#   alternatives:
+#     name: java
+#     link: /usr/bin/java
+#     path: /usr/lib/jvm/java-11-openjdk-11.0.14.1.1-1.el7_9.x86_64/bin/java
+#     priority: 60
+#   become: true
 
-- name: Upload NSO T-SDN FP image file
-  copy:
-    src: "/tmp/{{ installer }}.signed.bin"
-    dest: "/tmp/{{ installer }}.signed.bin"
+# - name: Upload NSO T-SDN FP image file
+#   copy:
+#     src: "/tmp/{{ installer }}.signed.bin"
+#     dest: "/tmp/{{ installer }}.signed.bin"
 
-- name: Unpack T-SDN FP image file
+# - name: Unpack T-SDN FP image file
+#   shell: |
+#     cd /tmp
+#     sh /tmp/{{ installer }}.signed.bin --skip-verification
+#     tar -zxvf {{ installer }}.tar.gz
+#   become: true
+
+# - name: Load T-SDN FP packages
+#   shell: |
+#     cp /tmp/{{ installer }}/core-fp-packages/{{ item }}.tar.gz /opt/ncs/packages/
+#     ln -s /opt/ncs/packages/{{ item }}.tar.gz  /var/opt/ncs/packages/{{ item }}.tar.gz
+#   loop:
+#     - ncs-5.5.2.12-cisco-sr-te-cfp-3.0.0
+#     - ncs-5.5.2.12-cisco-sr-te-cfp-internal-3.0.0
+#     - ncs-5.5.2.3-custom-template-utils-2.0.6
+#     - ncs-5.5.2.12-cisco-tsdn-core-fp-common-3.0.0
+#     - ncs-5.5.2.7-core-fp-common-1.26.0
+#     - ncs-5.5.2-cisco-iosxr-7.33.12
+#     - ncs-5.5.2.3-core-fp-plan-notif-generator-1.0.6
+#   become: true
+  
+# - name: start ncs application
+#   shell: NCS_RELOAD_PACKAGES=force /etc/init.d/ncs restart
+#   become: true
+
+# - name: Load merge configs
+#   shell: |
+#     ncs_load -l -m -u admin /tmp/{{ installer }}/config/{{ item }}
+#   loop:
+#     - SR-plan-notification-settings.xml
+#     - SR-status-codes.xml
+#     - SR-internal-plan-kicker.xml
+#     - SR-cfp-configuration-kicker.xml
+#     - dispatch-map-settings.xml
+#     - commit-queue-settings.xml
+
+# - name: Installing SR-TE CFP-IOSXR NC
+#   shell: |
+#     cp /tmp/{{ installer }}/core-fp-packages/{{ item }}.tar.gz /opt/ncs/packages/
+#     ln -s /opt/ncs/packages/{{ item }}.tar.gz  /var/opt/ncs/packages/{{ item }}.tar.gz
+#   loop:
+#     - ncs-5.5.2.12-sr-te-multi-vendors-3.0.0
+#     - ncs-5.5.2-cisco-iosxr_netconf-7.4.1
+#   become: true
+
+# - name: start ncs application
+#   shell: NCS_RELOAD_PACKAGES=force /etc/init.d/ncs restart
+#   become: true
+
+# - name: Post Installation Tasks for SR-TE CFP- IOSXR NC
+#   shell: |
+#     ncs_load -l -m -u admin /tmp/{{ installer }}/config/{{ item }}
+#   loop:
+#     - SR-multi-vendor-iosxr-netconf.xml
+
+# - name: Installing SR-TE CFP-IOSXE CLI
+#   shell: |
+#     cp /tmp/{{ installer }}/core-fp-packages/{{ item }}.tar.gz /opt/ncs/packages/
+#     ln -s /opt/ncs/packages/{{ item }}.tar.gz  /var/opt/ncs/packages/{{ item }}.tar.gz
+#   loop:
+#     - ncs-5.5.2-cisco-ios-6.74.8
+#   become: true
+
+# - name: start ncs application
+#   shell: NCS_RELOAD_PACKAGES=force /etc/init.d/ncs restart
+#   become: true
+
+# - name: Post Installation Tasks for SR-TE CFP-IOSXE CLI
+#   shell: |
+#     ncs_load -l -m -u admin /tmp/{{ installer }}/config/{{ item }}
+#   loop:
+#     - SR-multi-vendor-iosxe-cli.xml
+
+# - name: Installing L2VPN Services
+#   shell: |
+#     cp /tmp/{{ installer }}/example-packages/{{ item }}.tar.gz /opt/ncs/packages/
+#     ln -s /opt/ncs/packages/{{ item }}.tar.gz  /var/opt/ncs/packages/{{ item }}.tar.gz
+#   loop:
+#     - ncs-5.5.2.12-cisco-flat-L2vpn-fp-EXAMPLE-3.0.0
+#     - ncs-5.5.2.12-cisco-flat-L2vpn-fp-internal-EXAMPLE-3.0.0
+#     - ncs-5.5.2.3-core-fp-delete-tag-service-1.0.5
+#     - ncs-5.5.2.12-cisco-aa-service-assurance-EXAMPLE-3.0.0
+#     - ncs-5.5-resource-manager-3.5.4
+#   become: true
+
+# - name: start ncs application
+#   shell: NCS_RELOAD_PACKAGES=force /etc/init.d/ncs restart
+#   become: true
+
+# - name: Post Installation Tasks for L2VPN-IOSXR CLI
+#   shell: |
+#     ncs_load -l -m -u admin /tmp/{{ installer }}/config/{{ item }}
+#   loop:
+#     - L2VPN-plan-notification-settings.xml
+#     - L2VPN-status-codes.xml
+#     - L2VPN-internal-plan-kicker.xml
+#     - L2VPN-cfp-configuration-kicker.xml
+#     - L2VPN-AA-notification-settings.xml
+#     - xr-sman-id-resource-pool.xml
+
+# - name: Installing L2NM Services
+#   shell: |
+#     cp /tmp/{{ installer }}/example-packages/{{ item }}.tar.gz /opt/ncs/packages/
+#     ln -s /opt/ncs/packages/{{ item }}.tar.gz  /var/opt/ncs/packages/{{ item }}.tar.gz
+#   loop:
+#     - ncs-5.5.2.12-ietf-l2vpn-nm-EXAMPLE-3.0.0
+#   become: true
+
+# - name: start ncs application
+#   shell: NCS_RELOAD_PACKAGES=force /etc/init.d/ncs restart
+#   become: true
+
+# - name: Post Installation Tasks for L2VPN-IOSXR CLI
+#   shell: |
+#     ncs_load -l -m -u admin /tmp/{{ installer }}/config/{{ item }}
+#   loop:
+#     - IETF-L2NM-plan-notification-settings.xml
+#     - IETF-L2NM-status-codes.xml
+#     - IETF-L2NM-internal-plan-kicker.xml
+
+- name: Installing L2VPN-IOSXR NC
   shell: |
-    cd /tmp
-    sh /tmp/{{ installer }}.signed.bin --skip-verification
-    tar -zxvf {{ installer }}.tar.gz
-  become: true
-
-- name: Unpack T-SDN FP packages
-  shell: |
-    cd /tmp/{{ installer }}/core-fp-packages
-    cp {{ item }}.tar.gz /opt/ncs/packages/
+    cp /tmp/{{ installer }}/example-packages/{{ item }}.tar.gz /opt/ncs/packages/
     ln -s /opt/ncs/packages/{{ item }}.tar.gz  /var/opt/ncs/packages/{{ item }}.tar.gz
   loop:
-    - ncs-5.5.2.12-cisco-sr-te-cfp-3.0.0
-    - ncs-5.5.2.12-cisco-sr-te-cfp-internal-3.0.0
-    - ncs-5.5.2.3-custom-template-utils-2.0.6
-    - ncs-5.5.2.12-cisco-tsdn-core-fp-common-3.0.0
-    - ncs-5.5.2.7-core-fp-common-1.26.0
-    - ncs-5.5.2-cisco-iosxr-7.33.12
-    - ncs-5.5.2.3-core-fp-plan-notif-generator-1.0.6
+    - ncs-5.5.2.12-ietf-l2vpn-nm-EXAMPLE-3.0.0
   become: true
-  
+
 - name: start ncs application
   shell: NCS_RELOAD_PACKAGES=force /etc/init.d/ncs restart
   become: true
 
-- name: Load merge configs
+- name: Post Installation Tasks for L2VPN-IOSXR CLI
   shell: |
     ncs_load -l -m -u admin /tmp/{{ installer }}/config/{{ item }}
   loop:
-    - SR-plan-notification-settings.xml
-    - SR-status-codes.xml
-    - SR-internal-plan-kicker.xml
-    - SR-cfp-configuration-kicker.xml
-    - dispatch-map-settings.xml
-    - commit-queue-settings.xml
+    - IETF-L2NM-plan-notification-settings.xml
+    - IETF-L2NM-status-codes.xml
+    - IETF-L2NM-internal-plan-kicker.xml
+
 ...

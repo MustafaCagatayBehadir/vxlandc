@@ -198,6 +198,15 @@ submodule cisco-dc-routepolicy {
                     tailf:info "Set weight. <0..65535>";
                     type uint16;
                 }
+
+                leaf address-family {
+                    tailf:info "Prefix-List address-family can be IPv4 | IPv6";
+                    tailf:hidden "dc";
+                    type enumeration {
+                        enum ipv4;
+                        enum ipv6;
+                    }
+                }
             }
         }
 
@@ -236,7 +245,7 @@ submodule cisco-dc-routepolicy {
                     default permit;
                 }
 
-                leaf set-rules {
+                leaf set-rule {
                     tailf:info "Attach Set rule name";
                     type leafref {
                         path "../../../cisco-dc:rules-set/cisco-dc:set-rules/cisco-dc:name";

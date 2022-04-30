@@ -4,11 +4,10 @@
             "name": "BD-SERVICE-2",
             "cisco-dc:bd-subnet": [
                 {
-                    "address": "10.0.3.1/24",
-                    "preferred": "no"
+                    "address": "2001:db8:cafe::1/64",
+                    "preferred": "yes"
                 }
-            ],
-            "vrf": "tcell-grt"
+            ]
         }
     ]
 }

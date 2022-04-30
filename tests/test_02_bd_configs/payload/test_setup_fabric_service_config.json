@@ -33,7 +33,16 @@
                                     "name": "PC_PG_1_TRUNK",
                                     "mode": "trunk"
                                 }
-                            ]
+                            ],
+                            "bd-subnet": [
+                                {
+                                    "address": "2001:db8:cafe::1/64"
+                                },
+                                {
+                                    "address": "2001:db8:cafe:1::1/64"
+                                }
+                            ],
+                            "vrf": "tcell-grt"
                         },
                         {
                             "name": "BD-SERVICE-3",

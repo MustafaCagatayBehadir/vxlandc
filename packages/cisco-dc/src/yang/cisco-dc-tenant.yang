@@ -49,9 +49,8 @@ submodule cisco-dc-tenant {
             type dc-string;
         }
 
-        leaf id {
-            tailf:hidden "dc";
-            type uint32;
+        tailf:validate "bridge-domain-service-validation" {
+            tailf:dependency "bd-subnet";
         }
 
         container l2vni {
@@ -145,10 +144,6 @@ submodule cisco-dc-tenant {
                     enum no;
                 }
                 default no;
-                must "count(../../bd-subnet[preferred='yes']) = 1 or ../address-family = 'ipv6'" {
-                    error-message
-                      "One primary address must be selected for address-family ipv4.";
-                }
             }
 
             leaf address-family {

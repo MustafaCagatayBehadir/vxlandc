@@ -1,0 +1,16 @@
+{
+    "tailf-ned-cisco-nx:loopback": [
+        {
+            "name": 100,
+            "description": "tcell-grt:eBGP-Extension-Source-Interface",
+            "vrf": {
+                "member": "tcell-grt"
+            },
+            "ip": {
+                "address": {
+                    "ipaddr": "10.1.0.2/32"
+                }
+            }
+        }
+    ]
+}

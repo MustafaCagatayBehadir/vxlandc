@@ -10,8 +10,8 @@ class DCRoutePolicyConfigsTests:
     A Test Class for NSO dc-route-policy service
     """
 
-    payload_path = Path.cwd() / "tests" / "test_03_dc_route_policy_configs" / "payload"
-    expected_path = Path.cwd() / "tests" / "test_03_dc_route_policy_configs" / "expected"
+    payload_path = Path.cwd() / "tests" / "test_04_dc_route_policy_configs" / "payload"
+    expected_path = Path.cwd() / "tests" / "test_04_dc_route_policy_configs" / "expected"
     nso = NsoRestconfCall()
 
     @classmethod
@@ -49,7 +49,7 @@ class DCRoutePolicyConfigsTests:
         assert resp.status_code == 200
         assert json.loads(resp.text) == expected
 
-    @classmethod
-    def teardown_class(cls):
-        cls.nso.delete(path="cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric")
-        cls.nso.delete(path="resource-allocator:resource-pools")
+    # @classmethod
+    # def teardown_class(cls):
+    #     cls.nso.delete(path="cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric")
+    #     cls.nso.delete(path="resource-allocator:resource-pools")

@@ -1,4 +1,7 @@
 import ncs
+import _ncs
+import ncs.maapi as maapi
+import ncs.maagic as maagic
 from .resource_manager import id_allocator
 from .l3out_routing import _configure_l3out_routing
 from . import utils
@@ -176,3 +179,49 @@ def _apply_template(bd):
     template = ncs.template.Template(bd)
     template.apply('cisco-dc-services-fabric-bd-l2vni-service')
     template.apply('cisco-dc-services-fabric-l3out-routing')
+
+
+class BridgeDomainServiceValidator(object):
+    def __init__(self, log):
+        self.log = log
+
+    def cb_validate(self, tctx, kp, newval):
+        '''
+        Validating bridge-domain bd-subnet list has at least one primary ipv4 address
+        '''
+
+        try:
+            self.log.debug("Validating bridge-domain service")
+            m = maapi.Maapi()
+            th = m.attach(tctx)
+
+            service = maagic.get_node(th, str(kp))
+
+            # raise Exception("Invalid bridge-domain config")
+            self._bd_subnet_validation(th, service)
+
+        except Exception as e:
+            self.log.error(e)
+            raise
+        return _ncs.OK
+
+    def _bd_subnet_validation(self, th, bd):
+        '''
+        :th: ncs.maapi.Transaction
+        :bd: ncs.maagic.ListElement
+        '''
+        if bd.vrf:
+            flag_ipv4, num_preferred_address = False, 0
+            for bd_subnet in bd.bd_subnet:
+                ip = utils.getIpAddress(bd_subnet.address)
+                if type(ip_address(ip)) is IPv4Address:
+                    flag_ipv4 = True
+                    if bd_subnet.preferred.string == 'yes':
+                        num_preferred_address += 1
+                if type(ip_address(ip)) is IPv6Address:
+                    if bd_subnet.preferred.string == 'yes':
+                        raise Exception(f'Bridge-Domain {bd.name} bd-subnet {bd_subnet.address} should not be selected as preferred address.')
+            if flag_ipv4 and num_preferred_address < 1:
+                raise Exception(f'Bridge-Domain {bd.name} has at least one preferred IPv4 subnet.')
+            elif flag_ipv4 and num_preferred_address > 1:
+                raise Exception(f'Bridge-Domain {bd.name} should not have more than one preferred IPv4 subnet.')

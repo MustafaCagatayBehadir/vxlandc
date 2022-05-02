@@ -21,7 +21,7 @@ submodule cisco-dc-site {
     import resource-allocator {
         prefix ralloc;
     }
-    
+
     import id-allocator {
         prefix idalloc;
     }
@@ -42,6 +42,7 @@ submodule cisco-dc-site {
         }
 
         list node {
+            tailf:info "Deploy Fabric Node Configurations";
             key hostname;
 
             leaf hostname {
@@ -80,8 +81,10 @@ submodule cisco-dc-site {
         }
 
         list node-group {
+            tailf:info "Deploy Fabric vPC Node-Group Configurations";
             key id;
-            unique "node-1 node-2";
+            unique "node-1";
+            unique "node-2";
 
             leaf id {
                 tailf:info "vpc Domain ID";

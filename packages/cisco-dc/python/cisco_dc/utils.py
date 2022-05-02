@@ -45,38 +45,51 @@ def get_node_group(root, port, device):
                 return int(r[0])
 
 
-def get_description(port, port_parameters):
+def get_description(port):
     """Function to create port description for Ethernet & Port-Channel & VPC Port-Channel on devices
 
     Args:
         port: service node
-        port_parameters: port configuration elements dictionary
 
     Returns:
         String: Port description
 
     """
-    description = f"{port_parameters['name']}_{port_parameters['mode']}_{port_parameters['speed']}".upper(
-    )
-    if port_parameters['type'] == 'ethernet':
-        return f"{description}_ETH"
-    elif port_parameters['type'] == 'port-channel':
-        return f"{description}_PC"
-    return f"{description}_VPC"
+    if port.port_type == 'ethernet':
+        return f'{port.name}:{port.mode}:{port.speed}'
+    elif port.port_type == 'port-channel':
+        return f'{port.name}:{port.mode}:{get_port_channel_speed(port)}'
+    elif port.port_type == 'vpc-port-channel':
+        return f'{port.name}:{port.mode}:{get_port_channel_speed(port)}'
 
 
-def get_po_member_description(node_port, port_parameters):
+def get_po_member_description(port):
     """Function to create port channel member port description
 
     Args:
-        node_port: Port id like 1/10
-        port_parameters: port configuration elements dictionary
+        port: service node
 
     Returns:
         String: Port channel member port description
 
     """
-    return f"PO{port_parameters['port-channel-id']}_MEMBER_ETH_{node_port}"
+    return f'{port.name}:MEMBER'
+
+
+def get_port_channel_speed(port):
+    """Function to get port channel speed
+
+    Args:
+        port: service node
+
+    Returns:
+        String: Port channel speed ex. 30G, 4G, 100G
+
+    """
+    if port.port_type == 'port-channel':
+        return f'{len(port.port_channel.node_port) * int(port.speed.string[:-1])}G'
+    elif port.port_type == 'vpc-port-channel':
+        return f'{len(port.vpc_port_channel.node_1_port) * int(port.speed.string[:-1])}G'
 
 
 def get_bum(speed):

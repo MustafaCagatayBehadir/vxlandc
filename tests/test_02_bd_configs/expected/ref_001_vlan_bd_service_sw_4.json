@@ -8,6 +8,11 @@
                 "id": 3,
                 "name": "BD-SERVICE-2:network-vlan",
                 "vn-segment": 60001
+            },
+            {
+                "id": 3101,
+                "name": "tcell-grt:vrf-vlan",
+                "vn-segment": 80000
             }
         ]
     }

@@ -118,8 +118,8 @@ def _set_hidden_leaves(root, port, tctx, id_parameters, log):
             vpc_node = port.vpc_port_channel.node.create(node)
             vpc_node.node_port = node_port
 
-    port.auto_bum = utils.get_bum(port.speed) 
-    
+    port.auto_bum = utils.get_bum(port.speed)
+
     bd_services = root.cisco_dc__dc_site[port.site].port_configs[port.port_group].bd_service
     for bd_service in bd_services:
         bd = ncs.maagic.cd(root, bd_service.kp)
@@ -141,8 +141,7 @@ def _set_hidden_leaves(root, port, tctx, id_parameters, log):
             if (port._path, node_1) not in bd.device:
                 bd.device.create(port._path, node_1)
             if (port._path, node_2) not in bd.device:
-                bd.device.create(port._path, node_2)                
-            
+                bd.device.create(port._path, node_2)
 
         log.info(f'Bridge-domain {bd.name} is activated by port {port.name}')
 
@@ -154,8 +153,14 @@ def _apply_template(port):
         port: service node
 
     """
+    vars = ncs.template.Variables()
+    vars.add('DESCRIPTION',
+             port.description if port.description else utils.get_description(port))
+    vars.add('MEMBER_DESCRIPTION', utils.get_po_member_description(port))
+    vars.add('BUM', float(port.bum) if port.bum else float(port.auto_bum))
     template = ncs.template.Template(port)
-    template.apply('cisco-dc-services-fabric-port-service')
+    template.apply('cisco-dc-services-fabric-port-service', vars)
+
 
 class PortConfigServiceValidator(object):
     def __init__(self, log):

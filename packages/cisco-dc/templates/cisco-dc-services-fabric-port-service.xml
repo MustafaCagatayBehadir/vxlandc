@@ -1,16 +1,7 @@
 <config-template xmlns="http://tail-f.com/ns/config/1.0">
     <?save-context service?>
-    <?set DESCRIPTION = {concat(string(name), ":", string(mode), ":", string(speed))}?>
-    <?set BUM = {auto-bum}?>
-    <?if {boolean(description)}?>
-        <?set DESCRIPTION = {string(description)}?>
-    <?end?>
-    <?if {bum}?>
-        <?set BUM = {bum}?>
-    <?end?>
     <devices xmlns="http://tail-f.com/ns/ncs">
-        <?if {type = 'ethernet'}?>
-            <device>
+        <device when="{type='ethernet'}">
             <name>{ethernet/node}</name>
             <config>
                 <interface xmlns="http://tail-f.com/ned/cisco-nx">
@@ -19,45 +10,30 @@
                         <?switch-context service?>
                         <enable>
                             <switchport>true</switchport>
-                        </enable>              
+                        </enable>
                         <switchport>
                             <mode>{mode}</mode>
-                            <?if {mode = 'trunk'}?>
-                                <?foreach {bd-vlan}?>
-                                    <trunk>
-                                        <allowed>
-                                            <vlan>
-                                                <ids>{vlan}</ids>
-                                            </vlan>
-                                        </allowed>
-                                    </trunk>                                
-                                <?end?>
-                            <?else?>
-                                <?foreach {bd-vlan}?>
-                                    <access>
-                                        <vlan>{vlan}</vlan>
-                                    </access>
-                                <?end?>
-                            <?end?>
+                            <trunk when="{mode='trunk'}">
+                                <allowed>
+                                    <vlan>
+                                        <ids>{bd-vlan/vlan}</ids>
+                                    </vlan>
+                                </allowed>
+                            </trunk>
+                            <access when="{mode='access'}">
+                                <vlan>{bd-vlan/vlan}</vlan>
+                            </access>
                         </switchport>
-                        <?if {shutdown}?>
-                            <shutdown/>
-                        <?else?>
-                            <shutdown tags="delete"/>
-                        <?end?>
+                        <shutdown when="{shutdown}" />
+                        <shutdown when="{not(shutdown)}" tags="delete" />
                         <description>{$DESCRIPTION}</description>
                         <mtu>9216</mtu>
                         <spanning-tree>
-                            <?if {connection = 'host'}?>
-                                <bpduguard>enable</bpduguard>
-                            <?else?>
-                                <guard>root</guard>
-                            <?end?>
+                            <bpduguard when="{connection='host'}">enable</bpduguard>
+                            <guard when="{connection='switch'}">root</guard>
                             <port>
                                 <type>edge</type>
-                                <?if {mode = 'trunk'}?>
-                                    <trunk/>
-                                <?end?>
+                                <trunk when="{mode='trunk'}" />
                             </port>
                         </spanning-tree>
                         <storm-control>
@@ -71,25 +47,18 @@
                                 <level>{$BUM}</level>
                             </multicast>
                             <action>
-                                <?if {storm-control-action-trap}?>
-                                    <trap/>
-                                <?else?>
-                                    <shutdown/>
-                                <?end?>
+                                <trap when="{string(storm-control-action)='trap'}" />
+                                <shutdown when="{string(storm-control-action)='shutdown'}" />
                             </action>
                         </storm-control>
-                        <?if {string(deref(ethernet/node)/../node-type) = 'vpc'}?>
-                            <vpc>
-                                <orphan-port>suspend</orphan-port>
-                            </vpc>
-                        <?end?>
+                        <vpc when="{string(deref(ethernet/node)/../node-type)='vpc'}">
+                            <orphan-port>suspend</orphan-port>
+                        </vpc>
                     </Ethernet>
                 </interface>
             </config>
         </device>
-        <?elif {type = 'port-channel'}?>
-            <?set MEMBER_DESCRIPTION = {concat(string(name), ":", "MEMBER")}?>
-            <device>
+        <device when="{type='port-channel'}">
             <name>{port-channel/node}</name>
             <config>
                 <interface xmlns="http://tail-f.com/ned/cisco-nx">
@@ -101,42 +70,27 @@
                         </enable>
                         <switchport>
                             <mode>{mode}</mode>
-                            <?if {mode = 'trunk'}?>
-                                <?foreach {bd-vlan}?>
-                                    <trunk>
-                                        <allowed>
-                                            <vlan>
-                                                <ids>{vlan}</ids>
-                                            </vlan>
-                                        </allowed>
-                                    </trunk>                                
-                                <?end?>
-                            <?else?>
-                                <?foreach {bd-vlan}?>
-                                    <access>
-                                        <vlan>{vlan}</vlan>
-                                    </access>
-                                <?end?>
-                            <?end?>
+                            <trunk when="{mode='trunk'}">
+                                <allowed>
+                                    <vlan>
+                                        <ids>{bd-vlan/vlan}</ids>
+                                    </vlan>
+                                </allowed>
+                            </trunk>
+                            <access when="{mode='access'}">
+                                <vlan>{bd-vlan/vlan}</vlan>
+                            </access>
                         </switchport>
-                        <?if {shutdown}?>
-                            <shutdown/>
-                        <?else?>
-                            <shutdown tags="delete"/>
-                        <?end?>
+                        <shutdown when="{shutdown}" />
+                        <shutdown when="{not(shutdown)}" tags="delete" />
                         <description>{$DESCRIPTION}</description>
                         <mtu>9216</mtu>
                         <spanning-tree>
-                            <?if {connection = 'host'}?>
-                                <bpduguard>enable</bpduguard>
-                            <?else?>
-                                <guard>root</guard>
-                            <?end?>
+                            <bpduguard when="{connection='host'}">enable</bpduguard>
+                            <guard when="{connection='switch'}">root</guard>
                             <port>
                                 <type>edge</type>
-                                <?if {mode = 'trunk'}?>
-                                    <trunk/>
-                                <?end?>
+                                <trunk when="{mode='trunk'}" />
                             </port>
                         </spanning-tree>
                         <storm-control>
@@ -150,18 +104,13 @@
                                 <level>{$BUM}</level>
                             </multicast>
                             <action>
-                                <?if {storm-control-action-trap}?>
-                                    <trap/>
-                                <?else?>
-                                    <shutdown/>
-                                <?end?>
+                                <trap when="{string(storm-control-action)='trap'}" />
+                                <shutdown when="{string(storm-control-action)='shutdown'}" />
                             </action>
                         </storm-control>
-                        <?if {string(deref(ethernet/node)/../node-type) = 'vpc'}?>
-                            <vpc>
-                                <orphan-port>suspend</orphan-port>
-                            </vpc>
-                        <?end?>
+                        <vpc when="{string(deref(ethernet/node)/../node-type)='vpc'}">
+                            <orphan-port>suspend</orphan-port>
+                        </vpc>
                     </port-channel>
                     <Ethernet>
                         <name>{node-port}</name>
@@ -170,20 +119,15 @@
                             <id>{port-channel/allocated-port-channel-id}</id>
                             <mode>active</mode>
                         </channel-group>
-                        <?if {shutdown}?>
-                            <shutdown/>
-                        <?else?>
-                            <shutdown tags="delete"/>
-                        <?end?>
+                        <shutdown when="{shutdown}" />
+                        <shutdown when="{not(shutdown)}" tags="delete" />
                         <description>{$MEMBER_DESCRIPTION}</description>
                         <mtu>9216</mtu>
                     </Ethernet>
                 </interface>
             </config>
         </device>
-        <?else?>
-            <?set MEMBER_DESCRIPTION = {concat(string(name), ":", "MEMBER")}?>
-            <device>
+        <device when="{type='vpc-port-channel'}">
             <name>{vpc-port-channel/node/name}</name>
             <config>
                 <interface xmlns="http://tail-f.com/ned/cisco-nx">
@@ -195,42 +139,27 @@
                         </enable>
                         <switchport>
                             <mode>{mode}</mode>
-                            <?if {mode = 'trunk'}?>
-                                <?foreach {bd-vlan}?>
-                                    <trunk>
-                                        <allowed>
-                                            <vlan>
-                                                <ids>{vlan}</ids>
-                                            </vlan>
-                                        </allowed>
-                                    </trunk>                                
-                                <?end?>
-                            <?else?>
-                                <?foreach {bd-vlan}?>
-                                    <access>
-                                        <vlan>{vlan}</vlan>
-                                    </access>
-                                <?end?>
-                            <?end?>
+                            <trunk when="{mode='trunk'}">
+                                <allowed>
+                                    <vlan>
+                                        <ids>{bd-vlan/vlan}</ids>
+                                    </vlan>
+                                </allowed>
+                            </trunk>
+                            <access when="{mode='access'}">
+                                <vlan>{bd-vlan/vlan}</vlan>
+                            </access>
                         </switchport>
-                        <?if {shutdown}?>
-                            <shutdown/>
-                        <?else?>
-                            <shutdown tags="delete"/>
-                        <?end?>
+                        <shutdown when="{shutdown}" />
+                        <shutdown when="{not(shutdown)}" tags="delete" />
                         <description>{$DESCRIPTION}</description>
                         <mtu>9216</mtu>
                         <spanning-tree>
-                            <?if {connection = 'host'}?>
-                                <bpduguard>enable</bpduguard>
-                            <?else?>
-                                <guard>root</guard>
-                            <?end?>
+                            <bpduguard when="{connection='host'}">enable</bpduguard>
+                            <guard when="{connection='switch'}">root</guard>
                             <port>
                                 <type>edge</type>
-                                <?if {mode = 'trunk'}?>
-                                    <trunk/>
-                                <?end?>
+                                <trunk when="{mode='trunk'}" />
                             </port>
                         </spanning-tree>
                         <storm-control>
@@ -244,11 +173,8 @@
                                 <level>{$BUM}</level>
                             </multicast>
                             <action>
-                                <?if {storm-control-action-trap}?>
-                                    <trap/>
-                                <?else?>
-                                    <shutdown/>
-                                <?end?>
+                                <trap when="{string(storm-control-action)='trap'}" />
+                                <shutdown when="{string(storm-control-action)='shutdown'}" />
                             </action>
                         </storm-control>
                         <vpc>
@@ -262,17 +188,13 @@
                             <id>{vpc-port-channel/allocated-port-channel-id}</id>
                             <mode>active</mode>
                         </channel-group>
-                        <?if {shutdown}?>
-                            <shutdown/>
-                        <?else?>
-                            <shutdown tags="delete"/>
-                        <?end?>
+                        <shutdown when="{shutdown}" />
+                        <shutdown when="{not(shutdown)}" tags="delete" />
                         <description>{$MEMBER_DESCRIPTION}</description>
                         <mtu>9216</mtu>
                     </Ethernet>
                 </interface>
             </config>
         </device>
-        <?end?>
     </devices>
 </config-template>

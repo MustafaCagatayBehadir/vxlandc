@@ -318,9 +318,24 @@ submodule cisco-dc-port-config {
             type empty;
         }
 
-        leaf storm-control-action-trap {
-            tailf:info "Change storm control action to trap";
-            type empty;
+        leaf storm-control-action {
+            tailf:info "Storm control action can be trap | shutdown";
+            tailf:cli-show-with-default;
+            type enumeration {
+                enum trap;
+                enum shutdown;
+            }
+            default shutdown;
+        }
+
+        leaf auto-bum {
+            tailf:info "BUM is auto-generated based on port speed.";
+            tailf:cli-show-config;
+            config false;
+            type decimal64 {
+                fraction-digits 2;
+                range "0.0..100.0";
+            }            
         }
 
         leaf bum {
@@ -329,14 +344,6 @@ submodule cisco-dc-port-config {
                 fraction-digits 2;
                 range "0.0..100.0";
             }
-        }
-
-        leaf auto-bum {
-            tailf:hidden "Just for convenience";
-            type decimal64 {
-                fraction-digits 2;
-                range "0.0..100.0";
-            }            
         }
 
         leaf site {

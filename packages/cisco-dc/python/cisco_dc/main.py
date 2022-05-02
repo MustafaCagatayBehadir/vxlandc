@@ -17,6 +17,9 @@ class Main(ncs.application.Application):
     def setup(self):
         self.log.info('Main RUNNING')
 
+        # Port Config Premod
+        self.register_service('port-config-servicepoint', port_config_service.PortServiceCallback)
+
         # Port Config Registration
         self.register_nano_service('port-config-servicepoint', 'ncs:self',
                                    'cisco-dc:id-allocated', port_config_service.PortServiceSelfComponent)

@@ -1,5 +1,7 @@
 import ncs
+import _ncs
 from ncs.experimental import Query
+import json
 
 
 def get_port_channel_id_pool_name(root, port):
@@ -170,6 +172,21 @@ def getIpPrefix(addr):
     return parts[1]
 
 
+def get_kp_service_id(kp):
+    kpath = str(kp)
+    service = kpath[kpath.rfind("{") + 1:len(kpath) - 1]
+    return service
+
+
+def get_service_operation(op):
+    if op == _ncs.dp.NCS_SERVICE_CREATE:
+        return "SERVICE_CREATE"
+    elif op == _ncs.dp.NCS_SERVICE_UPDATE:
+        return "SERVICE_UPDATE"
+    else:
+        return "SERVICE_DELETE"
+
+
 def is_node_vpc(root, port, port_parameters):
     """Function to check if node is Standalone or vPC
 
@@ -188,6 +205,26 @@ def is_node_vpc(root, port, port_parameters):
     elif port_parameters['type'] == 'port-channel':
         return site.node[port_parameters['node']].node_type == 'vpc'
     return True
+
+
+def send_show_command(device, cmd, log):
+    """Function to send live status exec show command
+
+    Args:
+        device: Device ncs.maagic ListElement
+        cmd: Command to run
+        log: log object(self.log)
+
+    Returns:
+        result: Json Object
+    """
+    show = device.live_status.__getitem__('exec').show
+    input = show.get_input()
+    input.args = [cmd]
+    result = show.request(input).result
+    log.debug(f'Result :', result)
+    return json.loads(result)
+
 
 
 def apply_template(service, template_name, template_vars):

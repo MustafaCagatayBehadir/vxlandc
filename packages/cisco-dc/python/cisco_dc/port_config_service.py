@@ -7,6 +7,73 @@ from .resource_manager import id_allocator
 from collections import defaultdict
 
 
+class PortServiceCallback(ncs.application.Service):
+    @ncs.application.Service.pre_modification
+    def cb_pre_modification(self, tctx, op, kp, root, proplist):
+
+        self.log.info(
+            "ENTRY_POINT for {} at pre_mod of PortConfigService, operation: {}" .format(
+                utils.get_kp_service_id(kp),
+                utils.get_service_operation(op)))
+        # If op is delete, validate port is in physical down state
+        try:
+            if op == _ncs.dp.NCS_SERVICE_DELETE:
+               with ncs.maapi.single_read_trans('admin', 'python') as t:
+                    port = maagic.get_node(t, str(kp))
+                    
+                    # raise Exception(" invalid delete operation")
+                    self._is_port_down(root, port)
+        
+        except Exception as e:
+            self.log.error(e)
+            raise
+
+
+    def _is_port_down(self, root, port):
+        """Function to check port physical state
+
+        Args:
+            root: Maagic object pointing to the root of the CDB
+            port: service node
+        
+        """
+        if port.port_type == 'ethernet':
+            eth = port.ethernet
+            device = root.ncs__devices.device[eth.node]
+            result = utils.send_show_command(device, 'interface status | json-pretty', self.log)
+            for node_port in eth.node_port:
+                for interface in result['TABLE_interface']['ROW_interface']:
+                    if interface['interface'] == f'Ethernet{node_port}':
+                        if interface['state'] == 'connected':
+                            raise Exception(f'Port {port.name} state is connected, port can not be deleted.')
+                        else:
+                            break
+        
+        elif port.port_type == 'port-channel':
+            pc = port.port_channel
+            device = root.ncs__devices.device[pc.node]
+            result = utils.send_show_command(device, 'interface status | json-pretty', self.log)
+            for interface in result['TABLE_interface']['ROW_interface']:
+                if interface['interface'] == f'port-channel{pc.allocated_port_channel_id}':
+                    if interface['state'] == 'connected':
+                        raise Exception(f'Port {port.name} state is connected, port can not be deleted.')
+                    else:
+                        break
+
+        elif port.port_type == 'vpc-port-channel':
+            vpc = port.vpc_port_channel
+            for node in vpc.node:
+                device = root.ncs__devices.device[node.name]
+                result = utils.send_show_command(device, 'interface status | json-pretty', self.log)
+                for interface in result['TABLE_interface']['ROW_interface']:
+                    if interface['interface'] == f'port-channel{vpc.allocated_port_channel_id}':
+                        if interface['state'] == 'connected':
+                            raise Exception(f'Port {port.name} state is connected, port can not be deleted.')
+                        else:
+                            break
+
+
+
 class PortServiceSelfComponent(ncs.application.NanoService):
     """
     NanoService callback handler for the self component of port-config service.

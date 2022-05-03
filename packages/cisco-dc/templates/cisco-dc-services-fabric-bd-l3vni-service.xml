@@ -1,24 +1,20 @@
 <config-template xmlns="http://tail-f.com/ns/config/1.0">
     <?save-context service?>
-    <?set VRF = {string(name)}?>
-    <?set VRF_VLAN_NAME = {concat($VRF, ':', 'vrf-vlan')}?>
-    <?set AS_NUMBER = {string(as-number)}?>
     <devices xmlns="http://tail-f.com/ns/ncs">
-        <?foreach {device}?>
-            <device>
-            <name>{leaf-id}</name>
+        <device>
+            <name>{device/leaf-id}</name>
             <config>
                 <?switch-context service?>
                 <vlan xmlns="http://tail-f.com/ned/cisco-nx">
                     <vlan-list>
                         <id>{vlan-id}</id>
-                        <name>{$VRF_VLAN_NAME}</name>
+                        <name>{$VLAN_NAME}</name>
                         <vn-segment>{vni-id}</vn-segment>
                     </vlan-list>
                 </vlan>
                 <vrf xmlns="http://tail-f.com/ned/cisco-nx">
                     <context>
-                        <id>{$VRF}</id>
+                        <id>{name}</id>
                         <vni>{vni-id}</vni>
                         <rd>auto</rd>
                         <address-family>
@@ -55,9 +51,9 @@
                 </vrf>
                 <router xmlns="http://tail-f.com/ned/cisco-nx">
                     <bgp>
-                        <id>{$AS_NUMBER}</id>
+                        <id>{as-number}</id>
                         <vrf>
-                            <name>{$VRF}</name>
+                            <name>{name}</name>
                             <address-family>
                                 <proto>ipv4</proto>
                                 <type>unicast</type>
@@ -68,20 +64,12 @@
                                     <ibgp>2</ibgp>
                                 </maximum-paths>
                                 <redistribute>
-                                    <?if {direct}?>
-                                        <direct>
-                                            <?if {direct/address-family-ipv4-policy}?>
-                                                <route-map>{direct/address-family-ipv4-policy}</route-map>
-                                            <?end?>
-                                        </direct>
-                                    <?end?>
-                                    <?if {static}?>
-                                        <static>
-                                            <?if {static/address-family-ipv4-policy}?>
-                                                <route-map>{static/address-family-ipv4-policy}</route-map>
-                                            <?end?>
-                                        </static>                                    
-                                    <?end?>
+                                    <direct when="{direct}">
+                                        <route-map when="{direct/address-family-ipv4-policy}">{direct/address-family-ipv4-policy}</route-map>
+                                    </direct>
+                                    <static when="{static}">
+                                        <route-map when="{direct/address-family-ipv4-policy}">{static/address-family-ipv4-policy}</route-map>
+                                    </static>
                                 </redistribute>
                             </address-family>
                             <address-family>
@@ -94,20 +82,12 @@
                                     <ibgp>2</ibgp>
                                 </maximum-paths>
                                 <redistribute>
-                                    <?if {direct}?>
-                                        <direct>
-                                            <?if {direct/address-family-ipv6-policy}?>
-                                                <route-map>{direct/address-family-ipv6-policy}</route-map>
-                                            <?end?>
-                                        </direct>
-                                    <?end?>
-                                    <?if {static}?>
-                                        <static>
-                                            <?if {static/address-family-ipv6-policy}?>
-                                                <route-map>{static/address-family-ipv6-policy}</route-map>
-                                            <?end?>
-                                        </static>                                    
-                                    <?end?>
+                                    <direct when="{direct}">
+                                        <route-map when="{direct/address-family-ipv6-policy}">{direct/address-family-ipv6-policy}</route-map>
+                                    </direct>
+                                    <static when="{static}">
+                                        <route-map when="{direct/address-family-ipv6-policy}">{static/address-family-ipv6-policy}</route-map>
+                                    </static>
                                 </redistribute>
                             </address-family>
                         </vrf>
@@ -117,10 +97,10 @@
                     <Vlan>
                         <name>{vlan-id}</name>
                         <vrf>
-                            <member>{$VRF}</member>
+                            <member>{name}</member>
                         </vrf>
                         <ip>
-                            <forward />
+                            <forward/>
                             <redirects>false</redirects>
                         </ip>
                         <ipv6>
@@ -134,13 +114,12 @@
                         <member>
                             <vni>
                                 <id>{vni-id}</id>
-                                <associate-vrf />
+                                <associate-vrf/>
                             </vni>
                         </member>
                     </nve>
                 </interface>
             </config>
         </device>
-        <?end ?>
     </devices>
 </config-template>

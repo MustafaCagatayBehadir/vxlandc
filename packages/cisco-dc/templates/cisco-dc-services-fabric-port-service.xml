@@ -47,11 +47,11 @@
                                 <level>{$BUM}</level>
                             </multicast>
                             <action>
-                                <trap when="{string(storm-control-action)='trap'}" />
-                                <shutdown when="{string(storm-control-action)='shutdown'}" />
+                                <trap when="{storm-control-action='trap'}" />
+                                <shutdown when="{storm-control-action='shutdown'}" />
                             </action>
                         </storm-control>
-                        <vpc when="{string(deref(ethernet/node)/../node-type)='vpc'}">
+                        <vpc when="{deref(ethernet/node)/../node-type='vpc'}">
                             <orphan-port>suspend</orphan-port>
                         </vpc>
                     </Ethernet>
@@ -104,11 +104,11 @@
                                 <level>{$BUM}</level>
                             </multicast>
                             <action>
-                                <trap when="{string(storm-control-action)='trap'}" />
-                                <shutdown when="{string(storm-control-action)='shutdown'}" />
+                                <trap when="{storm-control-action='trap'}" />
+                                <shutdown when="{storm-control-action='shutdown'}" />
                             </action>
                         </storm-control>
-                        <vpc when="{string(deref(ethernet/node)/../node-type)='vpc'}">
+                        <vpc when="{deref(ethernet/node)/../node-type='vpc'}">
                             <orphan-port>suspend</orphan-port>
                         </vpc>
                     </port-channel>
@@ -173,8 +173,8 @@
                                 <level>{$BUM}</level>
                             </multicast>
                             <action>
-                                <trap when="{string(storm-control-action)='trap'}" />
-                                <shutdown when="{string(storm-control-action)='shutdown'}" />
+                                <trap when="{storm-control-action='trap'}" />
+                                <shutdown when="{storm-control-action='shutdown'}" />
                             </action>
                         </storm-control>
                         <vpc>

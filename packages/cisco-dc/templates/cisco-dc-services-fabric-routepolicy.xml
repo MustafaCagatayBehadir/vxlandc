@@ -1,8 +1,6 @@
 <config-template xmlns="http://tail-f.com/ns/config/1.0">
-    <devices xmlns="http://tail-f.com/ns/ncs">
-        <?foreach {route-policy}?>
+    <devices xmlns="http://tail-f.com/ns/ncs" foreach="{route-policy}">
             <?save-context route-policy?>
-            <?set RPL = {string(profile)}?>
             <device>
                 <name>{device/leaf-id}</name>
                 <?switch-context route-policy?>
@@ -10,14 +8,13 @@
                     <?foreach {match-and-set-group}?>
                         <?save-context match-and-set-group?>
                         <?foreach {match-rules}?>
-                            <?set MATCH_RULE = {string(name)}?>
                             <?set-context-node {deref(name)/..}?>
-                            <?set i = 5?>
-                            <?foreach {route-destination-ip}?>
-                                <ip xmlns="http://tail-f.com/ned/cisco-nx">
+                            <?set i=5?>
+                            <?foreach {prefix}?>
+                                <ip xmlns="http://tail-f.com/ned/cisco-nx" when="{address-family='ipv4'}">
                                     <prefix-list>
                                         <prefixes>
-                                            <name>{$MATCH_RULE}</name>
+                                            <name>{name}</name>
                                             <seq>
                                                 <no>{$i}</no>
                                                 <permit>{ip}</permit>
@@ -25,72 +22,69 @@
                                         </prefixes>
                                     </prefix-list>
                                 </ip>
+                                <ipv6 xmlns="http://tail-f.com/ned/cisco-nx" when="{address-family='ipv6'}">
+                                    <prefix-list>
+                                      <prefixes>
+                                        <name>{name}</name>
+                                        <seq>
+                                          <no>{$i}</no>
+                                          <permit>{ip}</permit>
+                                        </seq>
+                                      </prefixes>
+                                    </prefix-list>
+                                  </ipv6>
                                 <?set i = {$i+5}?>
                             <?end?>
                         <?end?>
                         <route-map xmlns="http://tail-f.com/ned/cisco-nx">
-                            <name>{$RPL}</name>
+                            <name>{../profile}</name>
                                 <sequence>{order}</sequence>
                                 <operation>{action}</operation>
-                                <match>
-                                    <?foreach {match-rules}?>
-                                        <?set MATCH_RULE = {string(name)}?>
-                                        <?set-context-node {deref(name)/..}?>
-                                        <?if {community}?>
-                                            <community>{community}</community>
-                                        <?elif {tag}?>
-                                            <tag>{tag}</tag>
-                                        <?else?>
-                                            <ip>
-                                                <address>
-                                                    <prefix-list>{$MATCH_RULE}</prefix-list>
-                                                </address>
-                                            </ip>
-                                        <?end?>
-                                    <?end?>
+                                <match foreach="{match-rules}">
+                                    <?set-context-node {deref(name)/..}?>
+                                    <community when="{community}">{community}</community>
+                                    <tag when="{tag}">{tag}</tag>
+                                    <ip when="{address-family='ipv4'}">
+                                        <address>
+                                            <prefix-list>{name}</prefix-list>
+                                        </address>
+                                    </ip>
+                                    <ipv6 when="{address-family='ipv6'}">
+                                        <address>
+                                          <prefix-list>{name}</prefix-list>
+                                        </address>
+                                      </ipv6>
                                 </match>
                                 <set>
                                     <?switch-context match-and-set-group?>
-                                    <?if {set-rule}?>
-                                        <?set-context-node {deref(set-rule)/..}?>
-                                        <?if {aspath-asn}?>
-                                            <as-path>
-                                                <prepend>
-                                                    <as-list>{aspath-asn/asn}</as-list>
-                                                    <last-as>{aspath-asn/lastnum}</last-as>
-                                                </prepend>
-                                            </as-path>
-                                        <?end?>
-                                        <?foreach {additional-community}?>
-                                            <community>
-                                                <community-number>{community}</community-number>
-                                                <?if {string(criteria) = 'append'}?>
-                                                    <additive />
-                                                <?end?>
-                                            </community>
-                                        <?end?>
-                                        <?if {nh-address}?>
-                                            <ip>
-                                                <next-hop>
-                                                    <next-hop-addr>{nh-address}</next-hop-addr>
-                                                </next-hop>
-                                            </ip>
-                                        <?end?>
-                                        <?if {local-preference}?>
-                                            <local-preference>{local-preference}</local-preference>
-                                        <?end?>
-                                        <?if {tag}?>
-                                            <tag>{tag}</tag>
-                                        <?end?>
-                                        <?if {weight}?>
-                                            <weight>{weight}</weight>
-                                        <?end?>
-                                    <?end?>
+                                    <?set-context-node {deref(set-rule)/..}?>
+                                    <as-path when="{aspath-asn}">
+                                        <prepend>
+                                            <as-list>{aspath-asn/asn}</as-list>
+                                            <last-as>{aspath-asn/lastnum}</last-as>
+                                        </prepend>
+                                    </as-path>
+                                    <community foreach="{additional-community}">
+                                        <community-number>{community}</community-number>
+                                        <additive when="{criteria='append'}"/>
+                                    </community>
+                                    <ip when="{nh-address and address-family='ipv4'}">
+                                        <next-hop>
+                                            <next-hop-addr>{nh-address}</next-hop-addr>
+                                        </next-hop>
+                                    </ip>
+                                    <ipv6 when="{nh-address and address-family='ipv6'}">
+                                        <next-hop>
+                                            <next-hop-addr>{nh-address}</next-hop-addr>
+                                        </next-hop>
+                                    </ipv6>
+                                    <local-preference when="{local-preference}">{local-preference}</local-preference>
+                                    <tag when="{tag}">{tag}</tag>
+                                    <weight when="{weight}">{weight}</weight>
                                 </set>
                         </route-map>
                     <?end?>
                 </config>
             </device>
-        <?end?>
     </devices>
 </config-template>

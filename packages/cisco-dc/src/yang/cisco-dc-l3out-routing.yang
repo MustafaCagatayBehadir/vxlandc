@@ -197,8 +197,8 @@ submodule cisco-dc-l3out-routing {
                     leaf direction {
                         tailf:info "Define direction on route-policy";
                         type enumeration {
-                            enum "import";
-                            enum "export";
+                            enum "in";
+                            enum "out";
                         }
                     }
 
@@ -244,7 +244,7 @@ submodule cisco-dc-l3out-routing {
                 }
 
                 leaf address-family {
-                    tailf:info "Prefix-List address-family can be IPv4 | IPv6";
+                    tailf:info "BGP address-family can be IPv4 | IPv6";
                     tailf:hidden "dc";
                     type enumeration {
                         enum ipv4;

@@ -187,6 +187,49 @@ def get_service_operation(op):
         return "SERVICE_DELETE"
 
 
+def get_network_vlan_name(bd):
+    """Function to create network vlan name
+
+    Args:
+        bd: Service node
+
+    Returns:
+        String: Vlan name
+
+    """
+    vlan_name = f'{bd.tenant}:{bd.name}:network-vlan'
+    return truncate_vlan_name(vlan_name) if len(vlan_name) > 32 else vlan_name
+
+
+def get_vrf_vlan_name(vrf):
+    """Function to create vrf vlan name
+
+    Args:
+        vrf: Service node
+
+    Returns:
+        String: Vlan name
+
+    """
+    vlan_name = f'{vrf.name}:vrf-vlan'
+    return truncate_vlan_name(vlan_name) if len(vlan_name) > 32 else vlan_name
+
+
+def truncate_vlan_name(vlan_name):
+    """Function to truncate vlan name (vlan-name >32 char is not allowed.)
+
+    Args:
+        vlan_name: Vlan name more than 32 char
+
+
+    Return:
+        String: Truncated vlan name
+
+    """
+    return f'{vlan_name[:29]}...'
+
+
+
 def is_node_vpc(root, port, port_parameters):
     """Function to check if node is Standalone or vPC
 

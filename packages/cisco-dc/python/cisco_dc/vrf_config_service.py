@@ -1,5 +1,6 @@
 import ncs
 from .resource_manager import id_allocator
+from . import utils
 
 
 class VrfServiceSelfComponent(ncs.application.NanoService):
@@ -140,4 +141,6 @@ def _apply_template(vrf):
 
     """
     template = ncs.template.Template(vrf)
+    vars = ncs.template.Variables()
+    vars.add('VLAN_NAME', utils.get_network_vlan_name(vrf))
     template.apply('cisco-dc-services-fabric-bd-l3vni-service')

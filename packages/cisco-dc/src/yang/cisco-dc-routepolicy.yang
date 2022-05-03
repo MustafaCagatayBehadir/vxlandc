@@ -70,7 +70,7 @@ submodule cisco-dc-routepolicy {
 
                     case community {
                         leaf-list community {
-                            when "not(current()/../route-destination-ip) and not(current()/../tag)";
+                            when "not(current()/../prefix) and not(current()/../tag)";
                             tailf:info "Specify community list\n"
                             + "example: [ extended:as4-nn2:4:15 regular:as2-nn2:4:15 ]";
                             type route-target;
@@ -78,9 +78,10 @@ submodule cisco-dc-routepolicy {
                     }
 
                     case prefix-list {
-                        list route-destination-ip {
+                        list prefix {
                             when "not(current()/../community) and not(current()/../tag)";
-                            tailf:info "Specify route destination ip";
+                            tailf:info "Specify route destination ip\n"
+                            + "example: [ ipv4:10.0.0.0/24 ipv6:2001:db8:cafe::/64]";
                             key ip;
                             leaf ip {
                                 tailf:info "IP address for the route destination.";
@@ -121,7 +122,7 @@ submodule cisco-dc-routepolicy {
 
                     case tag {
                         leaf tag {
-                            when "not(current()/../community) and not(current()/../route-destination-ip)";
+                            when "not(current()/../community) and not(current()/../prefix)";
                             tailf:info "Match Route Tag. <0..4294967295>";
                             type uint32;
                         }

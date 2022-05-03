@@ -1,0 +1,149 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+    <devices xmlns="http://tail-f.com/ns/ncs" foreach="{routing/bgp}">
+        <?save-context bgp?>
+        <?set VRF = {vrf}?>
+        <?set DESCRIPTION = {concat($VRF, ':', 'eBGP-Extension-Source-Interface')}?>
+        <device when="{source-interface/fabric-internal-connection}">
+            <name>{source-interface/fabric-internal-connection/loopback/node}</name>
+            <config>
+                <interface xmlns="http://tail-f.com/ned/cisco-nx">
+                    <loopback>
+                        <name>{id}</name>
+                        <description>{$DESCRIPTION}</description>
+                        <vrf>
+                            <member>{$VRF}</member>
+                        </vrf>
+                        <ip when="{../../address-family='ipv4'}">
+                            <address>
+                                <ipaddr>{address}</ipaddr>
+                            </address>
+                        </ip>
+                        <ipv6 when="{../../address-family='ipv6'}">
+                            <address>
+                                <addresses>
+                                    <addr>{address}</addr>
+                                </addresses>
+                            </address>
+                        </ipv6>
+                    </loopback>
+                </interface>
+                <router xmlns="http://tail-f.com/ned/cisco-nx">
+                    <?switch-context bgp?>
+                    <bgp>
+                        <id>{as-number}</id>
+                        <vrf>
+                            <name>{$VRF}</name>
+                            <neighbor>
+                                <id>{peer-address}</id>
+                                <inner-remote-as>
+                                    <remote-as>{remote-as}</remote-as>
+                                </inner-remote-as>
+                                <local-as when="{local-as}">{local-as}</local-as>
+                                <ebgp-multihop>{ttl}</ebgp-multihop>
+                                <update-source>{$UPDATE_SOURCE}</update-source>
+                                <disable-connected-check when="{peer-control='dis-conn-check'}"/>
+                                <timers when="{timers}">
+                                    <keepalive>{timers/keepalive}</keepalive>
+                                    <holdtime>{timers/holdtime}</holdtime>
+                                </timers>
+                                <address-family when="{address-family='ipv4'}">
+                                    <proto>ipv4</proto>
+                                    <type>unicast</type>
+                                    <route-map foreach="{peer-route-policy}">
+                                        <direction>{direction}</direction>
+                                        <name>{profile}</name>
+                                    </route-map>
+                                    <?foreach {peer-af-controls}?>
+                                    <send-community when="{current() = 'send-com'}"/>
+                                    <send-community when="{current() = 'send-ext-com'}">
+                                        <attr>extended</attr>
+                                    </send-community>
+                                    <next-hop-self when="{current()='nh-self'}"/>
+                                    <disable-peer-as-check when="{current()='dis-peer-as-check'}"/>
+                                    <allowas-in when="{current()='allow-self-as'}">
+                                        <occurrences>3</occurrences>
+                                    </allowas-in>
+                                    <as-override />
+                                    <?end ?>
+                                </address-family>
+                                <address-family when="{address-family='ipv6'}">
+                                    <proto>ipv6</proto>
+                                    <type>unicast</type>
+                                    <route-map foreach="{peer-route-policy}">
+                                        <direction>{direction}</direction>
+                                        <name>{profile}</name>
+                                    </route-map>
+                                    <?foreach {peer-af-controls}?>
+                                    <send-community when="{current() = 'send-com'}"/>
+                                    <send-community when="{current() = 'send-ext-com'}">
+                                        <attr>extended</attr>
+                                    </send-community>
+                                    <next-hop-self when="{current()='nh-self'}"/>
+                                    <disable-peer-as-check when="{current()='dis-peer-as-check'}"/>
+                                    <allowas-in when="{current()='allow-self-as'}">
+                                        <occurrences>3</occurrences>
+                                    </allowas-in>
+                                    <as-override when="{current()='as-override'}"/>
+                                    <?end ?>
+                                </address-family>
+                            </neighbor>
+                        </vrf>
+                    </bgp>
+                </router>
+            </config>
+        </device>
+        <device when="{source-interface/fabric-external-connection}">
+            <name>{source-interface/fabric-external-connection/node}</name>
+            <?set-context-node {source-interface/fabric-external-connection}?>
+            <?if {string(connection) = 'uplink-to-dci-gw-01'}?>
+                <?set DESCRIPTION = {concat($DESCRIPTION, ':', 'DCPE-01')}?>
+            <?else?>
+                <?set DESCRIPTION = {concat($DESCRIPTION, ':', 'DCPE-02')}?>
+            <?end?>
+            <config>
+                <interface xmlns="http://tail-f.com/ned/cisco-nx">
+                    <port-channel>
+                        <name>{port-channel-id}.{vlan}</name>
+                        <description>{$DESCRIPTION}</description>
+                        <vrf>
+                            <member>{$VRF}</member>
+                        </vrf>
+                        <ip when="{../../address-family='ipv4'}">
+                            <address>
+                                <ipaddr>{address}</ipaddr>
+                            </address>
+                        </ip>
+                        <ipv6 when="{../../address-family='ipv6'}">
+                            <address>
+                              <addresses>
+                                <addr>{address}</addr>
+                              </addresses>
+                            </address>
+                          </ipv6>
+                        <mtu>9216</mtu>
+                        <encapsulation>
+                            <dot1Q>
+                                <vlan-id>{vlan}</vlan-id>
+                            </dot1Q>
+                        </encapsulation>
+                    </port-channel>
+                </interface>
+                <router xmlns="http://tail-f.com/ned/cisco-nx">
+                    <?switch-context bgp?>
+                    <bgp>
+                        <id>{as-number}</id>
+                        <vrf>
+                            <name>{$VRF}</name>
+                            <neighbor>
+                                <id>{peer-address}</id>
+                                <inherit>
+                                    <peer>{source-interface/fabric-external-connection/peer-template}</peer>
+                                </inherit>
+                            </neighbor>
+                        </vrf>
+                    </bgp>
+                </router>
+            </config>
+        </device>
+    </devices>
+</config-template>

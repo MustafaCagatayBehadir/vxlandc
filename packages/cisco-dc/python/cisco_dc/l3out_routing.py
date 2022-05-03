@@ -1,5 +1,5 @@
+import ncs
 from ipaddress import ip_address, IPv4Address, IPv6Address
-
 from . import utils
 
 
@@ -15,6 +15,7 @@ def _configure_l3out_routing(root, bd, tctx, log):
     """
     address_family = set()
     _set_hidden_leaves(root, bd, address_family, log)
+    _apply_template(bd)
 
 
 def _set_hidden_leaves(root, bd, address_family, log):
@@ -62,3 +63,15 @@ def _set_hidden_leaves(root, bd, address_family, log):
                     l3out.address = f'{str(IPv4Address(bgp.peer_address) + 1)}/30'
                 elif type(ip_address(bgp.peer_address)) is IPv6Address:
                     l3out.address = f'{str(IPv6Address(bgp.peer_address) + 1)}/64'
+
+
+def _apply_template(bd):
+    """Function to apply configurations to devices
+
+    Args:
+        bd: service node
+
+    """
+    template = ncs.template.Template(bd)
+    vars = ncs.template.Variables()
+    template.apply('cisco-dc-services-fabric-l3out-routing-bgp')

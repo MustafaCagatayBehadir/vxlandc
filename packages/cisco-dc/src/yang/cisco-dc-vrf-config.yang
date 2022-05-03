@@ -128,18 +128,6 @@ submodule cisco-dc-vrf-config {
                 tailf:info "Define Leaf Node ID";
                 type string;
             }
-
-            leaf vrf-vlan {
-                tailf:info "Define network vlan value";
-                type vlan;
-                tailf:default-ref "../../cisco-dc:vlan-id";
-            }
-
-            leaf l3vni {
-                tailf:info "L2 Vni id is allocated by resource-manager";
-                type vxlan-id;
-                tailf:default-ref "../../cisco-dc:vni-id";
-            }
         }
 
         leaf vlan-id {

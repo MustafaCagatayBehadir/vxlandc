@@ -1,98 +1,79 @@
 <config-template xmlns="http://tail-f.com/ns/config/1.0">
-    <?save-context service?>
-    <?set NETWORK_VLAN_NAME = {concat(string(name), ':', 'network-vlan')}?>
-    <?set VRF = {string(vrf)}?>
-    <?set MCAST_GROUP = {string(mcast-group)}?>
-    <?set L3_SERVICE = {bd-subnet}?>
     <devices xmlns="http://tail-f.com/ns/ncs">
-        <?foreach {device}?>
-            <?save-context device?>
-            <device>
-                <name>{leaf-id}</name>
-                <config>
-                    <vlan xmlns="http://tail-f.com/ned/cisco-nx">
-                        <vlan-list>
-                            <id>{network-vlan}</id>
-                            <name>{$NETWORK_VLAN_NAME}</name>
-                            <vn-segment>{l2vni}</vn-segment>
-                        </vlan-list>
-                    </vlan>
-                    <evpn xmlns="http://tail-f.com/ned/cisco-nx">
-                        <vni>
-                            <id>{l2vni}</id>
-                            <l2 />
-                            <rd>auto</rd>
-                            <route-target>
-                                <method>import</method>
-                                <rt>auto</rt>
-                            </route-target>
-                            <route-target>
-                                <method>export</method>
-                                <rt>auto</rt>
-                            </route-target>
-                        </vni>
-                    </evpn>
-                    <?if {boolean($L3_SERVICE)}?>
-                        <interface xmlns="http://tail-f.com/ned/cisco-nx">
-                            <Vlan>
-                                <name>{network-vlan}</name>
-                                <vrf>
-                                    <member>{$VRF}</member>
-                                </vrf>
-                                <?switch-context service?>
-                                <?foreach {bd-subnet}?>
-                                    <?if {string(address-family) = 'ipv4'}?>
-                                        <ip>
-                                            <?if {string(preferred) = 'yes'}?>
-                                            <address>
-                                                <ipaddr>{address}</ipaddr>
-                                            </address>
-                                            <?else?>
-                                            <secondary-addr>
-                                                <address>
-                                                    <ipaddr>{address}</ipaddr>
-                                                    <secaddr>secondary</secaddr>
-                                                </address>
-                                            </secondary-addr>
-                                            <?end?>
-                                            <redirects>false</redirects>
-                                        </ip>
-                                    <?else?>
-                                        <ipv6>
-                                            <address>
-                                                <addresses>
-                                                  <addr>{address}</addr>
-                                                </addresses>
-                                            </address>
-                                            <redirects>false</redirects>
-                                        </ipv6>
-                                    <?end?>
-                                <?end?>
-                                <?switch-context device?>
-                                <fabric>
-                                    <forwarding>
-                                        <mode>anycast-gateway</mode>
-                                    </forwarding>
-                                </fabric>
-                            </Vlan>
-                        </interface>
-                    <?end?>
-                    <interface xmlns="http://tail-f.com/ned/cisco-nx">
-                        <nve>
-                            <name>1</name>
-                            <member>
-                                <vni>
-                                    <id>{l2vni}</id>
-                                    <mcast-group>{$MCAST_GROUP}</mcast-group>
-                                    <?if {boolean($L3_SERVICE)}?>
-                                        <suppress-arp />
-                                    <?end?>
-                                </vni>
-                            </member>
-                        </nve>
-                    </interface>
-                </config>
-            </device>
-        <?end?>
+        <device>
+            <name>{device/leaf-id}</name>
+            <config>
+                <vlan xmlns="http://tail-f.com/ned/cisco-nx">
+                    <vlan-list>
+                        <id>{network-vlan}</id>
+                        <name>{$VLAN_NAME}</name>
+                        <vn-segment>{l2vni}</vn-segment>
+                    </vlan-list>
+                </vlan>
+                <evpn xmlns="http://tail-f.com/ned/cisco-nx">
+                    <vni>
+                        <id>{l2vni}</id>
+                        <l2 />
+                        <rd>auto</rd>
+                        <route-target>
+                            <method>import</method>
+                            <rt>auto</rt>
+                        </route-target>
+                        <route-target>
+                            <method>export</method>
+                            <rt>auto</rt>
+                        </route-target>
+                    </vni>
+                </evpn>
+                <interface xmlns="http://tail-f.com/ned/cisco-nx" when="{../bd-subnet}">
+                    <Vlan>
+                        <name>{network-vlan}</name>
+                        <vrf>
+                            <member>{../vrf}</member>
+                        </vrf>
+                        <?foreach {../bd-subnet}?>
+                        <ip when="{address-family='ipv4'}">
+                            <address when="{preferred='yes'}">
+                                <ipaddr>{address}</ipaddr>
+                            </address>
+                            <secondary-addr when="{preferred='no'}">
+                                <address>
+                                    <ipaddr>{address}</ipaddr>
+                                    <secaddr>secondary</secaddr>
+                                </address>
+                            </secondary-addr>
+                            <redirects>false</redirects>
+                        </ip>
+                        <ipv6 when="{address-family='ipv6'}">
+                            <address>
+                                <addresses>
+                                    <addr>{address}</addr>
+                                </addresses>
+                            </address>
+                            <redirects>false</redirects>
+                        </ipv6>
+                        <?end ?>
+                        <?switch-context device?>
+                        <fabric>
+                            <forwarding>
+                                <mode>anycast-gateway</mode>
+                            </forwarding>
+                        </fabric>
+                    </Vlan>
+                </interface>
+                <interface xmlns="http://tail-f.com/ned/cisco-nx">
+                    <nve>
+                        <name>1</name>
+                        <member>
+                            <vni>
+                                <id>{l2vni}</id>
+                                <mcast-group>{../mcast-group}</mcast-group>
+                                <suppress-arp when="{../bd-subnet}" />
+                            </vni>
+                        </member>
+                    </nve>
+                </interface>
+            </config>
+        </device>
     </devices>
 </config-template>

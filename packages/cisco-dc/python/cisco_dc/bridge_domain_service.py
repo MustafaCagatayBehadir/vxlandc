@@ -177,8 +177,9 @@ def _apply_template(bd):
 
     """
     template = ncs.template.Template(bd)
+    vars = ncs.template.Variables()
+    vars.add('VLAN_NAME', utils.get_network_vlan_name(bd))
     template.apply('cisco-dc-services-fabric-bd-l2vni-service')
-    template.apply('cisco-dc-services-fabric-l3out-routing')
 
 
 class BridgeDomainServiceValidator(object):

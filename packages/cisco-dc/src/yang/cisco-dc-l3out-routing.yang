@@ -158,7 +158,6 @@ submodule cisco-dc-l3out-routing {
                     tailf:info "Peer AF controls";
                     type enumeration {
                         enum send-com;
-                        enum send-ext-com;
                         enum nh-self;
                         enum dis-peer-as-check;
                         enum allow-self-as;
@@ -218,7 +217,7 @@ submodule cisco-dc-l3out-routing {
                         + "deref(current())/../address-family = 'ipv6' and ../../address-family = 'ipv6'" {
                             tailf:dependency ".";
                             error-message
-                              "Route policy address-family should match the bgp neighbor address-family.";                            
+                              "Route policy address-family should match the bgp neighbor address-family.";
                         }
                     }
                 }
@@ -251,12 +250,12 @@ submodule cisco-dc-l3out-routing {
                         enum ipv6;
                     }
                 }
-            }
 
-            leaf vrf {
-                tailf:hidden "Just for convenience";
-                type string;
-                tailf:default-ref "../../cisco-dc:vrf";
+                leaf vrf {
+                    tailf:hidden "Just for convenience";
+                    type string;
+                    tailf:default-ref "../../../cisco-dc:vrf";
+                }
             }
         }
     }

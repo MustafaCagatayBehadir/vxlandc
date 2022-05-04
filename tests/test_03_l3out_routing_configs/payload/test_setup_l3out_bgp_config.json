@@ -29,6 +29,50 @@
                                             }
                                         },
                                         "remote-as": 65540
+                                    },
+                                    {
+                                        "peer-address": "172.16.0.1",
+                                        "source-interface": {
+                                            "fabric-external-connection": {
+                                                "node": "nw_blf_cnx9_001.dsslab_site1",
+                                                "connection": "uplink-to-dci-gw-01",
+                                                "peer-template": "dcpe01_bgp_peer_template"
+                                            }
+                                        },
+                                        "remote-as": 34984
+                                    },
+                                    {
+                                        "peer-address": "172.16.0.5",
+                                        "source-interface": {
+                                            "fabric-external-connection": {
+                                                "node": "nw_blf_cnx9_001.dsslab_site1",
+                                                "connection": "uplink-to-dci-gw-02",
+                                                "peer-template": "dcpe02_bgp_peer_template"
+                                            }
+                                        },
+                                        "remote-as": 34984
+                                    },
+                                    {
+                                        "peer-address": "172.16.1.1",
+                                        "source-interface": {
+                                            "fabric-external-connection": {
+                                                "node": "nw_blf_cnx9_002.dsslab_site1",
+                                                "connection": "uplink-to-dci-gw-01",
+                                                "peer-template": "dcpe01_bgp_peer_template"
+                                            }
+                                        },
+                                        "remote-as": 34984
+                                    },
+                                    {
+                                        "peer-address": "172.16.1.5",
+                                        "source-interface": {
+                                            "fabric-external-connection": {
+                                                "node": "nw_blf_cnx9_002.dsslab_site1",
+                                                "connection": "uplink-to-dci-gw-02",
+                                                "peer-template": "dcpe02_bgp_peer_template"
+                                            }
+                                        },
+                                        "remote-as": 34984
                                     }
                                 ]
                             }

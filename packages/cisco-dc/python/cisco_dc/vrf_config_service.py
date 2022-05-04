@@ -142,5 +142,5 @@ def _apply_template(vrf):
     """
     template = ncs.template.Template(vrf)
     vars = ncs.template.Variables()
-    vars.add('VLAN_NAME', utils.get_network_vlan_name(vrf))
-    template.apply('cisco-dc-services-fabric-bd-l3vni-service')
+    vars.add('VLAN_NAME', utils.get_vrf_vlan_name(vrf))
+    template.apply('cisco-dc-services-fabric-bd-l3vni-service', vars)

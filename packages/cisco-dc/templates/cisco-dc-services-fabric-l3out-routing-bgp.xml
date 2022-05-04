@@ -1,10 +1,11 @@
 <config-template xmlns="http://tail-f.com/ns/config/1.0">
     <devices xmlns="http://tail-f.com/ns/ncs" foreach="{routing/bgp}">
         <?save-context bgp?>
-        <?set VRF = {vrf}?>
-        <?set DESCRIPTION = {concat($VRF, ':', 'eBGP-Extension-Source-Interface')}?>
+        <?set VRF={vrf}?>
+        <?set DESCRIPTION={concat($VRF, ':', 'eBGP-Extension-Source-Interface')}?>
         <device when="{source-interface/fabric-internal-connection}">
             <name>{source-interface/fabric-internal-connection/loopback/node}</name>
+            <?set UPDATE_SOURCE={concat('loopback', string(id))}?>
             <config>
                 <interface xmlns="http://tail-f.com/ned/cisco-nx">
                     <loopback>
@@ -13,12 +14,12 @@
                         <vrf>
                             <member>{$VRF}</member>
                         </vrf>
-                        <ip when="{../../address-family='ipv4'}">
+                        <ip when="{../../../address-family='ipv4'}">
                             <address>
                                 <ipaddr>{address}</ipaddr>
                             </address>
                         </ip>
-                        <ipv6 when="{../../address-family='ipv6'}">
+                        <ipv6 when="{../../../address-family='ipv6'}">
                             <address>
                                 <addresses>
                                     <addr>{address}</addr>
@@ -54,17 +55,16 @@
                                         <name>{profile}</name>
                                     </route-map>
                                     <?foreach {peer-af-controls}?>
-                                    <send-community when="{current() = 'send-com'}"/>
-                                    <send-community when="{current() = 'send-ext-com'}">
-                                        <attr>extended</attr>
-                                    </send-community>
-                                    <next-hop-self when="{current()='nh-self'}"/>
-                                    <disable-peer-as-check when="{current()='dis-peer-as-check'}"/>
-                                    <allowas-in when="{current()='allow-self-as'}">
-                                        <occurrences>3</occurrences>
-                                    </allowas-in>
-                                    <as-override />
-                                    <?end ?>
+                                        <send-community when="{current() = 'send-com'}">
+                                            <attr>both</attr>
+                                        </send-community>
+                                        <next-hop-self when="{current()='nh-self'}"/>
+                                        <disable-peer-as-check when="{current()='dis-peer-as-check'}"/>
+                                        <allowas-in when="{current()='allow-self-as'}">
+                                            <occurrences>3</occurrences>
+                                        </allowas-in>
+                                        <as-override />
+                                    <?end?>
                                 </address-family>
                                 <address-family when="{address-family='ipv6'}">
                                     <proto>ipv6</proto>
@@ -74,17 +74,16 @@
                                         <name>{profile}</name>
                                     </route-map>
                                     <?foreach {peer-af-controls}?>
-                                    <send-community when="{current() = 'send-com'}"/>
-                                    <send-community when="{current() = 'send-ext-com'}">
-                                        <attr>extended</attr>
-                                    </send-community>
-                                    <next-hop-self when="{current()='nh-self'}"/>
-                                    <disable-peer-as-check when="{current()='dis-peer-as-check'}"/>
-                                    <allowas-in when="{current()='allow-self-as'}">
-                                        <occurrences>3</occurrences>
-                                    </allowas-in>
-                                    <as-override when="{current()='as-override'}"/>
-                                    <?end ?>
+                                        <send-community when="{current() = 'send-com'}">
+                                            <attr>both</attr>
+                                        </send-community>
+                                        <next-hop-self when="{current()='nh-self'}"/>
+                                        <disable-peer-as-check when="{current()='dis-peer-as-check'}"/>
+                                        <allowas-in when="{current()='allow-self-as'}">
+                                            <occurrences>3</occurrences>
+                                        </allowas-in>
+                                        <as-override when="{current()='as-override'}"/>
+                                    <?end?>
                                 </address-family>
                             </neighbor>
                         </vrf>
@@ -94,7 +93,6 @@
         </device>
         <device when="{source-interface/fabric-external-connection}">
             <name>{source-interface/fabric-external-connection/node}</name>
-            <?set-context-node {source-interface/fabric-external-connection}?>
             <?if {string(connection) = 'uplink-to-dci-gw-01'}?>
                 <?set DESCRIPTION = {concat($DESCRIPTION, ':', 'DCPE-01')}?>
             <?else?>

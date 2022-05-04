@@ -1,0 +1,43 @@
+{
+    "tailf-ned-cisco-nx:vrf": [
+        {
+            "name": "tcell-grt",
+            "address-family": [
+                {
+                    "proto": "ipv4",
+                    "type": "unicast",
+                    "advertise": {
+                        "l2vpn": "evpn"
+                    },
+                    "maximum-paths": {
+                        "ibgp": 2
+                    }
+                },
+                {
+                    "proto": "ipv6",
+                    "type": "unicast",
+                    "advertise": {
+                        "l2vpn": "evpn"
+                    },
+                    "maximum-paths": {
+                        "ibgp": 2
+                    }
+                }
+            ],
+            "neighbor": [
+                {
+                    "id": "172.16.1.1",
+                    "inherit": {
+                        "peer": "dcpe01_bgp_peer_template"
+                    }
+                },
+                {
+                    "id": "172.16.1.5",
+                    "inherit": {
+                        "peer": "dcpe02_bgp_peer_template"
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -141,33 +141,6 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
                 vrf.device.create(bd._path, device.leaf_id)
         log.info(f'Vrf {bd.vrf} is activated by bridge-domain {bd.name}')
 
-    if bd.routing.exists():
-        routing = bd.routing
-        for bgp in routing.bgp:
-            source_interface = bgp.source_interface
-            profiles = {
-                peer_route_policy.profile for peer_route_policy in bgp.peer_route_policy}
-        if profiles:
-            dc_route_policies = root.cisco_dc__dc_site[bd.site].dc_route_policy
-            for dc_route_policy in dc_route_policies:
-                if hasattr(dc_route_policy, 'tenant') and dc_route_policy.tenant == bd.tenant:
-                    for route_policy in dc_route_policy.route_policy:
-                        if route_policy.profile in profiles:
-                            if source_interface.interface == 'fabric-internal-connection':
-                                devices = [
-                                    loopback.node for loopback in source_interface.fabric_internal_connection.loopback]
-                                for device in devices:
-                                    if (bd._path, device) not in route_policy.device:
-                                        route_policy.device.create(
-                                            bd._path, device)
-                            elif source_interface.interface == 'fabric-external-connection':
-                                device = source_interface.fabric_external_connection.node
-                                if (bd._path, device) not in route_policy.device:
-                                    route_policy.device.create(
-                                        bd._path, device)
-                            log.info(
-                                f'Route-Policy {route_policy.profile} is activated by tenant {bd.tenant} bridge-domain {bd.name}')
-
 
 def _apply_template(bd):
     """Function to apply configurations to devices
@@ -179,7 +152,7 @@ def _apply_template(bd):
     template = ncs.template.Template(bd)
     vars = ncs.template.Variables()
     vars.add('VLAN_NAME', utils.get_network_vlan_name(bd))
-    template.apply('cisco-dc-services-fabric-bd-l2vni-service')
+    template.apply('cisco-dc-services-fabric-bd-l2vni-service', vars)
 
 
 class BridgeDomainServiceValidator(object):

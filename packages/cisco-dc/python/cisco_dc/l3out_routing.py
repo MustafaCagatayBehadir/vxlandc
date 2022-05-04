@@ -64,6 +64,24 @@ def _set_hidden_leaves(root, bd, address_family, log):
                 elif type(ip_address(bgp.peer_address)) is IPv6Address:
                     l3out.address = f'{str(IPv6Address(bgp.peer_address) + 1)}/64'
 
+            elif bgp.source_interface.interface == 'fabric-internal-connection':
+                profiles = {
+                    peer_route_policy.profile for peer_route_policy in bgp.peer_route_policy}
+                if profiles:
+                    dc_route_policies = root.cisco_dc__dc_site[bd.site].dc_route_policy
+                    for dc_route_policy in dc_route_policies:
+                        if hasattr(dc_route_policy, 'tenant') and dc_route_policy.tenant == bd.tenant:
+                            for route_policy in dc_route_policy.route_policy:
+                                if route_policy.profile in profiles:
+                                    devices = [
+                                        loopback.node for loopback in bgp.source_interface.fabric_internal_connection.loopback]
+                                    for device in devices:
+                                        if (bd._path, device) not in route_policy.device:
+                                            route_policy.device.create(
+                                                bd._path, device)
+                                    log.info(
+                                        f'Route-Policy {route_policy.profile} is activated by tenant {bd.tenant} bridge-domain {bd.name} routing bgp {bgp.peer_address}')
+
 
 def _apply_template(bd):
     """Function to apply configurations to devices
@@ -73,5 +91,4 @@ def _apply_template(bd):
 
     """
     template = ncs.template.Template(bd)
-    vars = ncs.template.Variables()
     template.apply('cisco-dc-services-fabric-l3out-routing-bgp')

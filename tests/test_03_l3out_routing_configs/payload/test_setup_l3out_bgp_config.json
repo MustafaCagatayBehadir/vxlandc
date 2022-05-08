@@ -35,8 +35,7 @@
                                         "source-interface": {
                                             "fabric-external-connection": {
                                                 "node": "nw_blf_cnx9_001.dsslab_site1",
-                                                "connection": "uplink-to-dci-gw-01",
-                                                "peer-template": "dcpe01_bgp_peer_template"
+                                                "connection": "uplink-to-dci-gw-01"
                                             }
                                         },
                                         "remote-as": 34984
@@ -46,8 +45,7 @@
                                         "source-interface": {
                                             "fabric-external-connection": {
                                                 "node": "nw_blf_cnx9_001.dsslab_site1",
-                                                "connection": "uplink-to-dci-gw-02",
-                                                "peer-template": "dcpe02_bgp_peer_template"
+                                                "connection": "uplink-to-dci-gw-02"
                                             }
                                         },
                                         "remote-as": 34984
@@ -57,8 +55,7 @@
                                         "source-interface": {
                                             "fabric-external-connection": {
                                                 "node": "nw_blf_cnx9_002.dsslab_site1",
-                                                "connection": "uplink-to-dci-gw-01",
-                                                "peer-template": "dcpe01_bgp_peer_template"
+                                                "connection": "uplink-to-dci-gw-01"
                                             }
                                         },
                                         "remote-as": 34984
@@ -68,8 +65,7 @@
                                         "source-interface": {
                                             "fabric-external-connection": {
                                                 "node": "nw_blf_cnx9_002.dsslab_site1",
-                                                "connection": "uplink-to-dci-gw-02",
-                                                "peer-template": "dcpe02_bgp_peer_template"
+                                                "connection": "uplink-to-dci-gw-02"
                                             }
                                         },
                                         "remote-as": 34984

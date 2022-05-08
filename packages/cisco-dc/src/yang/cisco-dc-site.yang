@@ -161,14 +161,6 @@ submodule cisco-dc-site {
             }
         }
 
-        container day0 {
-            tailf:info "Fabric day0 configuration references";
-            leaf-list bgp-peer-templates {
-                tailf:info "Template names for bgp peer parameters";
-                type string;
-            }
-        }
-
         container resource-pools {
             tailf:hidden "dc";
 

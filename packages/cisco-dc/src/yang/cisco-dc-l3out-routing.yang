@@ -75,15 +75,6 @@ submodule cisco-dc-l3out-routing {
                                     mandatory true;
                                 }
 
-                                leaf peer-template {
-                                    tailf:info "Peer template name";
-                                    type leafref {
-                                        path "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../../../../site]"
-                                        + "/cisco-dc:day0/cisco-dc:bgp-peer-templates";
-                                    }
-                                    mandatory true;
-                                }
-
                                 leaf address {
                                     tailf:hidden "dc";
                                     type tailf:ip-address-and-prefix-length;

@@ -27,15 +27,31 @@
             "neighbor": [
                 {
                     "id": "172.16.1.1",
-                    "inherit": {
-                        "peer": "dcpe01_bgp_peer_template"
-                    }
+                    "inner-remote-as": {
+                        "remote-as": 34984
+                    },
+                    "ebgp-multihop": 5,
+                    "update-source": "port-channel501.2",
+                    "address-family": [
+                        {
+                            "proto": "ipv4",
+                            "type": "unicast"
+                        }
+                    ]
                 },
                 {
                     "id": "172.16.1.5",
-                    "inherit": {
-                        "peer": "dcpe02_bgp_peer_template"
-                    }
+                    "inner-remote-as": {
+                        "remote-as": 34984
+                    },
+                    "ebgp-multihop": 5,
+                    "update-source": "port-channel502.2",
+                    "address-family": [
+                        {
+                            "proto": "ipv4",
+                            "type": "unicast"
+                        }
+                    ]
                 }
             ]
         }

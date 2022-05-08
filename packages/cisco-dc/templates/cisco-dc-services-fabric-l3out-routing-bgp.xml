@@ -40,9 +40,13 @@
                                     <remote-as>{remote-as}</remote-as>
                                 </inner-remote-as>
                                 <local-as when="{local-as}">{local-as}</local-as>
+                                <password when="{password}">
+                                    <passwd>{password}</passwd>
+                                </password>
                                 <ebgp-multihop>{ttl}</ebgp-multihop>
                                 <update-source>{$UPDATE_SOURCE}</update-source>
                                 <disable-connected-check when="{peer-control='dis-conn-check'}"/>
+                                <bfd when="{peer-control='bfd'}"/>
                                 <timers when="{timers}">
                                     <keepalive>{timers/keepalive}</keepalive>
                                     <holdtime>{timers/holdtime}</holdtime>
@@ -65,6 +69,7 @@
                                         </allowas-in>
                                         <as-override />
                                     <?end?>
+                                    <weight when="{weight}">{weight}</weight>
                                 </address-family>
                                 <address-family when="{address-family='ipv6'}">
                                     <proto>ipv6</proto>
@@ -84,6 +89,7 @@
                                         </allowas-in>
                                         <as-override when="{current()='as-override'}"/>
                                     <?end?>
+                                    <weight when="{weight}">{weight}</weight>
                                 </address-family>
                             </neighbor>
                         </vrf>
@@ -93,6 +99,7 @@
         </device>
         <device when="{source-interface/fabric-external-connection}">
             <name>{source-interface/fabric-external-connection/node}</name>
+            <?set UPDATE_SOURCE={concat('port-channel', string(port-channel-id), '.',  string(vlan))}?>
             <?if {string(connection) = 'uplink-to-dci-gw-01'}?>
                 <?set DESCRIPTION = {concat($DESCRIPTION, ':', 'DCPE-01')}?>
             <?else?>
@@ -134,9 +141,61 @@
                             <name>{$VRF}</name>
                             <neighbor>
                                 <id>{peer-address}</id>
-                                <inherit>
-                                    <peer>{source-interface/fabric-external-connection/peer-template}</peer>
-                                </inherit>
+                                <inner-remote-as>
+                                    <remote-as>{remote-as}</remote-as>
+                                </inner-remote-as>
+                                <local-as when="{local-as}">{local-as}</local-as>
+                                <password when="{password}">
+                                    <passwd>{password}</passwd>
+                                </password>
+                                <ebgp-multihop>{ttl}</ebgp-multihop>
+                                <update-source>{$UPDATE_SOURCE}</update-source>
+                                <disable-connected-check when="{peer-control='dis-conn-check'}"/>
+                                <bfd when="{peer-control='bfd'}"/>
+                                <timers when="{timers}">
+                                    <keepalive>{timers/keepalive}</keepalive>
+                                    <holdtime>{timers/holdtime}</holdtime>
+                                </timers>
+                                <address-family when="{address-family='ipv4'}">
+                                    <proto>ipv4</proto>
+                                    <type>unicast</type>
+                                    <route-map foreach="{peer-route-policy}">
+                                        <direction>{direction}</direction>
+                                        <name>{profile}</name>
+                                    </route-map>
+                                    <?foreach {peer-af-controls}?>
+                                        <send-community when="{current() = 'send-com'}">
+                                            <attr>both</attr>
+                                        </send-community>
+                                        <next-hop-self when="{current()='nh-self'}"/>
+                                        <disable-peer-as-check when="{current()='dis-peer-as-check'}"/>
+                                        <allowas-in when="{current()='allow-self-as'}">
+                                            <occurrences>3</occurrences>
+                                        </allowas-in>
+                                        <as-override />
+                                    <?end?>
+                                    <weight when="{weight}">{weight}</weight>
+                                </address-family>
+                                <address-family when="{address-family='ipv6'}">
+                                    <proto>ipv6</proto>
+                                    <type>unicast</type>
+                                    <route-map foreach="{peer-route-policy}">
+                                        <direction>{direction}</direction>
+                                        <name>{profile}</name>
+                                    </route-map>
+                                    <?foreach {peer-af-controls}?>
+                                        <send-community when="{current() = 'send-com'}">
+                                            <attr>both</attr>
+                                        </send-community>
+                                        <next-hop-self when="{current()='nh-self'}"/>
+                                        <disable-peer-as-check when="{current()='dis-peer-as-check'}"/>
+                                        <allowas-in when="{current()='allow-self-as'}">
+                                            <occurrences>3</occurrences>
+                                        </allowas-in>
+                                        <as-override when="{current()='as-override'}"/>
+                                    <?end?>
+                                    <weight when="{weight}">{weight}</weight>
+                                </address-family>
                             </neighbor>
                         </vrf>
                     </bgp>

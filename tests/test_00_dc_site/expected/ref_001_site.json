@@ -61,12 +61,6 @@
             "fabric-parameters": {
                 "as-number": 65001,
                 "mcast-group": "239.255.0.0"
-            },
-            "day0": {
-                "bgp-peer-templates": [
-                    "dcpe01_bgp_peer_template",
-                    "dcpe02_bgp_peer_template"
-                ]
             }
         }
     ]

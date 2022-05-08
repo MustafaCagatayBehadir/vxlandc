@@ -37,7 +37,6 @@ class NsoRestconfCall:
             "Accept": "application/yang-data+json",
         }
         resp = requests.get(url, headers=header, auth=self.auth, verify=False)
-        logger.debug(json.dumps(resp.json(), sort_keys=True, indent=4))
         return resp
 
     def patch(self, payload, path, params):

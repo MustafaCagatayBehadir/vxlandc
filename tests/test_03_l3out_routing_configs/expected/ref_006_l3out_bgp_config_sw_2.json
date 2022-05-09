@@ -8,7 +8,7 @@
             "local-as": 34984,
             "ebgp-multihop": 5,
             "update-source": "loopback100",
-            "bfd": [
+            "disable-connected-check": [
                 null
             ],
             "address-family": [

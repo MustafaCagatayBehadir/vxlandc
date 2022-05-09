@@ -2,7 +2,7 @@
     "bgp": [
         {
             "peer-address": "10.0.0.2",
-            "peer-control": "dis-conn-check"
+            "password": "cisco"
         }
     ]
 }

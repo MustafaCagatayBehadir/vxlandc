@@ -221,9 +221,15 @@ submodule cisco-dc-l3out-routing {
                         type uint16;
                         default 8;
                     }
+
                     leaf holdtime {
                         type uint16;
                         default 24;
+                    }
+
+                    must "number(current()/keepalive) < number(current()/holdtime)" {
+                        error-message
+                          "Hold time must be greater that keepalive time";
                     }
                 }
 

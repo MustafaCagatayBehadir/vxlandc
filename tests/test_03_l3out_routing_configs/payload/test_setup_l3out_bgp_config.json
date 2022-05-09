@@ -72,6 +72,33 @@
                                     }
                                 ]
                             }
+                        },
+                        {
+                            "name": "BD-SERVICE-2",
+                            "routing": {
+                                "bgp": [
+                                    {
+                                        "peer-address": "2001:db8:cafe::2",
+                                        "source-interface": {
+                                            "fabric-internal-connection": {
+                                                "loopback": [
+                                                    {
+                                                        "id": 100,
+                                                        "node": "nw_lf_cnx9_003.dsslab_site1",
+                                                        "address": "2001:db8:cafe:2::1/64"
+                                                    },
+                                                    {
+                                                        "id": 100,
+                                                        "node": "nw_lf_cnx9_004.dsslab_site1",
+                                                        "address": "2001:db8:cafe:3::1/64"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "remote-as": 65540
+                                    }
+                                ]
+                            }
                         }
                     ]
                 }

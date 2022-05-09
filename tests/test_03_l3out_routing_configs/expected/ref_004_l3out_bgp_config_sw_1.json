@@ -8,6 +8,9 @@
             "local-as": 34984,
             "ebgp-multihop": 5,
             "update-source": "loopback100",
+            "bfd": [
+                null
+            ],
             "address-family": [
                 {
                     "proto": "ipv4",

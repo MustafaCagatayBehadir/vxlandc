@@ -1,0 +1,8 @@
+{
+    "bgp": [
+        {
+            "peer-address": "2001:db8:cafe::2",
+            "local-as": 34984
+        }
+    ]
+}

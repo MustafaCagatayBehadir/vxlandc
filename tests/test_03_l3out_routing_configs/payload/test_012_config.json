@@ -1,7 +1,7 @@
 {
     "bgp": [
         {
-            "peer-address": "10.0.0.2",
+            "peer-address": "2001:db8:cafe::2",
             "peer-control": "bfd"
         }
     ]

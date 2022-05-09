@@ -11,7 +11,22 @@
             "address-family": [
                 {
                     "proto": "ipv4",
-                    "type": "unicast"
+                    "type": "unicast",
+                    "allowas-in": {
+                        "occurrences": 3
+                    },
+                    "next-hop-self": [
+                        null
+                    ],
+                    "send-community": {
+                        "attr": "both"
+                    },
+                    "disable-peer-as-check": [
+                        null
+                    ],
+                    "as-override": [
+                        null
+                    ]
                 }
             ]
         }

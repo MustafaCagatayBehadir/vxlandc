@@ -6,14 +6,15 @@
                 "remote-as": 65540
             },
             "local-as": 34984,
-            "password": {
-                "passwd": ".*"
-            },
             "ebgp-multihop": 5,
             "update-source": "loopback100",
-            "bfd": [
+            "disable-connected-check": [
                 null
             ],
+            "timers": {
+                "keepalive": 5,
+                "holdtime": 15
+            },
             "address-family": [
                 {
                     "proto": "ipv4",

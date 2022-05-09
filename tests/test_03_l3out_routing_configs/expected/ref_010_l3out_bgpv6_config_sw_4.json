@@ -1,0 +1,19 @@
+{
+    "tailf-ned-cisco-nx:neighbor": [
+        {
+            "id": "2001:db8:cafe::2",
+            "inner-remote-as": {
+                "remote-as": 65540
+            },
+            "local-as": 34984,
+            "ebgp-multihop": 5,
+            "update-source": "loopback100",
+            "address-family": [
+                {
+                    "proto": "ipv6",
+                    "type": "unicast"
+                }
+            ]
+        }
+    ]
+}

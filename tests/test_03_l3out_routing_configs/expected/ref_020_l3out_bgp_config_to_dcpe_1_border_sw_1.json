@@ -1,0 +1,37 @@
+{
+    "tailf-ned-cisco-nx:neighbor": [
+        {
+            "id": "172.16.0.1",
+            "inner-remote-as": {
+                "remote-as": 34984
+            },
+            "local-as": 9121,
+            "ebgp-multihop": 5,
+            "update-source": "port-channel501.2",
+            "bfd": [
+                null
+            ],
+            "address-family": [
+                {
+                    "proto": "ipv4",
+                    "type": "unicast",
+                    "allowas-in": {
+                        "occurrences": 3
+                    },
+                    "next-hop-self": [
+                        null
+                    ],
+                    "send-community": {
+                        "attr": "both"
+                    },
+                    "disable-peer-as-check": [
+                        null
+                    ],
+                    "as-override": [
+                        null
+                    ]
+                }
+            ]
+        }
+    ]
+}

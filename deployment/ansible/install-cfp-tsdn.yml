@@ -1,8 +1,0 @@
----
-
-- hosts: nso
-
-  roles:
-    - role: cfp-install
-
-...

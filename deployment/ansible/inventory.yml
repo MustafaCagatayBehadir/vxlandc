@@ -3,6 +3,6 @@
 nso:
   hosts:
     nso-lab:
-      ansible_host: "192.168.108.128"
+      ansible_host: "192.168.108.131"
 
 ...

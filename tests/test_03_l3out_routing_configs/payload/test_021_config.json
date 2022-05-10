@@ -1,3 +1,8 @@
 {
-    "peer-control": "dis-conn-check"
+    "bgp": [
+        {
+            "peer-address": "172.16.0.1",
+            "peer-control": "dis-conn-check"
+        }
+    ]
 }

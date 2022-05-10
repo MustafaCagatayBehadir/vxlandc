@@ -6,11 +6,18 @@
                 "remote-as": 34984
             },
             "local-as": 9121,
+            "password": {
+                "passwd": ".*"
+            },
             "ebgp-multihop": 5,
             "update-source": "port-channel502.2",
             "bfd": [
                 null
             ],
+            "timers": {
+                "keepalive": 5,
+                "holdtime": 15
+            },
             "address-family": [
                 {
                     "proto": "ipv4",
@@ -27,6 +34,7 @@
                     "disable-peer-as-check": [
                         null
                     ],
+                    "weight": 1000,
                     "as-override": [
                         null
                     ]

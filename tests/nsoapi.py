@@ -64,6 +64,31 @@ class NsoRestconfCall:
         )
         return resp
 
+    def put(self, payload, path, params):
+        """Send the data that we want to store
+        Args:
+            payload (str or Path): the path to the payload
+            path (str): the path to the NSO resource
+            params (str): the query parameter
+        Returns:
+            resp (requests return obj):
+        """
+        url = (
+            f"https://{self.ip}:{self.port}/restconf/data/{path}?{params}"
+            if params
+            else f"https://{self.ip}:{self.port}/restconf/data/{path}"
+        )
+        header = {
+            "content-type": "application/yang-data+json",
+            "Accept": "application/yang-data+json",
+        }
+        with open(payload) as json_file:
+            json_data = json.load(json_file)
+        resp = requests.put(
+            url, data=json.dumps(json_data), headers=header, auth=self.auth, verify=False
+        )
+        return resp
+
     def post(self, payload, path, params, action):
         """Send the data that we want to store
         Args:

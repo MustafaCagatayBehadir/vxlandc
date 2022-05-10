@@ -96,6 +96,26 @@
                                             }
                                         },
                                         "remote-as": 65540
+                                    },
+                                    {
+                                        "peer-address": "2001:db8:cafe:4::1",
+                                        "source-interface": {
+                                            "fabric-external-connection": {
+                                                "node": "nw_blf_cnx9_002.dsslab_site1",
+                                                "connection": "uplink-to-dci-gw-01"
+                                            }
+                                        },
+                                        "remote-as": 34984
+                                    },
+                                    {
+                                        "peer-address": "2001:db8:cafe:5::1",
+                                        "source-interface": {
+                                            "fabric-external-connection": {
+                                                "node": "nw_blf_cnx9_002.dsslab_site1",
+                                                "connection": "uplink-to-dci-gw-02"
+                                            }
+                                        },
+                                        "remote-as": 34984
                                     }
                                 ]
                             }

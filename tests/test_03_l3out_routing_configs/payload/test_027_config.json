@@ -1,0 +1,9 @@
+{
+    "peer-af-controls": [
+        "send-com",
+        "nh-self",
+        "dis-peer-as-check",
+        "allow-self-as",
+        "as-override"
+    ]
+}

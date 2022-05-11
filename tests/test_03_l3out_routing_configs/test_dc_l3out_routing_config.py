@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from sysconfig import get_path
 from nsoapi import NsoRestconfCall
 from pytest import mark
 import json
@@ -297,7 +298,7 @@ class L3OutRoutingConfigsTests:
         assert resp.status_code == 200
         assert json.loads(resp.text) == expected
 
-    @mark.parametrize('expected, patch_path, get_path', [
+    @mark.parametrize('expected, post_path, get_path', [
         (expected_path / 'ref_018_l3out_bgp_config_to_dcpe_1_border_sw_1.json',
          'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-1/routing/bgp=172.16.0.1',
          'tailf-ncs:devices/device=nw_blf_cnx9_001.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf=tcell-grt/neighbor=172.16.0.1'),
@@ -305,15 +306,15 @@ class L3OutRoutingConfigsTests:
          'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-1/routing/bgp=172.16.0.5',
          'tailf-ncs:devices/device=nw_blf_cnx9_001.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf=tcell-grt/neighbor=172.16.0.5'),
     ], indirect=['expected'])
-    def test_018_l3out_fabric_external_bgp_local_as(self, expected, patch_path, get_path):
+    def test_018_l3out_fabric_external_bgp_local_as(self, expected, post_path, get_path):
         post_resp = self.nso.post(
-            payload=self.payload_path / 'test_018_config.json', path=patch_path, params='', action=False)
+            payload=self.payload_path / 'test_018_config.json', path=post_path, params='', action=False)
         get_resp = self.nso.get(path=get_path)
         assert post_resp.status_code == 201
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
 
-    @mark.parametrize('expected, patch_path, get_path', [
+    @mark.parametrize('expected, post_path, get_path', [
         (expected_path / 'ref_019_l3out_bgp_config_to_dcpe_1_border_sw_1.json',
          'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-1/routing/bgp=172.16.0.1',
          'tailf-ncs:devices/device=nw_blf_cnx9_001.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf=tcell-grt/neighbor=172.16.0.1'),
@@ -321,15 +322,15 @@ class L3OutRoutingConfigsTests:
          'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-1/routing/bgp=172.16.0.5',
          'tailf-ncs:devices/device=nw_blf_cnx9_001.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf=tcell-grt/neighbor=172.16.0.5'),
     ], indirect=['expected'])
-    def test_019_l3out_fabric_external_bgp_peer_af_controls(self, expected, patch_path, get_path):
+    def test_019_l3out_fabric_external_bgp_peer_af_controls(self, expected, post_path, get_path):
         post_resp = self.nso.post(
-            payload=self.payload_path / 'test_019_config.json', path=patch_path, params='', action=False)
+            payload=self.payload_path / 'test_019_config.json', path=post_path, params='', action=False)
         get_resp = self.nso.get(path=get_path)
         assert post_resp.status_code == 201
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
 
-    @mark.parametrize('expected, patch_path, get_path', [
+    @mark.parametrize('expected, post_path, get_path', [
         (expected_path / 'ref_020_l3out_bgp_config_to_dcpe_1_border_sw_1.json',
          'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-1/routing/bgp=172.16.0.1',
          'tailf-ncs:devices/device=nw_blf_cnx9_001.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf=tcell-grt/neighbor=172.16.0.1'),
@@ -337,28 +338,28 @@ class L3OutRoutingConfigsTests:
          'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-1/routing/bgp=172.16.0.5',
          'tailf-ncs:devices/device=nw_blf_cnx9_001.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf=tcell-grt/neighbor=172.16.0.5'),
     ], indirect=['expected'])
-    def test_020_l3out_fabric_external_bgp_bfd(self, expected, patch_path, get_path):
+    def test_020_l3out_fabric_external_bgp_bfd(self, expected, post_path, get_path):
         post_resp = self.nso.post(
-            payload=self.payload_path / 'test_020_config.json', path=patch_path, params='', action=False)
+            payload=self.payload_path / 'test_020_config.json', path=post_path, params='', action=False)
         get_resp = self.nso.get(path=get_path)
         assert post_resp.status_code == 201
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
 
-    @mark.parametrize('expected, patch_path, get_path', [
+    @mark.parametrize('expected, post_path, get_path', [
         (expected_path / 'ref_021_l3out_bgp_config_to_dcpe_1_border_sw_1.json',
          'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-1/routing/bgp=172.16.0.1',
          'tailf-ncs:devices/device=nw_blf_cnx9_001.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf=tcell-grt/neighbor=172.16.0.1')
     ], indirect=['expected'])
-    def test_021_l3out_fabric_external_bgp_disable_connected_check(self, expected, patch_path, get_path):
+    def test_021_l3out_fabric_external_bgp_disable_connected_check(self, expected, post_path, get_path):
         patch_resp = self.nso.patch(
-            payload=self.payload_path / 'test_021_config.json', path=patch_path, params='')
+            payload=self.payload_path / 'test_021_config.json', path=post_path, params='')
         get_resp = self.nso.get(path=get_path)
         assert patch_resp.status_code == 204
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
 
-    @mark.parametrize('expected, patch_path, get_path', [
+    @mark.parametrize('expected, post_path, get_path', [
         (expected_path / 'ref_022_l3out_bgp_config_to_dcpe_1_border_sw_1.json',
          'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-1/routing/bgp=172.16.0.1',
          'tailf-ncs:devices/device=nw_blf_cnx9_001.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf=tcell-grt/neighbor=172.16.0.1'),
@@ -366,15 +367,15 @@ class L3OutRoutingConfigsTests:
          'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-1/routing/bgp=172.16.0.5',
          'tailf-ncs:devices/device=nw_blf_cnx9_001.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf=tcell-grt/neighbor=172.16.0.5'),
     ], indirect=['expected'])
-    def test_022_l3out_fabric_external_bgp_weight(self, expected, patch_path, get_path):
+    def test_022_l3out_fabric_external_bgp_weight(self, expected, post_path, get_path):
         post_resp = self.nso.post(
-            payload=self.payload_path / 'test_022_config.json', path=patch_path, params='', action=False)
+            payload=self.payload_path / 'test_022_config.json', path=post_path, params='', action=False)
         get_resp = self.nso.get(path=get_path)
         assert post_resp.status_code == 201
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
 
-    @mark.parametrize('expected, patch_path, get_path', [
+    @mark.parametrize('expected, post_path, get_path', [
         (expected_path / 'ref_023_l3out_bgp_config_to_dcpe_1_border_sw_1.json',
          'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-1/routing/bgp=172.16.0.1',
          'tailf-ncs:devices/device=nw_blf_cnx9_001.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf=tcell-grt/neighbor=172.16.0.1'),
@@ -382,15 +383,15 @@ class L3OutRoutingConfigsTests:
          'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-1/routing/bgp=172.16.0.5',
          'tailf-ncs:devices/device=nw_blf_cnx9_001.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf=tcell-grt/neighbor=172.16.0.5'),
     ], indirect=['expected'])
-    def test_023_l3out_fabric_external_bgp_timers(self, expected, patch_path, get_path):
+    def test_023_l3out_fabric_external_bgp_timers(self, expected, post_path, get_path):
         post_resp = self.nso.post(
-            payload=self.payload_path / 'test_023_config.json', path=patch_path, params='', action=False)
+            payload=self.payload_path / 'test_023_config.json', path=post_path, params='', action=False)
         get_resp = self.nso.get(path=get_path)
         assert post_resp.status_code == 201
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
 
-    @mark.parametrize('expected, patch_path, get_path', [
+    @mark.parametrize('expected, post_path, get_path', [
         (expected_path / 'ref_024_l3out_bgp_config_to_dcpe_1_border_sw_1.json',
          'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-1/routing/bgp=172.16.0.1',
          'tailf-ncs:devices/device=nw_blf_cnx9_001.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf=tcell-grt/neighbor=172.16.0.1'),
@@ -398,9 +399,9 @@ class L3OutRoutingConfigsTests:
          'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-1/routing/bgp=172.16.0.5',
          'tailf-ncs:devices/device=nw_blf_cnx9_001.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf=tcell-grt/neighbor=172.16.0.5'),
     ], indirect=['expected'])
-    def test_024_l3out_fabric_external_bgp_password(self, expected, patch_path, get_path):
+    def test_024_l3out_fabric_external_bgp_password(self, expected, post_path, get_path):
         post_resp = self.nso.post(
-            payload=self.payload_path / 'test_024_config.json', path=patch_path, params='', action=False)
+            payload=self.payload_path / 'test_024_config.json', path=post_path, params='', action=False)
         get_resp = self.nso.get(path=get_path)
         data = json.loads(get_resp.text)
         data['tailf-ned-cisco-nx:neighbor'][0]['password']['passwd'] = ".*"
@@ -409,16 +410,127 @@ class L3OutRoutingConfigsTests:
         assert data == expected
 
     @mark.parametrize('expected, path', [
-        (expected_path / 'ref_017_l3out_bgp_config_to_dcpe_1_border_sw_1.json',
-         'tailf-ncs:devices/device=nw_blf_cnx9_001.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf=tcell-grt/neighbor=172.16.0.1'),
-        (expected_path / 'ref_017_l3out_bgp_config_to_dcpe_2_border_sw_1.json',
-         'tailf-ncs:devices/device=nw_blf_cnx9_001.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf=tcell-grt/neighbor=172.16.0.5'),
-        (expected_path / 'ref_017_l3out_bgp_port_channel_config_to_dcpe_1_border_sw_1.json',
-         'tailf-ncs:devices/device=nw_blf_cnx9_001.dsslab_site1/config/tailf-ned-cisco-nx:interface/port-channel=501.2'),
-        (expected_path / 'ref_017_l3out_bgp_port_channel_config_to_dcpe_2_border_sw_1.json',
-         'tailf-ncs:devices/device=nw_blf_cnx9_001.dsslab_site1/config/tailf-ned-cisco-nx:interface/port-channel=502.2'),
+        (expected_path / 'ref_025_l3out_bgpv6_config_to_dcpe_1_border_sw_2.json',
+         'tailf-ncs:devices/device=nw_blf_cnx9_002.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf=tcell-grt/neighbor=2001%3Adb8%3Acafe%3A4%3A%3A1'),
+        (expected_path / 'ref_025_l3out_bgpv6_config_to_dcpe_2_border_sw_2.json',
+         'tailf-ncs:devices/device=nw_blf_cnx9_002.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf=tcell-grt/neighbor=2001%3Adb8%3Acafe%3A5%3A%3A1'),
+        (expected_path / 'ref_025_l3out_bgpv6_port_channel_config_to_dcpe_1_border_sw_2.json',
+         'tailf-ncs:devices/device=nw_blf_cnx9_002.dsslab_site1/config/tailf-ned-cisco-nx:interface/port-channel=501.3'),
+        (expected_path / 'ref_025_l3out_bgpv6_port_channel_config_to_dcpe_2_border_sw_2.json',
+         'tailf-ncs:devices/device=nw_blf_cnx9_002.dsslab_site1/config/tailf-ned-cisco-nx:interface/port-channel=502.3'),
     ], indirect=['expected'])
-    def test_017_l3out_fabric_external_bgp_config(self, expected, path):
+    def test_025_l3out_fabric_external_bgpv6_config(self, expected, path):
         resp = self.nso.get(path=path)
         assert resp.status_code == 200
         assert json.loads(resp.text) == expected
+
+    @mark.parametrize('expected, post_path, get_path', [
+        (expected_path / 'ref_026_l3out_bgpv6_config_to_dcpe_1_border_sw_2.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-2/routing/bgp=2001%3Adb8%3Acafe%3A4%3A%3A1',
+         'tailf-ncs:devices/device=nw_blf_cnx9_002.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf=tcell-grt/neighbor=2001%3Adb8%3Acafe%3A4%3A%3A1'),
+        (expected_path / 'ref_026_l3out_bgpv6_config_to_dcpe_2_border_sw_2.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-2/routing/bgp=2001%3Adb8%3Acafe%3A5%3A%3A1',
+         'tailf-ncs:devices/device=nw_blf_cnx9_002.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf=tcell-grt/neighbor=2001%3Adb8%3Acafe%3A5%3A%3A1'),
+    ], indirect=['expected'])
+    def test_026_l3out_fabric_external_bgpv6_local_as(self, expected, post_path, get_path):
+        post_resp = self.nso.post(
+            payload=self.payload_path / 'test_026_config.json', path=post_path, params='', action=False)
+        get_resp = self.nso.get(path=get_path)
+        assert post_resp.status_code == 201
+        assert get_resp.status_code == 200
+        assert json.loads(get_resp.text) == expected
+
+    @mark.parametrize('expected, post_path, get_path', [
+        (expected_path / 'ref_027_l3out_bgpv6_config_to_dcpe_1_border_sw_2.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-2/routing/bgp=2001%3Adb8%3Acafe%3A4%3A%3A1',
+         'tailf-ncs:devices/device=nw_blf_cnx9_002.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf=tcell-grt/neighbor=2001%3Adb8%3Acafe%3A4%3A%3A1'),
+        (expected_path / 'ref_027_l3out_bgpv6_config_to_dcpe_2_border_sw_2.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-2/routing/bgp=2001%3Adb8%3Acafe%3A5%3A%3A1',
+         'tailf-ncs:devices/device=nw_blf_cnx9_002.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf=tcell-grt/neighbor=2001%3Adb8%3Acafe%3A5%3A%3A1'),
+    ], indirect=['expected'])
+    def test_027_l3out_fabric_external_bgpv6_peer_af_controls(self, expected, post_path, get_path):
+        post_resp = self.nso.post(
+            payload=self.payload_path / 'test_027_config.json', path=post_path, params='', action=False)
+        get_resp = self.nso.get(path=get_path)
+        assert post_resp.status_code == 201
+        assert get_resp.status_code == 200
+        assert json.loads(get_resp.text) == expected
+
+    @mark.parametrize('expected, post_path, get_path', [
+        (expected_path / 'ref_028_l3out_bgpv6_config_to_dcpe_1_border_sw_2.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-2/routing/bgp=2001%3Adb8%3Acafe%3A4%3A%3A1',
+         'tailf-ncs:devices/device=nw_blf_cnx9_002.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf=tcell-grt/neighbor=2001%3Adb8%3Acafe%3A4%3A%3A1'),
+        (expected_path / 'ref_028_l3out_bgpv6_config_to_dcpe_2_border_sw_2.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-2/routing/bgp=2001%3Adb8%3Acafe%3A5%3A%3A1',
+         'tailf-ncs:devices/device=nw_blf_cnx9_002.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf=tcell-grt/neighbor=2001%3Adb8%3Acafe%3A5%3A%3A1'),
+    ], indirect=['expected'])
+    def test_028_l3out_fabric_external_bgpv6_bfd(self, expected, post_path, get_path):
+        post_resp = self.nso.post(
+            payload=self.payload_path / 'test_028_config.json', path=post_path, params='', action=False)
+        get_resp = self.nso.get(path=get_path)
+        assert post_resp.status_code == 201
+        assert get_resp.status_code == 200
+        assert json.loads(get_resp.text) == expected
+
+    @mark.parametrize('expected, patch_path, get_path', [
+        (expected_path / 'ref_029_l3out_bgpv6_config_to_dcpe_1_border_sw_2.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-2/routing/bgp=2001%3Adb8%3Acafe%3A4%3A%3A1',
+         'tailf-ncs:devices/device=nw_blf_cnx9_002.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf=tcell-grt/neighbor=2001%3Adb8%3Acafe%3A4%3A%3A1'),
+    ], indirect=['expected'])
+    def test_029_l3out_fabric_external_bgpv6_disable_connected_check(self, expected, patch_path, get_path):
+        post_resp = self.nso.patch(
+            payload=self.payload_path / 'test_029_config.json', path=patch_path, params='')
+        get_resp = self.nso.get(path=get_path)
+        assert post_resp.status_code == 204
+        assert get_resp.status_code == 200
+        assert json.loads(get_resp.text) == expected
+
+    @mark.parametrize('expected, post_path, get_path', [
+        (expected_path / 'ref_030_l3out_bgpv6_config_to_dcpe_1_border_sw_2.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-2/routing/bgp=2001%3Adb8%3Acafe%3A4%3A%3A1',
+         'tailf-ncs:devices/device=nw_blf_cnx9_002.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf=tcell-grt/neighbor=2001%3Adb8%3Acafe%3A4%3A%3A1'),
+        (expected_path / 'ref_030_l3out_bgpv6_config_to_dcpe_2_border_sw_2.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-2/routing/bgp=2001%3Adb8%3Acafe%3A5%3A%3A1',
+         'tailf-ncs:devices/device=nw_blf_cnx9_002.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf=tcell-grt/neighbor=2001%3Adb8%3Acafe%3A5%3A%3A1'),
+    ], indirect=['expected'])
+    def test_030_l3out_fabric_external_bgpv6_weight(self, expected, post_path, get_path):
+        post_resp = self.nso.post(
+            payload=self.payload_path / 'test_030_config.json', path=post_path, params='', action=False)
+        get_resp = self.nso.get(path=get_path)
+        assert post_resp.status_code == 201
+        assert get_resp.status_code == 200
+        assert json.loads(get_resp.text) == expected
+
+    @mark.parametrize('expected, post_path, get_path', [
+        (expected_path / 'ref_031_l3out_bgpv6_config_to_dcpe_1_border_sw_2.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-2/routing/bgp=2001%3Adb8%3Acafe%3A4%3A%3A1',
+         'tailf-ncs:devices/device=nw_blf_cnx9_002.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf=tcell-grt/neighbor=2001%3Adb8%3Acafe%3A4%3A%3A1'),
+        (expected_path / 'ref_031_l3out_bgpv6_config_to_dcpe_2_border_sw_2.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-2/routing/bgp=2001%3Adb8%3Acafe%3A5%3A%3A1',
+         'tailf-ncs:devices/device=nw_blf_cnx9_002.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf=tcell-grt/neighbor=2001%3Adb8%3Acafe%3A5%3A%3A1'),
+    ], indirect=['expected'])
+    def test_031_l3out_fabric_external_bgpv6_timers(self, expected, post_path, get_path):
+        post_resp = self.nso.post(
+            payload=self.payload_path / 'test_031_config.json', path=post_path, params='', action=False)
+        get_resp = self.nso.get(path=get_path)
+        assert post_resp.status_code == 201
+        assert get_resp.status_code == 200
+        assert json.loads(get_resp.text) == expected
+
+    @mark.parametrize('expected, post_path, get_path', [
+        (expected_path / 'ref_032_l3out_bgpv6_config_to_dcpe_1_border_sw_2.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-2/routing/bgp=2001%3Adb8%3Acafe%3A4%3A%3A1',
+         'tailf-ncs:devices/device=nw_blf_cnx9_002.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf=tcell-grt/neighbor=2001%3Adb8%3Acafe%3A4%3A%3A1'),
+        (expected_path / 'ref_032_l3out_bgpv6_config_to_dcpe_2_border_sw_2.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-2/routing/bgp=2001%3Adb8%3Acafe%3A5%3A%3A1',
+         'tailf-ncs:devices/device=nw_blf_cnx9_002.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf=tcell-grt/neighbor=2001%3Adb8%3Acafe%3A5%3A%3A1'),
+    ], indirect=['expected'])
+    def test_032_l3out_fabric_external_bgpv6_password(self, expected, post_path, get_path):
+        post_resp = self.nso.post(
+            payload=self.payload_path / 'test_032_config.json', path=post_path, params='', action=False)
+        get_resp = self.nso.get(path=get_path)
+        data = json.loads(get_resp.text)
+        data['tailf-ned-cisco-nx:neighbor'][0]['password']['passwd'] = ".*"
+        assert post_resp.status_code == 201
+        assert get_resp.status_code == 200
+        assert data == expected

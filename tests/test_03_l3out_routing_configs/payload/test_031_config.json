@@ -1,0 +1,6 @@
+{
+    "timers": {
+        "keepalive": 5,
+        "holdtime": 15
+    }
+}

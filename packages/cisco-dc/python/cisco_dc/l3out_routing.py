@@ -15,7 +15,6 @@ def _configure_l3out_routing(root, bd, tctx, log):
     """
     address_family = set()
     _set_hidden_leaves(root, bd, address_family, log)
-    _apply_template(bd)
 
 
 def _set_hidden_leaves(root, bd, address_family, log):

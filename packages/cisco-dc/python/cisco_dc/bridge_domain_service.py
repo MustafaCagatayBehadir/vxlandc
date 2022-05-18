@@ -3,7 +3,7 @@ import _ncs
 import ncs.maapi as maapi
 import ncs.maagic as maagic
 from .resource_manager import id_allocator
-from .l3out_routing import _configure_l3out_routing
+from . import l3out_routing
 from . import utils
 from ipaddress import ip_address, IPv4Address, IPv6Address
 
@@ -24,8 +24,11 @@ class BridgeDomainServiceSelfComponent(ncs.application.NanoService):
 
         elif state == 'cisco-dc:bridge-domain-configured':
             _configure_bridge_domain(root, service, tctx, self.log)
-            _configure_l3out_routing(root, service, tctx, self.log)
             _apply_template(service)
+
+        elif state == 'cisco-dc:l3out-routing-configured':
+            l3out_routing._configure_l3out_routing(root, service, tctx, self.log)
+            l3out_routing._apply_template(service)
 
 
 def _id_requested(root, bd, tctx, log):
@@ -103,7 +106,7 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
         port_group = port_groups[attached_port_group.name]
         ports = port_group.port_config
         if (bd._path) not in port_group.bd_service:
-            port_group.bd_service.create(bd._path)
+            port_group.bd_service.create(bd._path)        
         for port in ports:
             if (bd._path, bd.vlan_id) not in port.bd_vlan:
                 port.bd_vlan.create(bd._path, bd.vlan_id)
@@ -127,6 +130,7 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
                     bd.device.create(port._path, node_1)
                 if (port._path, node_2) not in bd.device:
                     bd.device.create(port._path, node_2)
+
     log.info(
         f'Port {port.name} bridge-bomain {bd.name} hidden configuration is applied.')
 

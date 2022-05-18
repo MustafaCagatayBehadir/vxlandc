@@ -364,7 +364,7 @@ submodule cisco-dc-port-config {
         }
 
         leaf mode {
-            tailf:hidden "Just for convenience";
+            tailf:hidden "dc";
             type string;
             tailf:default-ref "../../mode";
         }
@@ -376,7 +376,7 @@ submodule cisco-dc-port-config {
         }
 
         leaf type {
-            tailf:hidden "Just for convenience";
+            tailf:hidden "dc";
             type string;
         }
 

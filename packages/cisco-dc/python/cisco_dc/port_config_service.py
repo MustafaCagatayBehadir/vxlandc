@@ -73,7 +73,6 @@ class PortServiceCallback(ncs.application.Service):
                             break
 
 
-
 class PortServiceSelfComponent(ncs.application.NanoService):
     """
     NanoService callback handler for the self component of port-config service.
@@ -194,22 +193,21 @@ def _set_hidden_leaves(root, port, tctx, id_parameters, log):
         if port.port_type == 'ethernet':
             eth = port.ethernet
             node = eth.node
-            if (port._path, node) not in bd.device:
-                bd.device.create(port._path, node)
+            if (port._path, node) not in bd.port_device:
+                bd.port_device.create(port._path, node)
 
         elif port.port_type == 'port-channel':
             pc = port.port_channel
             node = pc.node
-            if (port._path, node) not in bd.device:
-                bd.device.create(port._path, node)
+            if (port._path, node) not in bd.port_device:
+                bd.port_device.create(port._path, node)
 
         elif port.port_type == 'vpc-port-channel':
-            vpc = port.vpc_port_channel
             node_1, node_2 = utils.get_vpc_nodes_from_port(root, port)
-            if (port._path, node_1) not in bd.device:
-                bd.device.create(port._path, node_1)
-            if (port._path, node_2) not in bd.device:
-                bd.device.create(port._path, node_2)
+            if (port._path, node_1) not in bd.port_device:
+                bd.port_device.create(port._path, node_1)
+            if (port._path, node_2) not in bd.port_device:
+                bd.port_device.create(port._path, node_2)
 
         log.info(f'Bridge-domain {bd.name} is activated by port {port.name}')
 

@@ -28,10 +28,15 @@ submodule cisco-dc-l3out-routing {
 
     grouping l3out-routing {
         container routing {
-            when "../bd-subnet";
             tailf:info "Specify routing details";
-            presence
-              true;
+
+            leaf l3out-type {
+                tailf:hidden "dc";
+                type enumeration {
+                    enum fabric-external;
+                    enum fabric-internal;
+                }
+            }
 
             list bgp {
                 tailf:info "Define bgp routes";

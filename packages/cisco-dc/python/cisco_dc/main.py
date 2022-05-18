@@ -38,6 +38,9 @@ class Main(ncs.application.Application):
         self.register_nano_service('bridge-domain-config-servicepoint', 'ncs:self',
                                    'cisco-dc:bridge-domain-configured', bridge_domain_service.BridgeDomainServiceSelfComponent)
 
+        self.register_nano_service('bridge-domain-config-servicepoint', 'ncs:self',
+                                   'cisco-dc:l3out-routing-configured', bridge_domain_service.BridgeDomainServiceSelfComponent)
+
         # Bridge Domain Service Validation
         self.port_config_val = validate_callback.ValPointRegistrar(
             self.log, 'bridge-domain-val', 'bridge-domain-service-validation', bridge_domain_service.BridgeDomainServiceValidator(self.log))

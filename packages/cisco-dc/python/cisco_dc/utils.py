@@ -144,6 +144,23 @@ def get_vpc_nodes_from_bd(root, bd, vlan_dict):
     return [node_group.node_1, node_group.node_2]
 
 
+def get_vpc_nodes_from_l3out(root, bd, id):
+    """Function to return vPC nodes
+
+    Args:
+        root: Maagic object pointing to the root of the CDB
+        bd: service node
+        id: node group id
+
+    Returns:
+        List: vPC node1 & vPC node2 list object
+
+    """
+    site = root.cisco_dc__dc_site[bd.site]
+    node_group = site.node_group[id]
+    return [node_group.node_1, node_group.node_2]
+
+
 def getIpAddress(addr):
     """Return the Ip part of a 'Ip/Net' string.
 
@@ -188,7 +205,7 @@ def get_service_operation(op):
 
 
 def get_network_vlan_name(bd):
-    """Function to create network vlan name
+    """Function to return network vlan name
 
     Args:
         bd: Service node
@@ -202,7 +219,7 @@ def get_network_vlan_name(bd):
 
 
 def get_vrf_vlan_name(vrf):
-    """Function to create vrf vlan name
+    """Function to return vrf vlan name
 
     Args:
         vrf: Service node
@@ -215,8 +232,39 @@ def get_vrf_vlan_name(vrf):
     return truncate_vlan_name(vlan_name) if len(vlan_name) > 32 else vlan_name
 
 
+def get_static_route_name(bd):
+    """Function to return static route name
+
+    Args:
+        bd: Service node
+
+    Returns:
+        String: Static route name
+
+    """
+    static_route_name = f'{bd.tenant}:{bd.name}'
+    return truncate_static_route_name(static_route_name) if len(static_route_name) > 50 else static_route_name
+
+def get_node_connections(site):
+    """Function to return border-leaf connections
+
+    Args:
+        site: Maagic site object
+
+    Returns:
+        List: List of tuples
+
+    """
+    node_connections = list()
+    nodes = [node.hostname for node in site.node if node.node_role == 'border-leaf']
+    connections = ['uplink-to-dci-gw-01', 'uplink-to-dci-gw-02']
+    for node in nodes:
+        for connection in connections:
+            node_connections.append((node, connection))
+    return node_connections
+
 def truncate_vlan_name(vlan_name):
-    """Function to truncate vlan name (vlan-name >32 char is not allowed.)
+    """Function to truncate vlan name (vlan-name > 32 char is not allowed.)
 
     Args:
         vlan_name: Vlan name more than 32 char
@@ -228,6 +276,19 @@ def truncate_vlan_name(vlan_name):
     """
     return f'{vlan_name[:29]}...'
 
+
+def truncate_static_route_name(static_route_name):
+    """Function to truncate static route name (static-route-name > 50 char is not allowed.)
+
+    Args:
+        static_route_name: Static route name more than 50 char
+
+
+    Return:
+        String: Truncated static route name
+
+    """
+    return f'{static_route_name[:47]}...'
 
 
 def is_node_vpc(root, port, port_parameters):
@@ -267,7 +328,6 @@ def send_show_command(device, cmd, log):
     result = show.request(input).result
     log.debug(f'Result :', result)
     return json.loads(result)
-
 
 
 def apply_template(service, template_name, template_vars):

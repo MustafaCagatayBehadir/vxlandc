@@ -187,7 +187,8 @@ def _set_hidden_leaves(root, port, tctx, id_parameters, log):
 
     port.auto_bum = utils.get_bum(port.speed)
 
-    bd_services = root.cisco_dc__dc_site[port.site].port_configs[port.port_group].bd_service
+    port_group = root.cisco_dc__dc_site[port.site].port_configs[port.port_group]
+    bd_services = port_group.bd_service
     for bd_service in bd_services:
         bd = ncs.maagic.cd(root, bd_service.kp)
         if port.port_type == 'ethernet':
@@ -211,7 +212,6 @@ def _set_hidden_leaves(root, port, tctx, id_parameters, log):
                 bd.device.create(port._path, node_2)
 
         log.info(f'Bridge-domain {bd.name} is activated by port {port.name}')
-
 
 def _apply_template(port):
     """Function to create port configuration

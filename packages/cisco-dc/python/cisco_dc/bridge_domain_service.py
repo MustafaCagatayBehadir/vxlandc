@@ -132,7 +132,8 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
 
     for bd_subnet in bd.bd_subnet:
         ip = utils.getIpAddress(bd_subnet.address)
-        bd_subnet.address_family = "ipv4" if type(ip_address(ip)) is IPv4Address else "ipv6"
+        bd_subnet.address_family = "ipv4" if type(
+            ip_address(ip)) is IPv4Address else "ipv6"
 
     if bd.vrf:
         vrf = root.cisco_dc__dc_site[bd.site].vrf_config[bd.vrf]
@@ -194,8 +195,11 @@ class BridgeDomainServiceValidator(object):
                         num_preferred_address += 1
                 if type(ip_address(ip)) is IPv6Address:
                     if bd_subnet.preferred.string == 'yes':
-                        raise Exception(f'Bridge-Domain {bd.name} bd-subnet {bd_subnet.address} should not be selected as preferred address.')
+                        raise Exception(
+                            f'Bridge-Domain {bd.name} bd-subnet {bd_subnet.address} should not be selected as preferred address.')
             if flag_ipv4 and num_preferred_address < 1:
-                raise Exception(f'Bridge-Domain {bd.name} has at least one preferred IPv4 subnet.')
+                raise Exception(
+                    f'Bridge-Domain {bd.name} has at least one preferred IPv4 subnet.')
             elif flag_ipv4 and num_preferred_address > 1:
-                raise Exception(f'Bridge-Domain {bd.name} should not have more than one preferred IPv4 subnet.')
+                raise Exception(
+                    f'Bridge-Domain {bd.name} should not have more than one preferred IPv4 subnet.')

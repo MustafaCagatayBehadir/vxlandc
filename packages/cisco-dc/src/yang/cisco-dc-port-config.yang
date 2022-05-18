@@ -30,6 +30,12 @@ submodule cisco-dc-port-config {
             type dc-string;
         }
 
+        leaf mode-copy {
+            tailf:info "only to suppress compiler warning on must expression";
+            type string;
+            tailf:hidden "dc";
+        }
+
         leaf mode {
             tailf:info "Port Group Mode can be Access or Trunk";
             type enumeration {
@@ -37,6 +43,11 @@ submodule cisco-dc-port-config {
                 enum trunk;
             }
             mandatory true;
+
+            must "not(../mode-copy) or ../mode-copy = ." {
+                error-message
+                    "Mode can't be changed ones the port-group is deployed";
+            }
         }
 
         list bd-service {

@@ -3,7 +3,7 @@ import _ncs
 import ncs.maapi as maapi
 import ncs.maagic as maagic
 from .resource_manager import id_allocator
-from . import l3out_routing
+from . import bridge_domain_l3out_routing
 from . import utils
 from ipaddress import ip_address, IPv4Address, IPv6Address
 
@@ -26,9 +26,9 @@ class BridgeDomainServiceSelfComponent(ncs.application.NanoService):
             _configure_bridge_domain(root, service, tctx, self.log)
             _apply_template(service)
 
-        elif state == 'cisco-dc:l3out-routing-configured':
-            l3out_routing._configure_l3out_routing(root, service, tctx, self.log)
-            l3out_routing._apply_template(service)
+        elif state == 'cisco-dc:bridge-domain-l3out-routing-configured':
+            bridge_domain_l3out_routing._configure_l3out_routing(root, service, tctx, self.log)
+            bridge_domain_l3out_routing._apply_template(service)
 
 
 def _id_requested(root, bd, tctx, log):
@@ -131,8 +131,8 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
                 if (port._path, node_2) not in bd.device:
                     bd.device.create(port._path, node_2)
 
-    log.info(
-        f'Port {port.name} bridge-bomain {bd.name} hidden configuration is applied.')
+        log.info(
+            f'Port {port.name} bridge-bomain {bd.name} hidden configuration is applied.')
 
     for bd_subnet in bd.bd_subnet:
         ip = utils.getIpAddress(bd_subnet.address)
@@ -142,8 +142,8 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
     if bd.vrf:
         vrf = root.cisco_dc__dc_site[bd.site].vrf_config[bd.vrf]
         for device in bd.device:
-            if (bd._path, device.leaf_id) not in vrf.device:
-                vrf.device.create(bd._path, device.leaf_id)
+            if (bd._path, device.leaf_id) not in vrf.bd_device:
+                vrf.bd_device.create(bd._path, device.leaf_id)
         log.info(f'Vrf {bd.vrf} is activated by bridge-domain {bd.name}')
 
 

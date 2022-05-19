@@ -1,6 +1,7 @@
 import ncs
 from .resource_manager import id_allocator
 from . import utils
+from . import vrf_l3out_routing
 
 
 class VrfServiceSelfComponent(ncs.application.NanoService):
@@ -21,6 +22,11 @@ class VrfServiceSelfComponent(ncs.application.NanoService):
             _configure_vrf(root, service, tctx, self.log)
             _apply_template(service)
 
+        elif state == 'cisco-dc:vrf-l3out-routing-configured':
+            vrf_l3out_routing._configure_l3out_routing(
+                root, service, tctx, self.log)
+            vrf_l3out_routing._apply_template(service)
+
 
 def _id_requested(root, vrf, tctx, log):
     """Function to request vlan id & vni id from resource manager
@@ -33,7 +39,8 @@ def _id_requested(root, vrf, tctx, log):
     """
     resource_pools = root.cisco_dc__dc_site[vrf.site].resource_pools
     id = [(vrf.l3vni.vlan_id if vrf.l3vni.vlan_id else -1, resource_pools.l3_vrf_vlan),
-          (vrf.l3vni.vni_id if vrf.l3vni.vni_id else -1, resource_pools.l3_vxlan_vni)]
+          (vrf.l3vni.vni_id if vrf.l3vni.vni_id else -1, resource_pools.l3_vxlan_vni),
+          (vrf.l3vni.fabric_external_vlan_id if vrf.l3vni.fabric_external_vlan_id else -1, resource_pools.fabric_external_l3_vrf_vlan)]
     for requested_id, pool_name in id:
         svc_xpath = "/cisco-dc:dc-site[fabric='{}']/vrf-config[name='{}']"
         svc_xpath = svc_xpath.format(vrf.site, vrf.name)
@@ -71,7 +78,8 @@ def _create_service_parameters(root, vrf, tctx, id_parameters, log):
     """
     resource_pools = root.cisco_dc__dc_site[vrf.site].resource_pools
     id = [('vrf-vlan', resource_pools.l3_vrf_vlan),
-          ('l3vni', resource_pools.l3_vxlan_vni)]
+          ('l3vni', resource_pools.l3_vxlan_vni),
+          ('fabric-external-vrf-vlan', resource_pools.fabric_external_l3_vrf_vlan)]
     for parameter, pool_name in id:
         allocation_name = f'{vrf.site}:{vrf.name}'
         id_parameters[parameter] = id_allocator.id_read(
@@ -89,7 +97,13 @@ def _set_hidden_leaves(root, vrf, id_parameters, log):
         log: log object (self.log)
 
     """
-    vrf.vlan_id, vrf.vni_id = id_parameters.values()
+    vrf.vlan_id, vrf.vni_id, vrf.fabric_external_vlan_id = id_parameters[
+        'vrf-vlan'], id_parameters['l3vni'], id_parameters['fabric-external-vrf-vlan']
+
+    for device in vrf.bd_device:
+        if (device.kp, device.leaf_id) not in vrf.device:
+            vrf.device.create(device.kp, device.leaf_id)
+        
     if vrf.direct.exists():
         if vrf.direct.address_family_ipv4_policy:
             dc_route_policies = root.cisco_dc__dc_site[vrf.site].dc_route_policy

@@ -2,6 +2,13 @@
     "resource-allocator:resource-pools": {
         "id-allocator:id-pool": [
             {
+                "name": "avr-dss1-lbox-yaani-fabric::fabric-external-l3-vrf-vlan",
+                "range": {
+                    "start": 2,
+                    "end": 4094
+                }
+            },
+            {
                 "name": "avr-dss1-lbox-yaani-fabric::l2-network-vlan",
                 "range": {
                     "start": 2,

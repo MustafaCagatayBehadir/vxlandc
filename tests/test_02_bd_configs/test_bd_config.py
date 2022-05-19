@@ -27,10 +27,16 @@ class BDConfigsTests:
             params="",
         )
         cls.nso.patch(
+            payload=cls.payload_path / "test_setup_vrf_service_approved.json",
+            path="",
+            params="",
+        )
+        cls.nso.patch(
             payload=cls.payload_path / "test_setup_fabric_service_approved.json",
             path="",
             params="",
         )
+
 
     @mark.parametrize('expected, path', [
         (expected_path / 'ref_001_vlan_bd_service_sw_1.json',

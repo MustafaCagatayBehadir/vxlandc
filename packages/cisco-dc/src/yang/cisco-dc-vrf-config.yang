@@ -45,6 +45,11 @@ submodule cisco-dc-vrf-config {
                 tailf:info "Vni id is allocated by resource-manager, use this field to overwrite the default behavior.";
                 type vxlan-id;
             }
+
+            leaf fabric-external-vlan-id {
+                tailf:info "Fabric external vlan id is allocated by resource-manager, use this field to overwrite the default behavior.";
+                type vlan;
+            }
         }
 
         container direct {
@@ -115,8 +120,23 @@ submodule cisco-dc-vrf-config {
             }
         }
 
+        list bd-device {
+            tailf:hidden "Attach device defined in infra by bd service";
+            key "kp leaf-id";
+
+            leaf kp {
+                tailf:info "Attach port keypath";
+                type string;
+            }
+
+            leaf leaf-id {
+                tailf:info "Define Leaf Node ID";
+                type string;
+            }
+        }
+
         list device {
-            tailf:hidden "Attach device defined in infra";
+            tailf:hidden "Attach vrf device defined in infra by vrf service";
             key "kp leaf-id";
 
             leaf kp {
@@ -140,6 +160,11 @@ submodule cisco-dc-vrf-config {
             type vxlan-id;
         }
 
+        leaf fabric-external-vlan-id {
+            tailf:hidden "dc";
+            type vlan;
+        }
+
         leaf site {
             tailf:hidden "Just for convenience";
             type string;
@@ -150,6 +175,12 @@ submodule cisco-dc-vrf-config {
             tailf:hidden "Just for convenience";
             type inet:as-number;
             tailf:default-ref "../../cisco-dc:fabric-parameters/cisco-dc:as-number";
+        }
+
+        leaf approved {
+            tailf:info "Approved will set to true if id is allocated";
+            type boolean;
+            default false;
         }
     }
 }

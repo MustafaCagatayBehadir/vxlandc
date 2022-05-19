@@ -26,6 +26,12 @@
                 "scope": "fabric"
             },
             {
+                "id": "fabric-external-l3-vrf-vlan",
+                "start": 2,
+                "end": 4094,
+                "scope": "fabric"
+            },
+            {
                 "id": "port-channel-id",
                 "start": 1,
                 "end": 500,

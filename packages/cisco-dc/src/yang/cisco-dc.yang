@@ -81,7 +81,12 @@ module cisco-dc {
 
                 uses bridge-domain;
 
-                uses l3out-routing;
+                uses l3out-routing {
+                    when "bd-subnet";
+                    refine routing/l3out-type {
+                        default fabric-internal;
+                    }
+                }
             }
         }
 
@@ -119,6 +124,12 @@ module cisco-dc {
             key name;
 
             uses vrf-config-service;
+
+            uses l3out-routing {
+                refine routing/l3out-type {
+                    default fabric-external;
+                }
+            }
         }
 
         list dc-route-policy {
@@ -140,38 +151,6 @@ module cisco-dc {
         description
           "Supported DC actions";
 
-        container site-discovery {
-            tailf:action discover-site {
-                tailf:actionpoint discover-site;
-                description
-                  "Action to add devices to NSO and create fabric environment";
-                input {
-                    leaf site {
-                        tailf:info "Site name for discovery";
-                        type leafref {
-                            path "/cisco-dc:dc-site/cisco-dc:fabric";
-                        }
-                    }
-                    leaf spine {
-                        must "contains(., 'SPN')" {
-                            error-message
-                              "Node must be a spine node";
-                            tailf:dependency ".";
-                        }
-                        tailf:info "Spine name for discover the fabric";
-                        type leafref {
-                            path "/ncs:devices/ncs:device/ncs:name";
-                        }
-                    }
-                }
-                output {
-                    leaf success {
-                        type boolean;
-                    }
-                }
-            }
-        }
-
         container resource-pools {
             tailf:action create-site-resource-pools {
                 tailf:actionpoint create-site-resource-pools;
@@ -189,6 +168,7 @@ module cisco-dc {
                                 enum l2-network-vlan;
                                 enum l3-vrf-vlan;
                                 enum port-channel-id;
+                                enum fabric-external-l3-vrf-vlan;
                             }
                         }
 

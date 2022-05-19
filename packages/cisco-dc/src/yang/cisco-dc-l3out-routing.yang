@@ -29,6 +29,8 @@ submodule cisco-dc-l3out-routing {
     grouping l3out-routing {
         container routing {
             tailf:info "Specify routing details";
+            presence
+              "dc";
 
             leaf l3out-type {
                 tailf:hidden "dc";
@@ -48,93 +50,88 @@ submodule cisco-dc-l3out-routing {
                 }
 
                 container source-interface {
-                    tailf:info "Attach source interface connection\n"
-                    +   "it can be either fabric external connection OR loopback";
-                    choice interface {
-                        mandatory true;
+                    tailf:info "Attach source interface connection";
 
-                        case fabric-external-connection {
-                            container fabric-external-connection {
-                                tailf:info "attach external connection";
+                    container fabric-external-connection {
+                        when "../../../l3out-type = 'fabric-external'";
+                        tailf:info "attach external connection";
+                        tailf:cli-drop-node-name;
 
-                                leaf node {
-                                    must "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../../../../site]"
+                        leaf node {
+                            must "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../../../../site]"
                                     +   "/cisco-dc:node[cisco-dc:hostname=current()]/cisco-dc:node-role = 'border-leaf'" {
-                                        error-message
-                                          "Node role must be border-leaf";
-                                    }
-
-                                    tailf:info "Node name";
-                                    type leafref {
-                                        path "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../../../../site]"
-                                        + "/cisco-dc:node/cisco-dc:hostname";
-                                    }
-                                    mandatory true;
-                                }
-
-                                leaf connection {
-                                    tailf:info "Fabric l3out uplink can be uplink-to-dci-gw-01 or uplink-to-dci-gw-02";
-                                    type enumeration {
-                                        enum uplink-to-dci-gw-01;
-                                        enum uplink-to-dci-gw-02;
-                                    }
-                                    mandatory true;
-                                }
-
-                                leaf address {
-                                    tailf:hidden "dc";
-                                    type tailf:ip-address-and-prefix-length;
-                                }
-
-                                leaf vlan {
-                                    tailf:hidden "dc";
-                                    type vlan;
-                                    tailf:default-ref "../../../../../cisco-dc:vlan-id";
-                                }
-
-                                leaf port-channel-id {
-                                    tailf:hidden "dc";
-                                    type uint16 {
-                                        range "500..600";
-                                    }
-                                }
+                                error-message
+                                  "Node role must be border-leaf";
                             }
+
+                            tailf:info "Node name";
+                            type leafref {
+                                path "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../../../../site]"
+                                        + "/cisco-dc:node/cisco-dc:hostname";
+                            }
+                            mandatory true;
                         }
 
-                        case fabric-internal-connection {
+                        leaf connection {
+                            tailf:info "Fabric l3out uplink can be uplink-to-dci-gw-01 or uplink-to-dci-gw-02";
+                            type enumeration {
+                                enum uplink-to-dci-gw-01;
+                                enum uplink-to-dci-gw-02;
+                            }
+                            mandatory true;
+                        }
 
-                            container fabric-internal-connection {
-                                tailf:info "attach internal connection";
-                                list loopback {
-                                    tailf:info "Associate bgp routing on loopback";
-                                    key "id node";
+                        leaf address {
+                            tailf:hidden "dc";
+                            type tailf:ip-address-and-prefix-length;
+                        }
 
-                                    leaf id {
-                                        tailf:info "Specify loopback id";
-                                        type loopback-id;
-                                    }
+                        leaf vlan {
+                            tailf:hidden "dc";
+                            type vlan;
+                        }
 
-                                    leaf node {
-                                        must "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../../../../../site]"
+                        leaf port-channel-id {
+                            tailf:hidden "dc";
+                            type uint16 {
+                                range "500..600";
+                            }
+                        }
+                    }
+
+                    container fabric-internal-connection {
+                        when "../../../l3out-type = 'fabric-internal'";
+                        tailf:info "attach internal connection";
+                        tailf:cli-drop-node-name;
+
+                        list node {
+                            tailf:info "Associate bgp routing on loopback";
+                            key "leaf-id";
+
+                            leaf leaf-id {
+                                must "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../../../../../site]"
                                         +   "/cisco-dc:node[cisco-dc:hostname=current()]/cisco-dc:node-role = 'access-leaf'" {
-                                            error-message
-                                              "Node role must be access-leaf";
-                                        }
-
-                                        tailf:info "Node name";
-                                        type leafref {
-                                            path "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../../../../../site]"
-                                        + "/cisco-dc:node/cisco-dc:hostname";
-                                        }
-                                        mandatory true;
-                                    }
-
-                                    leaf address {
-                                        tailf:info "A.B.C.D/L;;Prefix or X:X::X/L;;Prefix for Loopback";
-                                        type tailf:ip-address-and-prefix-length;
-                                        mandatory true;
-                                    }
+                                    error-message
+                                      "Node role must be access-leaf";
                                 }
+
+                                tailf:info "Node name";
+                                type leafref {
+                                    path "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../../../../../site]"
+                                        + "/cisco-dc:node/cisco-dc:hostname";
+                                }
+                                mandatory true;
+                            }
+
+                            leaf loopback-id {
+                                tailf:info "Specify loopback id";
+                                type loopback-id;
+                            }
+
+                            leaf address {
+                                tailf:info "A.B.C.D/L;;Prefix or X:X::X/L;;Prefix for Loopback";
+                                type tailf:ip-address-and-prefix-length;
+                                mandatory true;
                             }
                         }
                     }
@@ -152,7 +149,7 @@ submodule cisco-dc-l3out-routing {
                 }
 
                 leaf-list peer-af-controls {
-                    tailf:info "Peer AF controls";
+                    tailf:info "Peer address family controls";
                     type enumeration {
                         enum send-com;
                         enum nh-self;
@@ -199,22 +196,10 @@ submodule cisco-dc-l3out-routing {
                     }
 
                     leaf profile {
+                        tailf:info "Route-policy name";
                         type leafref {
-                            path "../../../../../../cisco-dc:dc-route-policy/cisco-dc:route-policy/cisco-dc:profile";
-                        }
-                        must "deref(current())/../../dc-route-policy-type = 'tenant' and "
-                        + "deref(current())/../../tenant = ../../../../cisco-dc:tenant" {
-                            tailf:dependency ".";
-                            error-message
-                              "Route policy type should be tenant and route policy tenant must match bridge-domain tenant.";
-                        }
-
-                        must "not(deref(current())/../address-family) or "
-                        + "deref(current())/../address-family = 'ipv4' and ../../address-family = 'ipv4' or "
-                        + "deref(current())/../address-family = 'ipv6' and ../../address-family = 'ipv6'" {
-                            tailf:dependency ".";
-                            error-message
-                              "Route policy address-family should match the bgp neighbor address-family.";
+                            path "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../../../site]"
+                            +   "/cisco-dc:dc-route-policy/cisco-dc:route-policy/cisco-dc:profile";
                         }
                     }
                 }
@@ -242,7 +227,6 @@ submodule cisco-dc-l3out-routing {
                 leaf as-number {
                     tailf:hidden "Just for convenience";
                     type inet:as-number;
-                    tailf:default-ref "../../../../../cisco-dc:fabric-parameters/cisco-dc:as-number";
                 }
 
                 leaf address-family {
@@ -257,11 +241,11 @@ submodule cisco-dc-l3out-routing {
                 leaf vrf {
                     tailf:hidden "Just for convenience";
                     type string;
-                    tailf:default-ref "../../../cisco-dc:vrf";
                 }
             }
 
             container static-route {
+                when "../l3out-type = 'fabric-internal'";
                 tailf:info "Define static routes";
                 presence
                   true;
@@ -275,100 +259,38 @@ submodule cisco-dc-l3out-routing {
                         type inet:ip-prefix;
                     }
 
+                    leaf ip-nexthop {
+                        tailf:info "A.B.C.D;; or X:X::X;; static route to add ip-nexthop";
+                        type inet:ip-address;
+                        mandatory true;
+                    }
+
                     container source-node {
                         tailf:info "Attach source node connection\n"
                         +   "it can be either fabric external connection OR fabric internal connection";
 
-                        choice node {
+                        choice template {
                             mandatory true;
 
-                            case fabric-external-connection {
-                                container fabric-external-connection {
-                                    when "not(current()/../fabric-internal-connection)";
-                                    tailf:info "attach external connection";
+                            case apply-specific-nodes {
+                                container apply-specific-nodes {
+                                    tailf:info "Configurations are created with selecting nodes by operator";
 
-                                    choice template {
-                                        mandatory true;
-
-                                        case apply-specific-template {
-                                            container apply-specific-template {
-                                                when "not(current()/../apply-default-template)";
-                                                tailf:info "Configurations are created by operator";
-
-                                                list node {
-                                                    tailf:info "Attach border leaf node";
-                                                    key "leaf-id connection";
-
-                                                    leaf leaf-id {
-                                                        must "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../../../../../../../site]"
-                                                        +   "/cisco-dc:node[cisco-dc:hostname=current()]/cisco-dc:node-role = 'border-leaf'" {
-                                                            error-message
-                                                              "Node role must be border-leaf";
-                                                        }
-
-                                                        tailf:info "Node name";
-                                                        type leafref {
-                                                            path "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../../../../../../../site]"
-                                                            + "/cisco-dc:node/cisco-dc:hostname";
-                                                        }
-                                                        mandatory true;
-                                                    }
-
-                                                    leaf connection {
-                                                        tailf:info "Fabric l3out uplink can be uplink-to-dci-gw-01 or uplink-to-dci-gw-02";
-                                                        type enumeration {
-                                                            enum uplink-to-dci-gw-01;
-                                                            enum uplink-to-dci-gw-02;
-                                                        }
-                                                        mandatory true;
-                                                    }
-
-                                                    leaf ip-nexthop {
-                                                        tailf:info "A.B.C.D;; or X:X::X;; static route to add ip-nexthop";
-                                                        type inet:ip-address;
-                                                        mandatory true;
-                                                    }
-
-                                                    leaf pref {
-                                                        tailf:info "specify preference <1..255>";
-                                                        type uint8 {
-                                                            range 1..max;
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-
-                                        case apply-default-template {
-                                            container apply-default-template {
-                                                when "not(current()/../apply-specific-template)";
-                                                tailf:info "Configurations are created by ncs";
-
-                                                leaf subnet {
-                                                    tailf:info "Subnet is used for dci point-to-point connections.\n"
-                                                    +   "Prefix length must be 28 for ipv4 OR 62 for IPv6 Ex. 172.16.0.0/28 2001:db8:cafe::/62";
-                                                    type inet:ip-prefix;
-                                                    mandatory true;
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    list device {
-                                        tailf:hidden "dc";
-                                        tailf:info "Attach border leaf node";
-                                        key "kp leaf-id connection";
-
-                                        leaf kp {
-                                            tailf:info "Attach birdge-domain keypath";
-                                            type string;
-                                        }
+                                    list node {
+                                        tailf:info "Attach access leaf node";
+                                        key "leaf-id";
 
                                         leaf leaf-id {
                                             must "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../../../../../../site]"
-                                            +   "/cisco-dc:node[cisco-dc:hostname=current()]/cisco-dc:node-role = 'border-leaf'" {
+                                            +   "/cisco-dc:node[cisco-dc:hostname=current()]/cisco-dc:node-role = 'access-leaf'" {
                                                 error-message
-                                                  "Node role must be border-leaf";
+                                                  "Node role must be access-leaf";
+                                            }
+
+                                            must "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../../../../../../site]"
+                                            +   "/cisco-dc:node[cisco-dc:hostname=current()]/cisco-dc:node-type = 'standalone'" {
+                                                error-message
+                                                  "Node type must be standalone";
                                             }
 
                                             tailf:info "Node name";
@@ -376,155 +298,56 @@ submodule cisco-dc-l3out-routing {
                                                 path "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../../../../../../site]"
                                                 + "/cisco-dc:node/cisco-dc:hostname";
                                             }
-                                            mandatory true;
                                         }
+                                    }
 
-                                        leaf connection {
-                                            tailf:info "Fabric l3out uplink can be uplink-to-dci-gw-01 or uplink-to-dci-gw-02";
-                                            type enumeration {
-                                                enum uplink-to-dci-gw-01;
-                                                enum uplink-to-dci-gw-02;
-                                            }
-                                            mandatory true;
-                                        }
+                                    list node-group {
+                                        tailf:info "Attach vpc node-group";
+                                        key id;
 
-                                        leaf ip-nexthop {
-                                            tailf:info "A.B.C.D;; or X:X::X;; static route to add ip-nexthop";
-                                            type inet:ip-address;
-                                            mandatory true;
-                                        }
-
-                                        leaf pref {
-                                            tailf:info "specify preference <1..255>";
-                                            type uint8 {
-                                                range 1..max;
-                                            }
-                                        }
-
-                                        leaf address {
-                                            type tailf:ip-address-and-prefix-length;
-                                        }
-
-                                        leaf vlan {
-                                            type vlan;
-                                            tailf:default-ref "../../../../../../../cisco-dc:vlan-id";
-                                        }
-
-                                        leaf port-channel-id {
-                                            type uint16 {
-                                                range "500..600";
-                                            }
-                                        }
-
-                                        leaf address-family {
-                                            tailf:info "Static Route address-family can be IPv4 | IPv6";
-                                            type enumeration {
-                                                enum ipv4;
-                                                enum ipv6;
+                                        leaf id {
+                                            tailf:info "Node group id";
+                                            type leafref {
+                                                path "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../../../../../../site]"
+                                                +   "/cisco-dc:node-group/cisco-dc:id";
                                             }
                                         }
                                     }
                                 }
                             }
 
-                            case fabric-internal-connection {
-                                container fabric-internal-connection {
-                                    when "not(current()/../fabric-external-connection)";
-                                    tailf:info "attach internal connection";
+                            case apply-all-nodes {
+                                leaf apply-all-nodes {
+                                    tailf:info "Configurations are applied to all bridge-domain nodes by ncs";
+                                    type empty;
+                                }
+                            }
+                        }
 
-                                    choice template {
-                                        mandatory true;
+                        list device {
+                            tailf:hidden "Attach device defined in infra";
+                            key "kp leaf-id";
 
-                                        case apply-specific-template {
-                                            container apply-specific-template {
-                                                tailf:info "Configurations are created by operator";
+                            leaf kp {
+                                tailf:info "Attach vrf or bd keypath";
+                                type string;
+                            }
 
-                                                list node {
-                                                    tailf:info "Attach access leaf node";
-                                                    key "leaf-id";
+                            leaf leaf-id {
+                                tailf:info "Define Leaf Node ID";
+                                type string;
+                            }
 
-                                                    leaf leaf-id {
-                                                        must "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../../../../../../../site]"
-                                                        +   "/cisco-dc:node[cisco-dc:hostname=current()]/cisco-dc:node-role = 'access-leaf'" {
-                                                            error-message
-                                                              "Node role must be access-leaf";
-                                                        }
+                            leaf ip-nexthop {
+                                tailf:info "A.B.C.D;; or X:X::X;; static route to add ip-nexthop";
+                                type inet:ip-address;
+                            }
 
-                                                        must "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../../../../../../../site]"
-                                                        +   "/cisco-dc:node[cisco-dc:hostname=current()]/cisco-dc:node-type = 'standalone'" {
-                                                            error-message
-                                                              "Node type must be standalone";
-                                                        }
-
-                                                        tailf:info "Node name";
-                                                        type leafref {
-                                                            path "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../../../../../../../site]"
-                                                            + "/cisco-dc:node/cisco-dc:hostname";
-                                                        }
-                                                    }
-                                                }
-
-                                                list node-group {
-                                                    tailf:info "Attach vpc node-group";
-                                                    key id;
-
-                                                    leaf id {
-                                                        tailf:info "Node group id";
-                                                        type leafref {
-                                                            path "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../../../../../../../site]"
-                                                            + "/cisco-dc:node-group/cisco-dc:id";
-                                                        }
-                                                    }
-                                                }
-
-                                                leaf ip-nexthop {
-                                                    tailf:info "A.B.C.D;; or X:X::X;; static route to add ip-nexthop";
-                                                    type inet:ip-address;
-                                                    mandatory true;
-                                                }
-                                            }
-                                        }
-
-                                        case apply-default-template {
-                                            container apply-default-template {
-                                                tailf:info "Configurations are created by ncs";
-
-                                                leaf ip-nexthop {
-                                                    tailf:info "A.B.C.D;; or X:X::X;; static route to add ip-nexthop";
-                                                    type inet:ip-address;
-                                                    mandatory true;
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    list device {
-                                        tailf:hidden "Attach device defined in infra";
-                                        key "kp leaf-id";
-
-                                        leaf kp {
-                                            tailf:info "Attach vrf or bd keypath";
-                                            type string;
-                                        }
-
-                                        leaf leaf-id {
-                                            tailf:info "Define Leaf Node ID";
-                                            type string;
-                                        }
-
-                                        leaf ip-nexthop {
-                                            tailf:info "A.B.C.D;; or X:X::X;; static route to add ip-nexthop";
-                                            type inet:ip-address;
-                                        }
-
-                                        leaf address-family {
-                                            tailf:info "Static Route address-family can be IPv4 | IPv6";
-                                            type enumeration {
-                                                enum ipv4;
-                                                enum ipv6;
-                                            }
-                                        }
-                                    }
+                            leaf address-family {
+                                tailf:info "Static Route address-family can be IPv4 | IPv6";
+                                type enumeration {
+                                    enum ipv4;
+                                    enum ipv6;
                                 }
                             }
                         }
@@ -542,7 +365,6 @@ submodule cisco-dc-l3out-routing {
                     leaf vrf {
                         tailf:hidden "Just for convenience";
                         type string;
-                        tailf:default-ref "../../../../cisco-dc:vrf";
                     }
                 }
             }

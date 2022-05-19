@@ -39,7 +39,7 @@ class Main(ncs.application.Application):
                                    'cisco-dc:bridge-domain-configured', bridge_domain_service.BridgeDomainServiceSelfComponent)
 
         self.register_nano_service('bridge-domain-config-servicepoint', 'ncs:self',
-                                   'cisco-dc:l3out-routing-configured', bridge_domain_service.BridgeDomainServiceSelfComponent)
+                                   'cisco-dc:bridge-domain-l3out-routing-configured', bridge_domain_service.BridgeDomainServiceSelfComponent)
 
         # Bridge Domain Service Validation
         self.port_config_val = validate_callback.ValPointRegistrar(
@@ -51,6 +51,9 @@ class Main(ncs.application.Application):
 
         self.register_nano_service('vrf-config-servicepoint', 'ncs:self',
                                    'cisco-dc:vrf-configured', vrf_config_service.VrfServiceSelfComponent)
+
+        self.register_nano_service('vrf-config-servicepoint', 'ncs:self',
+                                   'cisco-dc:vrf-l3out-routing-configured', vrf_config_service.VrfServiceSelfComponent)
 
         # Route Policy Registration
         self.register_service('route-policy-config-servicepoint',

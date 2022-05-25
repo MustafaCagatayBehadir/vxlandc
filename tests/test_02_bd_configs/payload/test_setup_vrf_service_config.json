@@ -5,7 +5,13 @@
             "vrf-config": [
                 {
                     "name": "tcell-grt"
-                }
+                },
+                {
+                    "name": "pdu-mgmt"
+                },
+                {
+                    "name": "vrf-100001"
+                }                
             ]
         }
     ]

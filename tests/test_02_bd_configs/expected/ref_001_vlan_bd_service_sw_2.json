@@ -15,9 +15,24 @@
                 "vn-segment": 60002
             },
             {
+                "id": 5,
+                "name": "0002_TURKCELL:BD-SERVICE-4:ne...",
+                "vn-segment": 60003
+            },
+            {
+                "id": 7,
+                "name": "0002_TURKCELL:BD-SERVICE-6:ne...",
+                "vn-segment": 60005
+            },
+            {
                 "id": 3101,
-                "name": "tcell-grt:vrf-vlan",
+                "name": "pdu-mgmt:vrf-vlan",
                 "vn-segment": 80000
+            },
+            {
+                "id": 3102,
+                "name": "tcell-grt:vrf-vlan",
+                "vn-segment": 80001
             }
         ]
     }

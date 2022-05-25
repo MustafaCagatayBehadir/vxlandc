@@ -177,6 +177,11 @@ submodule cisco-dc-tenant {
                 path "../../../cisco-dc:vrf-config/cisco-dc:name";
             }
             mandatory true;
+
+            must "/cisco-dc:dc-site[cisco-dc:fabric=current()/../site]/cisco-dc:vrf-config[cisco-dc:name=current()]/cisco-dc:approved='true'" {
+                error-message
+                  "Vrf approved should be set to true before adding to bridge-domain";
+            }
         }
 
         leaf vlan-id {

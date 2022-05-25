@@ -24,22 +24,26 @@
                 {
                     "hostname": "nw_lf_cnx9_001.dsslab_site1",
                     "node-role": "access-leaf",
-                    "node-type": "vpc"
+                    "node-type": "vpc",
+                    "vpc-id": 1
                 },
                 {
                     "hostname": "nw_lf_cnx9_002.dsslab_site1",
                     "node-role": "access-leaf",
-                    "node-type": "vpc"
+                    "node-type": "vpc",
+                    "vpc-id": 1
                 },
                 {
                     "hostname": "nw_lf_cnx9_003.dsslab_site1",
                     "node-role": "access-leaf",
-                    "node-type": "vpc"
+                    "node-type": "vpc",
+                    "vpc-id": 2
                 },
                 {
                     "hostname": "nw_lf_cnx9_004.dsslab_site1",
                     "node-role": "access-leaf",
-                    "node-type": "vpc"
+                    "node-type": "vpc",
+                    "vpc-id": 2
                 }
             ],
             "node-group": [

@@ -1,0 +1,12 @@
+{
+    "ietf-restconf:errors": {
+        "error": [
+            {
+                "error-type": "application",
+                "error-tag": "invalid-value",
+                "error-path": "/cisco-dc:dc-site[fabric='avr-dss1-lbox-yaani-fabric']/tenant-service[name='0001_TURKCELL']/bridge-domain[name='BD-SERVICE-1']/vrf",
+                "error-message": "/dc-site{avr-dss1-lbox-yaani-fabric}/tenant-service{0001_TURKCELL}/bridge-domain{BD-SERVICE-1}/vrf (value \"vrf-100001\"): Vrf approved should be set to true before adding to bridge-domain"
+            }
+        ]
+    }
+}

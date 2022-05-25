@@ -1,6 +1,31 @@
 {
     "tailf-ned-cisco-nx:vrf": [
         {
+            "name": "pdu-mgmt",
+            "address-family": [
+                {
+                    "proto": "ipv4",
+                    "type": "unicast",
+                    "advertise": {
+                        "l2vpn": "evpn"
+                    },
+                    "maximum-paths": {
+                        "ibgp": 2
+                    }
+                },
+                {
+                    "proto": "ipv6",
+                    "type": "unicast",
+                    "advertise": {
+                        "l2vpn": "evpn"
+                    },
+                    "maximum-paths": {
+                        "ibgp": 2
+                    }
+                }
+            ]
+        },
+        {
             "name": "tcell-grt",
             "address-family": [
                 {

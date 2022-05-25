@@ -16,6 +16,23 @@
                     "rt": "auto"
                 }
             ]
+        },
+        {
+            "id": 60004,
+            "l2": [
+                null
+            ],
+            "rd": "auto",
+            "route-target": [
+                {
+                    "method": "import",
+                    "rt": "auto"
+                },
+                {
+                    "method": "export",
+                    "rt": "auto"
+                }
+            ]
         }
     ]
 }

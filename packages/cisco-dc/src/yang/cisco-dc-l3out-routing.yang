@@ -29,8 +29,6 @@ submodule cisco-dc-l3out-routing {
     grouping l3out-routing {
         container routing {
             tailf:info "Specify routing details";
-            presence
-              "dc";
 
             leaf l3out-type {
                 tailf:hidden "dc";

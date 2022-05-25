@@ -187,29 +187,51 @@ def _set_hidden_leaves(root, port, tctx, id_parameters, log):
     port.auto_bum = utils.get_bum(port.speed)
 
     port_group = root.cisco_dc__dc_site[port.site].port_configs[port.port_group]
+    port.mode = port_group.mode
+    
     bd_services = port_group.bd_service
     for bd_service in bd_services:
-        bd = ncs.maagic.cd(root, bd_service.kp)
-        if port.port_type == 'ethernet':
-            eth = port.ethernet
-            node = eth.node
-            if (port._path, node) not in bd.port_device:
-                bd.port_device.create(port._path, node)
+        try:
+            bd = ncs.maagic.cd(root, bd_service.kp)
+            if port.port_type == 'ethernet':
+                if utils.is_node_vpc(root, port):
+                    node_1, node_2 = utils.get_vpc_nodes_from_port(root, port)
+                    if (port._path, node_1) not in bd.port_device:
+                        bd.port_device.create(port._path, node_1)
+                    if (port._path, node_2) not in bd.port_device:
+                        bd.port_device.create(port._path, node_2)
+                else:
+                    eth = port.ethernet
+                    node = eth.node
+                    if (port._path, node) not in bd.port_device:
+                        bd.port_device.create(port._path, node)
 
-        elif port.port_type == 'port-channel':
-            pc = port.port_channel
-            node = pc.node
-            if (port._path, node) not in bd.port_device:
-                bd.port_device.create(port._path, node)
+            elif port.port_type == 'port-channel':
+                if utils.is_node_vpc(root, port):
+                    node_1, node_2 = utils.get_vpc_nodes_from_port(root, port)
+                    if (port._path, node_1) not in bd.port_device:
+                        bd.port_device.create(port._path, node_1)
+                    if (port._path, node_2) not in bd.port_device:
+                        bd.port_device.create(port._path, node_2)
+                else:            
+                    pc = port.port_channel
+                    node = pc.node
+                    if (port._path, node) not in bd.port_device:
+                        bd.port_device.create(port._path, node)
 
-        elif port.port_type == 'vpc-port-channel':
-            node_1, node_2 = utils.get_vpc_nodes_from_port(root, port)
-            if (port._path, node_1) not in bd.port_device:
-                bd.port_device.create(port._path, node_1)
-            if (port._path, node_2) not in bd.port_device:
-                bd.port_device.create(port._path, node_2)
+            elif port.port_type == 'vpc-port-channel':
+                node_1, node_2 = utils.get_vpc_nodes_from_port(root, port)
+                if (port._path, node_1) not in bd.port_device:
+                    bd.port_device.create(port._path, node_1)
+                if (port._path, node_2) not in bd.port_device:
+                    bd.port_device.create(port._path, node_2)
 
-        log.info(f'Bridge-domain {bd.name} is activated by port {port.name}')
+            log.info(f'Bridge-domain {bd.name} is activated by port {port.name}')
+        
+        except KeyError:
+            
+            log.error(f'Bridge-domain {bd_service.kp} can not be found.')
+
 
 def _apply_template(port):
     """Function to create port configuration

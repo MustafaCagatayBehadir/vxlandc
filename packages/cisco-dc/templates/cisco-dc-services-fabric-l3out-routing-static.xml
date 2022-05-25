@@ -1,75 +1,9 @@
 <config-template xmlns="http://tail-f.com/ns/config/1.0">
+    <?set VRF={vrf}?>
     <devices xmlns="http://tail-f.com/ns/ncs" foreach="{routing/static-route/destination}">
-        <?set VRF={vrf}?>
         <?set PREFIX={address}?>
-        <device when="{source-node/fabric-external-connection}">
-            <name>{source-node/fabric-external-connection/device/leaf-id}</name>
-            <?set INTERFACE={concat('port-channel', string(port-channel-id), '.',  string(vlan))}?>
-            <?set DESCRIPTION={concat($VRF, ':', 'Static-Extension-Interface')}?>
-            <?if {string(connection) = 'uplink-to-dci-gw-01'}?>
-            <?set DESCRIPTION = {concat($DESCRIPTION, ':', 'DCPE-01')}?>
-            <?else ?>
-            <?set DESCRIPTION = {concat($DESCRIPTION, ':', 'DCPE-02')}?>
-            <?end ?>
-            <config>
-                <interface xmlns="http://tail-f.com/ned/cisco-nx">
-                    <port-channel>
-                        <name>{port-channel-id}.{vlan}</name>
-                        <description>{$DESCRIPTION}</description>
-                        <vrf>
-                            <member>{$VRF}</member>
-                        </vrf>
-                        <ip when="{address-family='ipv4'}">
-                            <address>
-                                <ipaddr>{address}</ipaddr>
-                            </address>
-                        </ip>
-                        <ipv6 when="{address-family='ipv6'}">
-                            <address>
-                                <addresses>
-                                    <addr>{address}</addr>
-                                </addresses>
-                            </address>
-                        </ipv6>
-                        <mtu>9216</mtu>
-                        <encapsulation>
-                            <dot1Q>
-                                <vlan-id>{vlan}</vlan-id>
-                            </dot1Q>
-                        </encapsulation>
-                    </port-channel>
-                </interface>
-                <vrf xmlns="http://tail-f.com/ned/cisco-nx">
-                    <context>
-                        <id>{$VRF}</id>
-                        <ip when="{address-family='ipv4'}">
-                            <route>
-                                <ip-route-interface-list>
-                                    <prefix-mask>{$PREFIX}</prefix-mask>
-                                    <interface>{$INTERFACE}</interface>
-                                    <next-hop>{ip-nexthop}</next-hop>
-                                    <name>{$STATIC_ROUTE_NAME}</name>
-                                    <preference>{pref}</preference>
-                                </ip-route-interface-list>
-                            </route>
-                        </ip>
-                        <ipv6 when="{address-family='ipv6'}">
-                            <route>
-                              <ipv6-route-list>
-                                <prefix-mask>{$PREFIX}</prefix-mask>
-                                <next-hop>{ip-nexthop}</next-hop>
-                                <interface>{$INTERFACE}</interface>
-                                <name>{$STATIC_ROUTE_NAME}</name>
-                                <preference>{pref}</preference>
-                              </ipv6-route-list>
-                            </route>
-                          </ipv6>
-                    </context>
-                </vrf>
-            </config>
-        </device>
-        <device when="{source-node/fabric-internal-connection}">
-            <name>{source-node/fabric-internal-connection/device/leaf-id}</name>
+        <device>
+            <name>{source-node/device/leaf-id}</name>
             <config>
                 <vrf xmlns="http://tail-f.com/ned/cisco-nx">
                     <context>

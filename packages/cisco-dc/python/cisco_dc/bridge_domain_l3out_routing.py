@@ -27,7 +27,7 @@ def _set_hidden_leaves(root, bd, address_family, log):
         log: log object (self.log)
 
     """
-    if bd.routing.exists():
+    if bd.routing:
 
         routing = bd.routing
 
@@ -47,7 +47,7 @@ def _set_hidden_leaves(root, bd, address_family, log):
             else:
                 raise Exception(
                     f'BGP neighbor address and bridge-domain subnet address-family should match.')
-            
+
             bgp.as_number = root.cisco_dc__dc_site[bd.site].fabric_parameters.as_number
 
             if hasattr(bgp.source_interface, 'fabric_internal_connection'):
@@ -59,7 +59,8 @@ def _set_hidden_leaves(root, bd, address_family, log):
                         if hasattr(dc_route_policy, 'tenant') and dc_route_policy.tenant == bd.tenant:
                             for route_policy in dc_route_policy.route_policy:
                                 if route_policy.profile in profiles:
-                                    devices = [node.leaf_id for node in bgp.source_interface.fabric_internal_connection.node]
+                                    devices = [
+                                        node.leaf_id for node in bgp.source_interface.fabric_internal_connection.node]
                                     for device in devices:
                                         if (bd._path, device) not in route_policy.device:
                                             route_policy.device.create(
@@ -116,20 +117,20 @@ def _set_hidden_leaves(root, bd, address_family, log):
                             if (l3out._path, leaf_id) not in source_node.device:
                                 device = source_node.device.create(
                                     l3out._path, leaf_id)
-                                device.ip_nexthop = l3out.ip_nexthop
+                                device.ip_nexthop = destination.ip_nexthop
                                 device.address_family = destination.address_family
                                 log.info(
                                     f'Device {device.leaf_id} is created by routing static destination {destination.address} fabric-internal-connection apply-specific-template')
 
                 elif source_node.template == 'apply-all-nodes':
-                    l3out = source_node.apply_default_template
+                    l3out = source_node.apply_all_nodes
 
                     for device in bd.device:
 
                         if (l3out._path, device.leaf_id) not in source_node.device:
                             device = source_node.device.create(
                                 l3out._path, device.leaf_id)
-                            device.ip_nexthop = l3out.ip_nexthop
+                            device.ip_nexthop = destination.ip_nexthop
                             device.address_family = destination.address_family
                             log.info(
                                 f'Device {device.leaf_id} is created by routing static destination {destination.address} fabric-internal-connection apply-default-template')

@@ -22,12 +22,12 @@ class BDConfigsTests:
             params="",
         )
         cls.nso.patch(
-            payload=cls.payload_path / "test_setup_fabric_service_config.json",
+            payload=cls.payload_path / "test_setup_vrf_service_approved.json",
             path="",
             params="",
         )
         cls.nso.patch(
-            payload=cls.payload_path / "test_setup_vrf_service_approved.json",
+            payload=cls.payload_path / "test_setup_fabric_service_config.json",
             path="",
             params="",
         )
@@ -87,7 +87,11 @@ class BDConfigsTests:
         (expected_path / 'ref_004_svi_bd_service_sw_1.json',
          'tailf-ncs:devices/device=nw_lf_cnx9_001.dsslab_site1/config/tailf-ned-cisco-nx:interface/Vlan'),
         (expected_path / 'ref_004_svi_bd_service_sw_2.json',
-         'tailf-ncs:devices/device=nw_lf_cnx9_002.dsslab_site1/config/tailf-ned-cisco-nx:interface/Vlan')
+         'tailf-ncs:devices/device=nw_lf_cnx9_002.dsslab_site1/config/tailf-ned-cisco-nx:interface/Vlan'),
+        (expected_path / 'ref_004_svi_bd_service_sw_3.json',
+         'tailf-ncs:devices/device=nw_lf_cnx9_003.dsslab_site1/config/tailf-ned-cisco-nx:interface/Vlan'),
+        (expected_path / 'ref_004_svi_bd_service_sw_4.json',
+         'tailf-ncs:devices/device=nw_lf_cnx9_004.dsslab_site1/config/tailf-ned-cisco-nx:interface/Vlan')
     ], indirect=['expected'])
     def test_004_svi(self, expected, path):
         resp = self.nso.get(path=path)
@@ -96,9 +100,13 @@ class BDConfigsTests:
 
     @mark.parametrize('expected, path', [
         (expected_path / 'ref_005_vrf_bd_service_sw_1.json',
-         'tailf-ncs:devices/device=nw_lf_cnx9_001.dsslab_site1/config/tailf-ned-cisco-nx:vrf/context=tcell-grt'),
+         'tailf-ncs:devices/device=nw_lf_cnx9_001.dsslab_site1/config/tailf-ned-cisco-nx:vrf'),
         (expected_path / 'ref_005_vrf_bd_service_sw_2.json',
-         'tailf-ncs:devices/device=nw_lf_cnx9_002.dsslab_site1/config/tailf-ned-cisco-nx:vrf/context=tcell-grt')
+         'tailf-ncs:devices/device=nw_lf_cnx9_002.dsslab_site1/config/tailf-ned-cisco-nx:vrf'),
+        (expected_path / 'ref_005_vrf_bd_service_sw_3.json',
+         'tailf-ncs:devices/device=nw_lf_cnx9_003.dsslab_site1/config/tailf-ned-cisco-nx:vrf'),
+        (expected_path / 'ref_005_vrf_bd_service_sw_4.json',
+         'tailf-ncs:devices/device=nw_lf_cnx9_004.dsslab_site1/config/tailf-ned-cisco-nx:vrf')
     ], indirect=['expected'])
     def test_005_vrf(self, expected, path):
         resp = self.nso.get(path=path)
@@ -107,16 +115,20 @@ class BDConfigsTests:
 
     @mark.parametrize('expected, path', [
         (expected_path / 'ref_006_bgp_bd_service_sw_1.json',
-         'tailf-ncs:devices/device=nw_lf_cnx9_001.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf=tcell-grt'),
+         'tailf-ncs:devices/device=nw_lf_cnx9_001.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf'),
         (expected_path / 'ref_006_bgp_bd_service_sw_2.json',
-         'tailf-ncs:devices/device=nw_lf_cnx9_002.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf=tcell-grt')
+         'tailf-ncs:devices/device=nw_lf_cnx9_002.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf'),
+        (expected_path / 'ref_006_bgp_bd_service_sw_1.json',
+         'tailf-ncs:devices/device=nw_lf_cnx9_003.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf'),
+        (expected_path / 'ref_006_bgp_bd_service_sw_2.json',
+         'tailf-ncs:devices/device=nw_lf_cnx9_004.dsslab_site1/config/tailf-ned-cisco-nx:router/bgp=65001/vrf')
     ], indirect=['expected'])
     def test_006_bgp(self, expected, path):
         resp = self.nso.get(path=path)
         assert resp.status_code == 200
         assert json.loads(resp.text) == expected
 
-    @mark.parametrize('expected, post_payload, post_path', [
+    @mark.parametrize('expected, patch_payload, post_path', [
         (expected_path / 'ref_007_bd_service_1_error.json',
          payload_path / 'test_007_config_01.json',
          'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-1'),
@@ -127,17 +139,27 @@ class BDConfigsTests:
          payload_path / 'test_007_config_03.json',
          'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-3')
     ], indirect=['expected'])
-    def test_007_bd_subnet_preferred(self, expected, post_payload, post_path):
-        resp = self.nso.patch(payload=post_payload, path=post_path, params='')
+    def test_007_bd_subnet_preferred(self, expected, patch_payload, post_path):
+        resp = self.nso.patch(payload=patch_payload, path=post_path, params='')
         assert resp.status_code == 400
         assert json.loads(resp.text) == expected
 
-    @mark.parametrize('expected, post_payload, post_path', [
+    @mark.parametrize('expected, patch_payload, post_path', [
         (expected_path / 'ref_008_bd_service_1_error.json',
          payload_path / 'test_008_config_01.json',
          'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-1')
     ], indirect=['expected'])
-    def test_008_bd_access_port_group(self, expected, post_payload, post_path):
-        resp = self.nso.patch(payload=post_payload, path=post_path, params='')
+    def test_008_bd_access_port_group(self, expected, patch_payload, post_path):
+        resp = self.nso.patch(payload=patch_payload, path=post_path, params='')
+        assert resp.status_code == 400
+        assert json.loads(resp.text) == expected
+
+    @mark.parametrize('expected, patch_payload, post_path', [
+        (expected_path / 'ref_009_bd_service_1_error.json',
+         payload_path / 'test_009_config_01.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-1')
+    ], indirect=['expected'])
+    def test_009_bd_vrf(self, expected, patch_payload, post_path):
+        resp = self.nso.patch(payload=patch_payload, path=post_path, params='')
         assert resp.status_code == 400
         assert json.loads(resp.text) == expected

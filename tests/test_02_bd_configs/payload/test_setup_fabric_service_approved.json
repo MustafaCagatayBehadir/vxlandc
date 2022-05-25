@@ -19,6 +19,23 @@
                             "approved": true
                         }
                     ]
+                },
+                {
+                    "name": "0002_TURKCELL",
+                    "bridge-domain": [
+                        {
+                            "name": "BD-SERVICE-4",
+                            "approved": true
+                        },
+                        {
+                            "name": "BD-SERVICE-5",
+                            "approved": true
+                        },
+                        {
+                            "name": "BD-SERVICE-6",
+                            "approved": true
+                        }
+                    ]
                 }
             ]
         }

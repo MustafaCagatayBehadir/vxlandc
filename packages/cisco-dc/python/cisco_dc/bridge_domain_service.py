@@ -112,16 +112,30 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
                 port.bd_vlan.create(bd._path, bd.vlan_id)
 
             if port.type == 'ethernet':
-                eth = port.ethernet
-                node = eth.node
-                if (port._path, node) not in bd.device:
-                    bd.device.create(port._path, node)
+                if utils.is_node_vpc(root, port):
+                    node_1, node_2 = utils.get_vpc_nodes_from_port(root, port)
+                    if (port._path, node_1) not in bd.device:
+                        bd.device.create(port._path, node_1)
+                    if (port._path, node_2) not in bd.device:
+                        bd.device.create(port._path, node_2)
+                else:
+                    eth = port.ethernet
+                    node = eth.node
+                    if (port._path, node) not in bd.device:
+                        bd.device.create(port._path, node)
 
             elif port.type == 'port-channel':
-                pc = port.port_channel
-                node = pc.node
-                if (port._path, node) not in bd.device:
-                    bd.device.create(port._path, node)
+                if utils.is_node_vpc(root, port):
+                    node_1, node_2 = utils.get_vpc_nodes_from_port(root, port)
+                    if (port._path, node_1) not in bd.device:
+                        bd.device.create(port._path, node_1)
+                    if (port._path, node_2) not in bd.device:
+                        bd.device.create(port._path, node_2)
+                else:
+                    pc = port.port_channel
+                    node = pc.node
+                    if (port._path, node) not in bd.device:
+                        bd.device.create(port._path, node)
 
             elif port.type == 'vpc-port-channel':
                 vpc = port.vpc_port_channel

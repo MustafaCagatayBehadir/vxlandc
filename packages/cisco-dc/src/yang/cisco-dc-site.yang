@@ -59,6 +59,7 @@ submodule cisco-dc-site {
                     enum border-leaf;
                     enum spine;
                 }
+                mandatory true;
             }
 
             leaf node-type {
@@ -67,6 +68,15 @@ submodule cisco-dc-site {
                 type enumeration {
                     enum standalone;
                     enum vpc;
+                }
+                mandatory true;
+            }
+
+            leaf vpc-id {
+                when "../node-type = 'vpc'";
+                tailf:info "vPC domain id";
+                type uint16 {
+                    range "1..1000";
                 }
                 mandatory true;
             }
@@ -87,7 +97,7 @@ submodule cisco-dc-site {
             unique "node-2";
 
             leaf id {
-                tailf:info "vpc Domain ID";
+                tailf:info "vPC Domain ID";
                 type uint16 {
                     range "1..1000";
                 }

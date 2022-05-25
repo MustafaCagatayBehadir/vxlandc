@@ -6,6 +6,10 @@
                 {
                     "name": "tcell-grt",
                     "approved": true
+                },
+                {
+                    "name": "pdu-mgmt",
+                    "approved": true
                 }
             ]
         }

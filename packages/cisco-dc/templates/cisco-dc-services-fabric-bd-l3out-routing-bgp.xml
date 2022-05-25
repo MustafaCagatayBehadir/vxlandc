@@ -40,6 +40,7 @@
                                 </inner-remote-as>
                                 <local-as when="{local-as}">{local-as}</local-as>
                                 <password when="{password}">
+                                    <encryption>0</encryption>
                                     <passwd>{password}</passwd>
                                 </password>
                                 <ebgp-multihop>{ttl}</ebgp-multihop>

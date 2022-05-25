@@ -24,7 +24,7 @@ def _set_hidden_leaves(root, vrf, log):
         log: log object (self.log)
 
     """
-    if vrf.routing.exists():
+    if vrf.routing:
 
         routing = vrf.routing
 
@@ -46,8 +46,10 @@ def _set_hidden_leaves(root, vrf, log):
 
                 if type(ip_address(bgp.peer_address)) is IPv4Address:
                     l3out.address = f'{str(IPv4Address(bgp.peer_address) + 1)}/30'
+                    bgp.address_family = 'ipv4'
                 elif type(ip_address(bgp.peer_address)) is IPv6Address:
                     l3out.address = f'{str(IPv6Address(bgp.peer_address) + 1)}/64'
+                    bgp.address_family = 'ipv6'
 
                 l3out.vlan = vrf.fabric_external_vlan_id
 

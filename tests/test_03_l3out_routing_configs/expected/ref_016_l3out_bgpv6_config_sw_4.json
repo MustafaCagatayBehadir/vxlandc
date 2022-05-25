@@ -7,6 +7,7 @@
             },
             "local-as": 34984,
             "password": {
+                "encryption": "0",
                 "passwd": ".*"
             },
             "ebgp-multihop": 5,

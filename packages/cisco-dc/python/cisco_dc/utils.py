@@ -123,7 +123,17 @@ def get_vpc_nodes_from_port(root, port):
 
     """
     site = root.cisco_dc__dc_site[port.site]
-    node_group = site.node_group[port.vpc_port_channel.node_group]
+    if port.port_type == 'ethernet':
+        eth = port.ethernet
+        node = site.node[eth.node]
+        node_group = site.node_group[node.vpc_id]
+    elif port.port_type == 'port-channel':
+        pc = port.port_channel
+        node = site.node[pc.node]
+        node_group = site.node_group[node.vpc_id]
+    else:
+        vpc = port.vpc_port_channel
+        node_group = site.node_group[vpc.node_group]
     return node_group.node_1, node_group.node_2
 
 
@@ -291,23 +301,26 @@ def truncate_static_route_name(static_route_name):
     return f'{static_route_name[:47]}...'
 
 
-def is_node_vpc(root, port, port_parameters):
+def is_node_vpc(root, port):
     """Function to check if node is Standalone or vPC
 
     Args:
         root: Maagic object pointing to the root of the CDB
         port: service node
-        port_parameters: port configuration elements dictionary
 
     Returns:
         Boolean: True if node is a vPC node
 
     """
     site = root.cisco_dc__dc_site[port.site]
-    if port_parameters['type'] == 'ethernet':
-        return site.node[port_parameters['node']].node_type == 'vpc'
-    elif port_parameters['type'] == 'port-channel':
-        return site.node[port_parameters['node']].node_type == 'vpc'
+    if port.port_type == 'ethernet':
+        eth = port.ethernet
+        node = eth.node
+        return site.node[node].node_type == 'vpc'
+    elif port.port_type == 'port-channel':
+        pc = port.port_channel
+        node = pc.node
+        return site.node[node].node_type == 'vpc'        
     return True
 
 

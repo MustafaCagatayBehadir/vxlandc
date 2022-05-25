@@ -23,6 +23,9 @@
                 },
                 "redirects": false
             },
+            "ipv6": {
+                "redirects": false
+            },
             "fabric": {
                 "forwarding": {
                     "mode": "anycast-gateway"
@@ -48,6 +51,57 @@
                 },
                 "redirects": false
             },
+            "ipv6": {
+                "redirects": false
+            },
+            "fabric": {
+                "forwarding": {
+                    "mode": "anycast-gateway"
+                }
+            }
+        },
+        {
+            "name": 5,
+            "vrf": {
+                "member": "pdu-mgmt"
+            },
+            "ip": {
+                "address": {
+                    "ipaddr": "10.0.0.1/24"
+                },
+                "redirects": false
+            },
+            "ipv6": {
+                "redirects": false
+            },
+            "fabric": {
+                "forwarding": {
+                    "mode": "anycast-gateway"
+                }
+            }
+        },
+        {
+            "name": 7,
+            "vrf": {
+                "member": "pdu-mgmt"
+            },
+            "ip": {
+                "address": {
+                    "ipaddr": "10.0.1.1/24"
+                },
+                "secondary-addr": {
+                    "address": [
+                        {
+                            "ipaddr": "10.0.2.1/24",
+                            "secaddr": "secondary"
+                        }
+                    ]
+                },
+                "redirects": false
+            },
+            "ipv6": {
+                "redirects": false
+            },
             "fabric": {
                 "forwarding": {
                     "mode": "anycast-gateway"
@@ -56,6 +110,21 @@
         },
         {
             "name": 3101,
+            "vrf": {
+                "member": "pdu-mgmt"
+            },
+            "ip": {
+                "forward": [
+                    null
+                ],
+                "redirects": false
+            },
+            "ipv6": {
+                "redirects": false
+            }
+        },
+        {
+            "name": 3102,
             "vrf": {
                 "member": "tcell-grt"
             },

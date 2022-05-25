@@ -13,47 +13,26 @@
             }
         },
         {
-            "name": 2,
+            "name": 3,
             "vrf": {
                 "member": "tcell-grt"
             },
             "ip": {
-                "address": {
-                    "ipaddr": "10.0.0.1/24"
-                },
                 "redirects": false
             },
             "ipv6": {
-                "redirects": false
-            },
-            "fabric": {
-                "forwarding": {
-                    "mode": "anycast-gateway"
-                }
-            }
-        },
-        {
-            "name": 4,
-            "vrf": {
-                "member": "tcell-grt"
-            },
-            "ip": {
                 "address": {
-                    "ipaddr": "10.0.1.1/24"
-                },
-                "secondary-addr": {
-                    "address": [
+                    "addresses": [
                         {
-                            "ipaddr": "10.0.2.1/24",
-                            "secaddr": "secondary"
+                            "addr": "2001:db8:cafe::1/64"
+                        },
+                        {
+                            "addr": "2001:db8:cafe:1::1/64"
                         }
                     ]
                 },
                 "redirects": false
             },
-            "ipv6": {
-                "redirects": false
-            },
             "fabric": {
                 "forwarding": {
                     "mode": "anycast-gateway"
@@ -61,45 +40,24 @@
             }
         },
         {
-            "name": 5,
+            "name": 6,
             "vrf": {
                 "member": "pdu-mgmt"
             },
             "ip": {
-                "address": {
-                    "ipaddr": "10.0.0.1/24"
-                },
                 "redirects": false
             },
             "ipv6": {
-                "redirects": false
-            },
-            "fabric": {
-                "forwarding": {
-                    "mode": "anycast-gateway"
-                }
-            }
-        },
-        {
-            "name": 7,
-            "vrf": {
-                "member": "pdu-mgmt"
-            },
-            "ip": {
                 "address": {
-                    "ipaddr": "10.0.1.1/24"
-                },
-                "secondary-addr": {
-                    "address": [
+                    "addresses": [
                         {
-                            "ipaddr": "10.0.2.1/24",
-                            "secaddr": "secondary"
+                            "addr": "2001:db8:cafe::1/64"
+                        },
+                        {
+                            "addr": "2001:db8:cafe:1::1/64"
                         }
                     ]
                 },
-                "redirects": false
-            },
-            "ipv6": {
                 "redirects": false
             },
             "fabric": {

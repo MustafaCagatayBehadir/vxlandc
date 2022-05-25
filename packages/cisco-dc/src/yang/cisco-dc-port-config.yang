@@ -30,24 +30,22 @@ submodule cisco-dc-port-config {
             type dc-string;
         }
 
-        leaf mode-copy {
-            tailf:info "only to suppress compiler warning on must expression";
-            type string;
-            tailf:hidden "dc";
-        }
-
         leaf mode {
             tailf:info "Port Group Mode can be Access or Trunk";
+            tailf:display-when "not(../mode-oper)";
             type enumeration {
                 enum access;
                 enum trunk;
             }
             mandatory true;
+        }
 
-            must "not(../mode-copy) or ../mode-copy = ." {
-                error-message
-                    "Mode can't be changed ones the port-group is deployed";
-            }
+        leaf mode-oper {
+            tailf:info "Port Group Mode operational value";
+            tailf:cli-show-config;
+            config false;
+            type string;
+            tailf:default-ref "../mode";
         }
 
         list bd-service {
@@ -346,7 +344,7 @@ submodule cisco-dc-port-config {
             type decimal64 {
                 fraction-digits 2;
                 range "0.0..100.0";
-            }            
+            }
         }
 
         leaf bum {
@@ -366,7 +364,6 @@ submodule cisco-dc-port-config {
         leaf mode {
             tailf:hidden "dc";
             type string;
-            tailf:default-ref "../../mode";
         }
 
         leaf port-group {

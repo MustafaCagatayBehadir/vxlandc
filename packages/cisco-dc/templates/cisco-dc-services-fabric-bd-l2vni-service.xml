@@ -32,27 +32,36 @@
                             <member>{../vrf}</member>
                         </vrf>
                         <?foreach {../bd-subnet}?>
-                        <ip when="{address-family='ipv4'}">
-                            <address when="{preferred='yes'}">
-                                <ipaddr>{address}</ipaddr>
-                            </address>
-                            <secondary-addr when="{preferred='no'}">
-                                <address>
-                                    <ipaddr>{address}</ipaddr>
-                                    <secaddr>secondary</secaddr>
-                                </address>
-                            </secondary-addr>
-                            <redirects>false</redirects>
-                        </ip>
-                        <ipv6 when="{address-family='ipv6'}">
-                            <address>
-                                <addresses>
-                                    <addr>{address}</addr>
-                                </addresses>
-                            </address>
-                            <redirects>false</redirects>
-                        </ipv6>
-                        <?end ?>
+                            <?if {address-family='ipv4'}?>
+                                <ip>
+                                    <address when="{preferred='yes'}">
+                                        <ipaddr>{address}</ipaddr>
+                                    </address>
+                                    <secondary-addr when="{preferred='no'}">
+                                        <address>
+                                            <ipaddr>{address}</ipaddr>
+                                            <secaddr>secondary</secaddr>
+                                        </address>
+                                    </secondary-addr>
+                                    <redirects>false</redirects>
+                                </ip>
+                                <ipv6>
+                                    <redirects>false</redirects>
+                                </ipv6>
+                            <?else?>
+                                <ipv6>
+                                    <address>
+                                        <addresses>
+                                            <addr>{address}</addr>
+                                        </addresses>
+                                    </address>
+                                    <redirects>false</redirects>
+                                </ipv6>
+                                <ip>
+                                    <redirects>false</redirects>
+                                </ip> 
+                            <?end?>
+                        <?end?>                       
                         <fabric>
                             <forwarding>
                                 <mode>anycast-gateway</mode>

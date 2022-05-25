@@ -157,7 +157,7 @@ class BDConfigsTests:
     @mark.parametrize('expected, patch_payload, post_path', [
         (expected_path / 'ref_009_bd_service_1_error.json',
          payload_path / 'test_009_config_01.json',
-         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-1')
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-1/vrf')
     ], indirect=['expected'])
     def test_009_bd_vrf(self, expected, patch_payload, post_path):
         resp = self.nso.patch(payload=patch_payload, path=post_path, params='')

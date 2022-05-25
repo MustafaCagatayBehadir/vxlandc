@@ -11,7 +11,7 @@
                 "passwd": ".*"
             },
             "ebgp-multihop": 5,
-            "update-source": "port-channel501.2",
+            "update-source": "port-channel501.3",
             "disable-connected-check": [
                 null
             ],

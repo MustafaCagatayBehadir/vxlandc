@@ -6,6 +6,11 @@
             "vrf": {
                 "member": "tcell-grt"
             },
+            "ip": {
+                "address": {
+                    "ipaddr": "172.16.1.2/30"
+                }
+            },
             "ipv6": {
                 "address": {
                     "addresses": [

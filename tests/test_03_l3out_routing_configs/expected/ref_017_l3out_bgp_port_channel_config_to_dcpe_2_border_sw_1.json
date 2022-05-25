@@ -1,7 +1,7 @@
 {
     "tailf-ned-cisco-nx:port-channel": [
         {
-            "name": "502.2",
+            "name": "502.3",
             "description": "tcell-grt:eBGP-Extension-Source-Interface:DCPE-02",
             "vrf": {
                 "member": "tcell-grt"
@@ -11,10 +11,19 @@
                     "ipaddr": "172.16.0.6/30"
                 }
             },
+            "ipv6": {
+                "address": {
+                    "addresses": [
+                        {
+                            "addr": "2001:db8:cafe:3::2/64"
+                        }
+                    ]
+                }
+            },
             "mtu": 9216,
             "encapsulation": {
                 "dot1Q": {
-                    "vlan-id": 2
+                    "vlan-id": 3
                 }
             }
         }

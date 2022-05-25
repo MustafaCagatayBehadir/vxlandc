@@ -6,7 +6,7 @@
                 "remote-as": 34984
             },
             "ebgp-multihop": 5,
-            "update-source": "port-channel502.2",
+            "update-source": "port-channel502.3",
             "address-family": [
                 {
                     "proto": "ipv4",

@@ -10,7 +10,15 @@
             "address-family": [
                 {
                     "proto": "ipv6",
-                    "type": "unicast"
+                    "type": "unicast",
+                    "soft-reconfiguration": {
+                        "inbound": [
+                            null
+                        ],
+                        "always": [
+                            null
+                        ]
+                    }
                 }
             ]
         }

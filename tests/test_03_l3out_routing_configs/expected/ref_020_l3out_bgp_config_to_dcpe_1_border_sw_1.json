@@ -24,6 +24,14 @@
                     "send-community": {
                         "attr": "both"
                     },
+                    "soft-reconfiguration": {
+                        "inbound": [
+                            null
+                        ],
+                        "always": [
+                            null
+                        ]
+                    },
                     "disable-peer-as-check": [
                         null
                     ],

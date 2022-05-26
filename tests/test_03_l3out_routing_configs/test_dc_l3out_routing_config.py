@@ -1,6 +1,5 @@
 import json
 from pathlib import Path
-from sysconfig import get_path
 from nsoapi import NsoRestconfCall
 from pytest import mark
 import json
@@ -574,7 +573,6 @@ class L3OutRoutingConfigsTests:
         assert resp.status_code == 400
         assert json.loads(resp.text) == expected
 
-
     @mark.parametrize('expected, patch_path', [
         (expected_path / 'ref_036_bd_service_5_error.json',
          'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0002_TURKCELL/bridge-domain=BD-SERVICE-5/routing')
@@ -594,7 +592,6 @@ class L3OutRoutingConfigsTests:
             payload=self.payload_path / 'test_037_config.json', path=patch_path, params='')
         assert resp.status_code == 400
         assert json.loads(resp.text) == expected
-
 
     @mark.parametrize('expected, patch_path', [
         (expected_path / 'ref_038_bd_service_5_error.json',

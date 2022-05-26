@@ -59,38 +59,6 @@
                                     }
                                 ]
                             }
-                        },
-                        {
-                            "name": "BD-SERVICE-4",
-                            "port-group": [
-                                {
-                                    "name": "ETH_PG_1_TRUNK",
-                                    "mode": "trunk"
-                                }
-                            ],
-                            "bd-subnet": [
-                                {
-                                    "address": "10.0.0.1/24",
-                                    "preferred": "yes"
-                                }
-                            ],
-                            "vrf": "pdu-mgmt",
-                            "approved": true,
-                            "routing": {
-                                "static-route": {
-                                    "destination": [
-                                        {
-                                            "address": "10.0.0.0/8",
-                                            "ip-nexthop": "10.0.1.2",
-                                            "source-node": {
-                                                "apply-all-nodes": [
-                                                    null
-                                                ]
-                                            }
-                                        }
-                                    ]
-                                }
-                            }
                         }
                     ]
                 }

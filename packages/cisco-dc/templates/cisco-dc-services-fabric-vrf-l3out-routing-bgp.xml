@@ -56,8 +56,8 @@
                                 </password>
                                 <ebgp-multihop>{ttl}</ebgp-multihop>
                                 <update-source>{$UPDATE_SOURCE}</update-source>
-                                <disable-connected-check when="{peer-control='dis-conn-check'}" />
-                                <bfd when="{peer-control='bfd'}" />
+                                <disable-connected-check when="{peer-control='dis-conn-check'}"/>
+                                <bfd when="{peer-control='bfd'}"/>
                                 <timers when="{timers}">
                                     <keepalive>{timers/keepalive}</keepalive>
                                     <holdtime>{timers/holdtime}</holdtime>
@@ -70,16 +70,20 @@
                                         <name>{profile}</name>
                                     </route-map>
                                     <?foreach {peer-af-controls}?>
-                                    <send-community when="{current() = 'send-com'}">
-                                        <attr>both</attr>
-                                    </send-community>
-                                    <next-hop-self when="{current()='nh-self'}" />
-                                    <disable-peer-as-check when="{current()='dis-peer-as-check'}" />
-                                    <allowas-in when="{current()='allow-self-as'}">
-                                        <occurrences>3</occurrences>
-                                    </allowas-in>
-                                    <as-override />
-                                    <?end ?>
+                                        <send-community when="{current() = 'send-com'}">
+                                            <attr>both</attr>
+                                        </send-community>
+                                        <next-hop-self when="{current()='nh-self'}"/>
+                                        <disable-peer-as-check when="{current()='dis-peer-as-check'}"/>
+                                        <allowas-in when="{current()='allow-self-as'}">
+                                            <occurrences>3</occurrences>
+                                        </allowas-in>
+                                        <as-override when="{current()='as-override'}"/>
+                                    <?end?>
+                                    <soft-reconfiguration>
+                                        <inbound/>
+                                        <always/>
+                                    </soft-reconfiguration>
                                     <weight when="{weight}">{weight}</weight>
                                 </address-family>
                                 <address-family when="{address-family='ipv6'}">
@@ -90,16 +94,20 @@
                                         <name>{profile}</name>
                                     </route-map>
                                     <?foreach {peer-af-controls}?>
-                                    <send-community when="{current() = 'send-com'}">
-                                        <attr>both</attr>
-                                    </send-community>
-                                    <next-hop-self when="{current()='nh-self'}" />
-                                    <disable-peer-as-check when="{current()='dis-peer-as-check'}" />
-                                    <allowas-in when="{current()='allow-self-as'}">
-                                        <occurrences>3</occurrences>
-                                    </allowas-in>
-                                    <as-override when="{current()='as-override'}" />
-                                    <?end ?>
+                                        <send-community when="{current() = 'send-com'}">
+                                            <attr>both</attr>
+                                        </send-community>
+                                        <next-hop-self when="{current()='nh-self'}"/>
+                                        <disable-peer-as-check when="{current()='dis-peer-as-check'}"/>
+                                        <allowas-in when="{current()='allow-self-as'}">
+                                            <occurrences>3</occurrences>
+                                        </allowas-in>
+                                        <as-override when="{current()='as-override'}"/>
+                                    <?end?>
+                                    <soft-reconfiguration>
+                                        <inbound/>
+                                        <always/>
+                                    </soft-reconfiguration>
                                     <weight when="{weight}">{weight}</weight>
                                 </address-family>
                             </neighbor>

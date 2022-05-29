@@ -6,6 +6,7 @@ from . import port_config_service
 from . import bridge_domain_service
 from . import vrf_config_service
 from . import dc_routepolicy
+from . import tenant_service
 from . import validate_callback
 
 # ---------------------------------------------
@@ -18,7 +19,8 @@ class Main(ncs.application.Application):
         self.log.info('Main RUNNING')
 
         # Port Config Premod
-        self.register_service('port-config-servicepoint', port_config_service.PortServiceCallback)
+        self.register_service('port-config-servicepoint',
+                              port_config_service.PortServiceCallback)
 
         # Port Config Registration
         self.register_nano_service('port-config-servicepoint', 'ncs:self',
@@ -58,6 +60,10 @@ class Main(ncs.application.Application):
         # Route Policy Registration
         self.register_service('route-policy-config-servicepoint',
                               dc_routepolicy.RoutePolicyConfigService)
+
+        # Tenant Service Validation
+        self.tenant_service_val = validate_callback.ValPointRegistrar(
+            self.log, 'tenant-service-val', 'tenant-service-validation', tenant_service.TenantServiceValidator(self.log))
 
         ############################################################################################
 

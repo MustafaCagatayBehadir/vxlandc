@@ -61,6 +61,10 @@ module cisco-dc {
 
         uses site-configs;
 
+        tailf:validate "tenant-service-validation" {
+            tailf:dependency "tenant-service/name";
+        }
+
         list tenant-service {
             description
               "List of Data Center customer definitions";

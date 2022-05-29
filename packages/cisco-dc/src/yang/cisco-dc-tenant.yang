@@ -42,6 +42,7 @@ submodule cisco-dc-tenant {
             tailf:info "Tenant Description";
         }
     }
+
     grouping bridge-domain {
 
         leaf name {

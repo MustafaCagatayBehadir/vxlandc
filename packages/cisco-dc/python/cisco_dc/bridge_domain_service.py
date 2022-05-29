@@ -145,8 +145,8 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
                 if (port._path, node_2) not in bd.device:
                     bd.device.create(port._path, node_2)
 
-        log.info(
-            f'Port {port.name} bridge-bomain {bd.name} hidden configuration is applied.')
+            log.info(
+                f'Port {port.name} bridge-bomain {bd.name} hidden configuration is applied.')
 
     for bd_subnet in bd.bd_subnet:
         ip = utils.getIpAddress(bd_subnet.address)

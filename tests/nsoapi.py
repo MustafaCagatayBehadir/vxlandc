@@ -33,8 +33,7 @@ class NsoRestconfCall:
         """
         url = f"https://{self.ip}:{self.port}/restconf/data/{path}"
         header = {
-            "Content-type": "application/yang-data+json",
-            "Accept": "application/yang-data+json",
+            "Accept": "application/yang-data+json"
         }
         resp = requests.get(url, headers=header, auth=self.auth, verify=False)
         return resp
@@ -54,7 +53,7 @@ class NsoRestconfCall:
             else f"https://{self.ip}:{self.port}/restconf/data/{path}"
         )
         header = {
-            "content-type": "application/yang-data+json",
+            "Content-Type": "application/yang-data+json",
             "Accept": "application/yang-data+json",
         }
         with open(payload) as json_file:
@@ -79,7 +78,7 @@ class NsoRestconfCall:
             else f"https://{self.ip}:{self.port}/restconf/data/{path}"
         )
         header = {
-            "content-type": "application/yang-data+json",
+            "Content-Type": "application/yang-data+json",
             "Accept": "application/yang-data+json",
         }
         with open(payload) as json_file:
@@ -106,7 +105,7 @@ class NsoRestconfCall:
             else f"https://{self.ip}:{self.port}/{restconf_root}/{path}"
         )
         header = {
-            "content-type": "application/yang-data+json",
+            "Content-Type": "application/yang-data+json",
             "Accept": "application/yang-data+json",
         }
         with open(payload) as json_file:
@@ -123,7 +122,9 @@ class NsoRestconfCall:
         Returns:
             resp (requests return obj):
         """
-
+        header = {
+            "Accept": "application/yang-data+json"
+        }
         url = f"https://{self.ip}:{self.port}/restconf/data/{path}"
         resp = requests.delete(url, auth=self.auth, verify=False)
         return resp

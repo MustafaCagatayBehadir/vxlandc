@@ -267,6 +267,7 @@ class PortConfigServiceValidator(object):
             dc_site = maagic.cd(service, '../..')
             fabric = dc_site.fabric
 
+            self.log.info('Port config service validation keypath: ', kp)
             # raise Exception("Invalid port config")
             self._no_interface_id_overlap_validation(th, service, fabric)
 

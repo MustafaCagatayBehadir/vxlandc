@@ -206,9 +206,8 @@ submodule cisco-dc-site {
                 tailf:info "Fabric External BGP option-A Vlan Pool";
                 type leafref {
                     path "/ralloc:resource-pools/idalloc:id-pool/idalloc:name";
-                }                
+                }
             }
         }
     }
 }
-

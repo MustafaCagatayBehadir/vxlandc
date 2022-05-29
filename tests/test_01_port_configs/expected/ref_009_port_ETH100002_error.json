@@ -1,0 +1,11 @@
+{
+    "ietf-restconf:errors": {
+        "error": [
+            {
+                "error-type": "application",
+                "error-tag": "malformed-message",
+                "error-message": "Python cb_pre_modification error. Port ETH100002 state is connected, port can not be deleted."
+            }
+        ]
+    }
+}

@@ -1,0 +1,38 @@
+{
+    "tailf-ned-cisco-nx:address-family": [
+        {
+            "proto": "ipv6",
+            "type": "unicast",
+            "allowas-in": {
+                "occurrences": 3
+            },
+            "route-map": [
+                {
+                    "direction": "in",
+                    "name": "DC_RP_0002_RP_0002"
+                }
+            ],
+            "next-hop-self": [
+                null
+            ],
+            "send-community": {
+                "attr": "both"
+            },
+            "soft-reconfiguration": {
+                "inbound": [
+                    null
+                ],
+                "always": [
+                    null
+                ]
+            },
+            "disable-peer-as-check": [
+                null
+            ],
+            "weight": 1000,
+            "as-override": [
+                null
+            ]
+        }
+    ]
+}

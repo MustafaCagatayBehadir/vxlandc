@@ -87,8 +87,23 @@ module cisco-dc {
 
                 uses l3out-routing {
                     when "bd-subnet";
+
                     refine routing/l3out-type {
                         default fabric-internal;
+                    }
+
+                    refine routing/bgp/peer-route-policy/profile {
+                        must "deref(current())/../../dc-route-policy-type = 'tenant'" {
+                            tailf:dependency ".";
+                            error-message
+                              "Route policy type should be tenant.";
+                        }
+
+                        must "deref(current())/../../tenant = current()/../../../../tenant" {
+                            tailf:dependency ".";
+                            error-message
+                              "Route policy tenant should be match with bridge-domain tenant.";
+                        }
                     }
                 }
             }
@@ -132,6 +147,20 @@ module cisco-dc {
             uses l3out-routing {
                 refine routing/l3out-type {
                     default fabric-external;
+                }
+
+                refine routing/bgp/peer-route-policy/profile {
+                    must "deref(current())/../../dc-route-policy-type = 'vrf'" {
+                        tailf:dependency ".";
+                        error-message
+                          "Route policy type should be vrf.";
+                    }
+
+                    must "deref(current())/../../vrf = current()/../../../../name" {
+                        tailf:dependency ".";
+                        error-message
+                          "Route policy vrf should be match with applied vrf.";
+                    }
                 }
             }
         }

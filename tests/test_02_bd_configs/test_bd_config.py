@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+import re
 from nsoapi import NsoRestconfCall
 from pytest import mark
 import json
@@ -36,7 +37,6 @@ class BDConfigsTests:
             path="",
             params="",
         )
-
 
     @mark.parametrize('expected, path', [
         (expected_path / 'ref_001_vlan_bd_service_sw_1.json',
@@ -161,5 +161,16 @@ class BDConfigsTests:
     ], indirect=['expected'])
     def test_009_bd_vrf(self, expected, patch_payload, post_path):
         resp = self.nso.patch(payload=patch_payload, path=post_path, params='')
+        assert resp.status_code == 400
+        assert json.loads(resp.text) == expected
+
+    @mark.parametrize('expected, delete_path', [
+        (expected_path / 'ref_010_tenant_service_1_error.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL'),
+        (expected_path / 'ref_010_tenant_service_2_error.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0002_TURKCELL')
+    ], indirect=['expected'])
+    def test_010_tenant_delete(self, expected, delete_path):
+        resp = self.nso.delete(path=delete_path)
         assert resp.status_code == 400
         assert json.loads(resp.text) == expected

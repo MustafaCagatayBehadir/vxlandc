@@ -37,8 +37,8 @@ def _set_hidden_leaves(root, dc_rpl, log):
     """
     for match_rule in dc_rpl.rules_set.match_rules:
         if match_rule.match_type == 'prefix-list':
-            for route_destination_ip in match_rule.route_destination_ip:
-                ip = utils.getIpAddress(route_destination_ip.ip)
+            for prefix in match_rule.prefix:
+                ip = utils.getIpAddress(prefix.ip)
                 if not match_rule.address_family and type(ip_address(ip)) is IPv4Address:
                     match_rule.address_family = 'ipv4'
                 elif not match_rule.address_family and type(ip_address(ip)) is IPv6Address:
@@ -75,8 +75,8 @@ def _set_hidden_leaves(root, dc_rpl, log):
                             f'Route-Policy {route_policy.profile} should not contain both ipv4 and ipv6 prefix-lists.')
 
         for match_and_set_group in route_policy.match_and_set_group:
-            if match_and_set_group.set_rule:
-                set_rule = dc_rpl.rules_set.set_rules[match_and_set_group.set_rule]
+            for rpl_set_rule in match_and_set_group.set_rules:
+                set_rule = dc_rpl.rules_set.set_rules[rpl_set_rule.name]
                 if set_rule.nh_address:
                     if not route_policy.address_family and set_rule.address_family.string == 'ipv4':
                         route_policy.address_family = 'ipv4'
@@ -90,6 +90,11 @@ def _set_hidden_leaves(root, dc_rpl, log):
                         raise Exception(
                             f'Route-Policy {route_policy.profile} should not contain both ipv4 prefix-lists and ipv6 next-hop vice versa.')
 
+    if dc_rpl.dc_route_policy_type.string == 'tenant' and hasattr(dc_rpl, 'tenant'):
+        dc_rpl.tenant_copy = dc_rpl.tenant
+
+    elif dc_rpl.dc_route_policy_type.string == 'vrf' and hasattr(dc_rpl, 'vrf'):
+        dc_rpl.vrf_copy = dc_rpl.vrf
 
 def _apply_template(dc_rpl):
     """Function to apply configurations to devices

@@ -53,6 +53,21 @@ def _set_hidden_leaves(root, vrf, log):
 
                 l3out.vlan = vrf.fabric_external_vlan_id
 
+                profiles = {
+                    peer_route_policy.profile for peer_route_policy in bgp.peer_route_policy}
+                device = bgp.source_interface.fabric_external_connection.node
+                if profiles:
+                    dc_route_policies = root.cisco_dc__dc_site[vrf.site].dc_route_policy
+                    for dc_route_policy in dc_route_policies:
+                        if hasattr(dc_route_policy, 'vrf') and dc_route_policy.vrf == vrf.name:
+                            for route_policy in dc_route_policy.route_policy:
+                                if route_policy.profile in profiles:
+                                    if (vrf._path, device) not in route_policy.device:
+                                        route_policy.device.create(
+                                            vrf._path, device)
+                                    log.info(
+                                        f'Route-Policy {route_policy.profile} is activated by vrf {vrf.name} routing bgp {bgp.peer_address}')
+
 
 def _apply_template(vrf):
     """Function to apply configurations to devices

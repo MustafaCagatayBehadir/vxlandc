@@ -6,8 +6,8 @@
                 {
                     "name": "tcell-grt",
                     "direct": {
-                        "address-family-ipv4-policy": "RP_0001_TURKCELL",
-                        "address-family-ipv6-policy": "RP_0001_TURKCELL"
+                        "address-family-ipv4-policy": "DC_RP_0001_RP_0001",
+                        "address-family-ipv6-policy": "DC_RP_0001_RP_0001"
                     }
                 }
             ]

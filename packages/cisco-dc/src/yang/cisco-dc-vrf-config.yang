@@ -121,11 +121,11 @@ submodule cisco-dc-vrf-config {
         }
 
         list bd-device {
-            tailf:hidden "Attach device defined in infra by bd service";
+            // tailf:hidden "Attach device defined in infra by bd service";
             key "kp leaf-id";
 
             leaf kp {
-                tailf:info "Attach port keypath";
+                tailf:info "Attach bridge-domain keypath";
                 type string;
             }
 
@@ -136,11 +136,11 @@ submodule cisco-dc-vrf-config {
         }
 
         list device {
-            tailf:hidden "Attach vrf device defined in infra by vrf service";
+            // tailf:hidden "Attach vrf device defined in infra by vrf service";
             key "kp leaf-id";
 
             leaf kp {
-                tailf:info "Attach birdge-domain keypath";
+                tailf:info "Attach bridge-domain & vrf keypath";
                 type string;
             }
 

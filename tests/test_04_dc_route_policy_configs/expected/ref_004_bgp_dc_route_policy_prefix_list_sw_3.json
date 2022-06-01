@@ -1,0 +1,35 @@
+{
+    "tailf-ned-cisco-nx:prefix-list": {
+        "prefixes": [
+            {
+                "name": "PL_0003",
+                "seq": [
+                    {
+                        "no": 5,
+                        "permit": "2001:db8::/48",
+                        "eq": 49
+                    },
+                    {
+                        "no": 10,
+                        "permit": "2001:db8:1::/48",
+                        "ge": 49,
+                        "le": 128
+                    }
+                ]
+            },
+            {
+                "name": "PL_0004",
+                "seq": [
+                    {
+                        "no": 5,
+                        "permit": "2001:db8:2::/48"
+                    },
+                    {
+                        "no": 10,
+                        "permit": "2001:db8:3::/48"
+                    }
+                ]
+            }
+        ]
+    }
+}

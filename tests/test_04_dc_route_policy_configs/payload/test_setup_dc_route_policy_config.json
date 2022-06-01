@@ -4,26 +4,352 @@
             "fabric": "avr-dss1-lbox-yaani-fabric",
             "dc-route-policy": [
                 {
-                    "name": "DC_RP_0001_TURKCELL",
+                    "name": "DC_RP_0001",
                     "dc-route-policy-type": "vrf",
+                    "vrf": "tcell-grt",
                     "rules-set": {
                         "match-rules": [
                             {
-                                "name": "MR_0001_TURKCELL_TAG_12345",
+                                "name": "tag_12345",
                                 "tag": 12345
+                            },
+                            {
+                                "name": "PL_0001",
+                                "prefix": [
+                                    {
+                                        "ip": "192.168.0.0/24",
+                                        "equal": 25
+                                    },
+                                    {
+                                        "ip": "192.168.1.0/24",
+                                        "from-prefix": 25,
+                                        "to-prefix": 32
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "PL_0002",
+                                "prefix": [
+                                    {
+                                        "ip": "192.168.2.0/24"
+                                    },
+                                    {
+                                        "ip": "192.168.3.0/24"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "PL_0003",
+                                "prefix": [
+                                    {
+                                        "ip": "2001:db8:0000::/48",
+                                        "equal": 49
+                                    },
+                                    {
+                                        "ip": "2001:db8:0001::/48",
+                                        "from-prefix": 49,
+                                        "to-prefix": 128
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "PL_0004",
+                                "prefix": [
+                                    {
+                                        "ip": "2001:db8:0002::/48"
+                                    },
+                                    {
+                                        "ip": "2001:db8:0003::/48"
+                                    }
+                                ]
+                            }
+                        ],
+                        "set-rules": [
+                            {
+                                "name": "ebgp_customers",
+                                "additional-community": [
+                                    {
+                                        "community": "34984:123"
+                                    },
+                                    {
+                                        "community": "34984:5"
+                                    },
+                                    {
+                                        "community": "34984:6"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "as_path_prepend",
+                                "aspath-asn": {
+                                    "asn": 34984,
+                                    "lastnum": 5
+                                }
+                            },
+                            {
+                                "name": "local_preference_150",
+                                "local-preference": 150
                             }
                         ]
                     },
                     "route-policy": [
                         {
-                            "profile": "RP_0001_TURKCELL",
+                            "profile": "DC_RP_0001_RP_0001",
                             "match-and-set-group": [
                                 {
-                                    "order": 5,
+                                    "order": 10,
                                     "action": "permit",
                                     "match-rules": [
                                         {
-                                            "name": "MR_0001_TURKCELL_TAG_12345"
+                                            "name": "tag_12345"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "order": 1000,
+                                    "action": "deny"
+                                }
+                            ]
+                        },
+                        {
+                            "profile": "DC_RP_0001_RP_0002",
+                            "match-and-set-group": [
+                                {
+                                    "order": 10,
+                                    "action": "permit",
+                                    "set-rules": [
+                                        {
+                                            "name": "ebgp_customers"
+                                        }
+                                    ],
+                                    "match-rules": [
+                                        {
+                                            "name": "PL_0001"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "order": 20,
+                                    "action": "permit",
+                                    "set-rules": [
+                                        {
+                                            "name": "local_preference_150"
+                                        },
+                                        {
+                                            "name": "as_path_prepend"
+                                        }
+                                    ],
+                                    "match-rules": [
+                                        {
+                                            "name": "PL_0002"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "order": 1000,
+                                    "action": "deny"
+                                }
+                            ]
+                        },
+                        {
+                            "profile": "DC_RP_0001_RP_0003",
+                            "match-and-set-group": [
+                                {
+                                    "order": 10,
+                                    "action": "permit",
+                                    "set-rules": [
+                                        {
+                                            "name": "ebgp_customers"
+                                        }
+                                    ],
+                                    "match-rules": [
+                                        {
+                                            "name": "PL_0003"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "order": 20,
+                                    "action": "permit",
+                                    "set-rules": [
+                                        {
+                                            "name": "local_preference_150"
+                                        },
+                                        {
+                                            "name": "as_path_prepend"
+                                        }
+                                    ],
+                                    "match-rules": [
+                                        {
+                                            "name": "PL_0004"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "order": 1000,
+                                    "action": "deny"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "DC_RP_0002",
+                    "dc-route-policy-type": "tenant",
+                    "tenant": "0001_TURKCELL",
+                    "rules-set": {
+                        "match-rules": [
+                            {
+                                "name": "PL_0001",
+                                "prefix": [
+                                    {
+                                        "ip": "192.168.0.0/24",
+                                        "equal": 25
+                                    },
+                                    {
+                                        "ip": "192.168.1.0/24",
+                                        "from-prefix": 25,
+                                        "to-prefix": 32
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "PL_0002",
+                                "prefix": [
+                                    {
+                                        "ip": "192.168.2.0/24"
+                                    },
+                                    {
+                                        "ip": "192.168.3.0/24"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "PL_0003",
+                                "prefix": [
+                                    {
+                                        "ip": "2001:db8:0000::/48",
+                                        "equal": 49
+                                    },
+                                    {
+                                        "ip": "2001:db8:0001::/48",
+                                        "from-prefix": 49,
+                                        "to-prefix": 128
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "PL_0004",
+                                "prefix": [
+                                    {
+                                        "ip": "2001:db8:0002::/48"
+                                    },
+                                    {
+                                        "ip": "2001:db8:0003::/48"
+                                    }
+                                ]
+                            }
+                        ],
+                        "set-rules": [
+                            {
+                                "name": "ebgp_customers",
+                                "additional-community": [
+                                    {
+                                        "community": "34984:123"
+                                    },
+                                    {
+                                        "community": "34984:5"
+                                    },
+                                    {
+                                        "community": "34984:6"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "as_path_prepend",
+                                "aspath-asn": {
+                                    "asn": 34984,
+                                    "lastnum": 5
+                                }
+                            },
+                            {
+                                "name": "local_preference_150",
+                                "local-preference": 150
+                            }
+                        ]
+                    },
+                    "route-policy": [
+                        {
+                            "profile": "DC_RP_0002_RP_0001",
+                            "match-and-set-group": [
+                                {
+                                    "order": 10,
+                                    "action": "permit",
+                                    "set-rules": [
+                                        {
+                                            "name": "ebgp_customers"
+                                        }
+                                    ],
+                                    "match-rules": [
+                                        {
+                                            "name": "PL_0001"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "order": 20,
+                                    "action": "permit",
+                                    "set-rules": [
+                                        {
+                                            "name": "local_preference_150"
+                                        },
+                                        {
+                                            "name": "as_path_prepend"
+                                        }
+                                    ],
+                                    "match-rules": [
+                                        {
+                                            "name": "PL_0002"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "order": 1000,
+                                    "action": "deny"
+                                }
+                            ]
+                        },
+                        {
+                            "profile": "DC_RP_0002_RP_0002",
+                            "match-and-set-group": [
+                                {
+                                    "order": 10,
+                                    "action": "permit",
+                                    "set-rules": [
+                                        {
+                                            "name": "ebgp_customers"
+                                        }
+                                    ],
+                                    "match-rules": [
+                                        {
+                                            "name": "PL_0003"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "order": 20,
+                                    "action": "permit",
+                                    "set-rules": [
+                                        {
+                                            "name": "local_preference_150"
+                                        },
+                                        {
+                                            "name": "as_path_prepend"
+                                        }
+                                    ],
+                                    "match-rules": [
+                                        {
+                                            "name": "PL_0004"
                                         }
                                     ]
                                 },

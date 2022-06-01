@@ -1,0 +1,11 @@
+{
+    "ietf-restconf:errors": {
+        "error": [
+            {
+                "error-type": "application",
+                "error-tag": "malformed-message",
+                "error-message": "/dc-site{avr-dss1-lbox-yaani-fabric}: Python cb_validate error. Tenant 0001_TURKCELL can not be deleted because there are bridge-domains under it."
+            }
+        ]
+    }
+}

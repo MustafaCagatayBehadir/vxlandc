@@ -255,6 +255,20 @@ def get_static_route_name(bd):
     static_route_name = f'{bd.tenant}:{bd.name}'
     return truncate_static_route_name(static_route_name) if len(static_route_name) > 50 else static_route_name
 
+
+def get_svi_description(bd):
+    """Function to return svi description
+
+    Args:
+        bd: Service node
+
+    Returns:
+        String: svi description
+
+    """
+    return f'{bd.tenant}:{bd.name}:AGW'
+
+
 def get_node_connections(site):
     """Function to return border-leaf connections
 

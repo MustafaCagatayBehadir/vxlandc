@@ -48,6 +48,39 @@ submodule cisco-dc-routepolicy {
                 path "/cisco-dc:dc-site[fabric=current()/../../fabric]/cisco-dc:tenant-service/cisco-dc:name";
             }
             mandatory true;
+
+            must "not(../tenant-copy) or ../tenant-copy = ." {
+                error-message
+                  "Tenant can't be changed ones the dc-route-policy is deployed";
+            }
+        }
+
+        leaf tenant-copy {
+            when "current()/../dc-route-policy-type = 'tenant'";
+            tailf:info "only to suppress compiler warning on must expression";
+            type string;
+            tailf:hidden "dc";
+        }
+
+        leaf vrf {
+            when "current()/../dc-route-policy-type = 'vrf'";
+            tailf:info "Specify tenant name";
+            type leafref {
+                path "/cisco-dc:dc-site[fabric=current()/../../fabric]/cisco-dc:vrf-config/cisco-dc:name";
+            }
+            mandatory true;
+
+            must "not(../vrf-copy) or ../vrf-copy = ." {
+                error-message
+                  "Vrf can't be changed ones the dc-route-policy is deployed";
+            }
+        }
+
+        leaf vrf-copy {
+            when "current()/../dc-route-policy-type = 'vrf'";
+            tailf:info "only to suppress compiler warning on must expression";
+            type string;
+            tailf:hidden "dc";
         }
 
         container rules-set {
@@ -102,6 +135,13 @@ submodule cisco-dc-routepolicy {
                                     range 0..128;
                                 }
                                 default 0;
+                            }
+
+                            leaf equal {
+                                tailf:info "Specifies the prefix length to match. <0..128>[0]";
+                                type uint8 {
+                                    range 0..128;
+                                }
                             }
 
                             must "number(current()/from-prefix) <= number(current()/to-prefix)" {
@@ -246,17 +286,23 @@ submodule cisco-dc-routepolicy {
                     default permit;
                 }
 
-                leaf set-rule {
-                    tailf:info "Attach Set rule name";
-                    type leafref {
-                        path "../../../cisco-dc:rules-set/cisco-dc:set-rules/cisco-dc:name";
+                list set-rules {
+                    tailf:info "Attach set-rules name";
+                    key name;
+
+                    leaf name {
+                        tailf:info "Set name";
+                        type leafref {
+                            path "../../../../cisco-dc:rules-set/cisco-dc:set-rules/cisco-dc:name";
+                        }
                     }
                 }
+
                 list match-rules {
                     tailf:info "Attach match-rules name";
                     key name;
                     leaf name {
-                        tailf:info "Set name";
+                        tailf:info "Match name";
                         type leafref {
                             path "../../../../cisco-dc:rules-set/cisco-dc:match-rules/cisco-dc:name";
                         }

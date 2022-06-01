@@ -28,6 +28,7 @@
                 <interface xmlns="http://tail-f.com/ned/cisco-nx" when="{../bd-subnet}">
                     <Vlan>
                         <name>{network-vlan}</name>
+                        <description>{$DESCRIPTION}</description>
                         <vrf>
                             <member>{../vrf}</member>
                         </vrf>
@@ -36,11 +37,13 @@
                                 <ip>
                                     <address when="{preferred='yes'}">
                                         <ipaddr>{address}</ipaddr>
+                                        <tag>12345</tag>
                                     </address>
                                     <secondary-addr when="{preferred='no'}">
                                         <address>
                                             <ipaddr>{address}</ipaddr>
                                             <secaddr>secondary</secaddr>
+                                            <tag>12345</tag>
                                         </address>
                                     </secondary-addr>
                                     <redirects>false</redirects>
@@ -53,6 +56,7 @@
                                     <address>
                                         <addresses>
                                             <addr>{address}</addr>
+                                            <tag>12345</tag>
                                         </addresses>
                                     </address>
                                     <redirects>false</redirects>

@@ -171,6 +171,7 @@ def _apply_template(bd):
     template = ncs.template.Template(bd)
     vars = ncs.template.Variables()
     vars.add('VLAN_NAME', utils.get_network_vlan_name(bd))
+    vars.add('DESCRIPTION', utils.get_svi_description(bd))
     template.apply('cisco-dc-services-fabric-bd-l2vni-service', vars)
 
 

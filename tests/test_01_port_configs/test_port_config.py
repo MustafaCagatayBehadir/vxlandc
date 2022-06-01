@@ -175,4 +175,13 @@ class PortConfigsTests:
         get_resp = self.nso.get(path=get_path)
         assert post_resp.status_code == 201
         assert get_resp.status_code == 200
-        assert json.loads(get_resp.text) == expected        
+        assert json.loads(get_resp.text) == expected
+
+    @mark.parametrize('expected, delete_path', [
+        (expected_path / 'ref_009_port_ETH100002_error.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs=ETH_PG_1_TRUNK/port-config=ETH100002')
+    ], indirect=['expected'])
+    def test_009_port_delete(self, expected, delete_path):
+        resp = self.nso.delete(path=delete_path)
+        assert resp.status_code == 400
+        assert json.loads(resp.text) == expected

@@ -14,6 +14,7 @@
         },
         {
             "name": 3,
+            "description": "0001_TURKCELL:BD-SERVICE-2:AGW",
             "vrf": {
                 "member": "tcell-grt"
             },
@@ -24,10 +25,12 @@
                 "address": {
                     "addresses": [
                         {
-                            "addr": "2001:db8:cafe::1/64"
+                            "addr": "2001:db8:cafe::1/64",
+                            "tag": 12345
                         },
                         {
-                            "addr": "2001:db8:cafe:1::1/64"
+                            "addr": "2001:db8:cafe:1::1/64",
+                            "tag": 12345
                         }
                     ]
                 },
@@ -41,6 +44,7 @@
         },
         {
             "name": 6,
+            "description": "0002_TURKCELL:BD-SERVICE-5:AGW",
             "vrf": {
                 "member": "pdu-mgmt"
             },
@@ -51,10 +55,12 @@
                 "address": {
                     "addresses": [
                         {
-                            "addr": "2001:db8:cafe::1/64"
+                            "addr": "2001:db8:cafe::1/64",
+                            "tag": 12345
                         },
                         {
-                            "addr": "2001:db8:cafe:1::1/64"
+                            "addr": "2001:db8:cafe:1::1/64",
+                            "tag": 12345
                         }
                     ]
                 },

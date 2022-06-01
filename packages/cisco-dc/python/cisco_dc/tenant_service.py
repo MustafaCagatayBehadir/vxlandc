@@ -61,9 +61,7 @@ class TenantServiceValidator(object):
                 flag = True
                 break
         if flag:
-            bd_delete_regex = "{'kp': '\/ralloc:resource-pools\/idalloc:id-pool{.*}\/allocation{.*}', 'op': 2, 'ov': '', 'nv': ''}"
             for _data in _di._data:
-                if re.match(bd_delete_regex, str(_data)):
-                    if site in _data['kp'] and tenant in _data['kp']:
-                        raise Exception(
-                            f'Tenant {tenant} can not be deleted because there are bridge-domains under it.')
+                if site in _data['kp'] and tenant in _data['kp'] and 'bridge-domain' in _data['kp']:
+                    raise Exception(
+                        f'Tenant {tenant} can not be deleted because there are bridge-domains under it.')

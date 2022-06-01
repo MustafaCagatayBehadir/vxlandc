@@ -1,29 +1,14 @@
 {
     "tailf-ned-cisco-nx:route-map": [
         {
-            "name": "DC_RP_0001_RP_0001",
+            "name": "DC_RP_0001_RP_0003",
             "sequence": 10,
             "operation": "permit",
             "match": {
-                "tag": [
-                    12345
-                ]
-            }
-        },
-        {
-            "name": "DC_RP_0001_RP_0001",
-            "sequence": 1000,
-            "operation": "deny"
-        },
-        {
-            "name": "DC_RP_0002_RP_0001",
-            "sequence": 10,
-            "operation": "permit",
-            "match": {
-                "ip": {
+                "ipv6": {
                     "address": {
                         "prefix-list": [
-                            "PL_0001"
+                            "PL_0003"
                         ]
                     }
                 }
@@ -42,14 +27,14 @@
             }
         },
         {
-            "name": "DC_RP_0002_RP_0001",
+            "name": "DC_RP_0001_RP_0003",
             "sequence": 20,
             "operation": "permit",
             "match": {
-                "ip": {
+                "ipv6": {
                     "address": {
                         "prefix-list": [
-                            "PL_0002"
+                            "PL_0004"
                         ]
                     }
                 }
@@ -65,7 +50,7 @@
             }
         },
         {
-            "name": "DC_RP_0002_RP_0001",
+            "name": "DC_RP_0001_RP_0003",
             "sequence": 1000,
             "operation": "deny"
         }

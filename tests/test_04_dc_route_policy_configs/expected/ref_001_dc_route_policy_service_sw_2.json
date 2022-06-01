@@ -1,8 +1,8 @@
 {
     "tailf-ned-cisco-nx:route-map": [
         {
-            "name": "RP_0001_TURKCELL",
-            "sequence": 5,
+            "name": "DC_RP_0001_RP_0001",
+            "sequence": 10,
             "operation": "permit",
             "match": {
                 "tag": [
@@ -11,7 +11,61 @@
             }
         },
         {
-            "name": "RP_0001_TURKCELL",
+            "name": "DC_RP_0001_RP_0001",
+            "sequence": 1000,
+            "operation": "deny"
+        },
+        {
+            "name": "DC_RP_0002_RP_0001",
+            "sequence": 10,
+            "operation": "permit",
+            "match": {
+                "ip": {
+                    "address": {
+                        "prefix-list": [
+                            "PL_0001"
+                        ]
+                    }
+                }
+            },
+            "set": {
+                "community": {
+                    "community-number": [
+                        "34984:123",
+                        "34984:5",
+                        "34984:6"
+                    ],
+                    "additive": [
+                        null
+                    ]
+                }
+            }
+        },
+        {
+            "name": "DC_RP_0002_RP_0001",
+            "sequence": 20,
+            "operation": "permit",
+            "match": {
+                "ip": {
+                    "address": {
+                        "prefix-list": [
+                            "PL_0002"
+                        ]
+                    }
+                }
+            },
+            "set": {
+                "as-path": {
+                    "prepend": {
+                        "as-list": "34984",
+                        "last-as": 5
+                    }
+                },
+                "local-preference": 150
+            }
+        },
+        {
+            "name": "DC_RP_0002_RP_0001",
             "sequence": 1000,
             "operation": "deny"
         }

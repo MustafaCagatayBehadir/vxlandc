@@ -126,5 +126,5 @@ class NsoRestconfCall:
             "Accept": "application/yang-data+json"
         }
         url = f"https://{self.ip}:{self.port}/restconf/data/{path}"
-        resp = requests.delete(url, auth=self.auth, verify=False)
+        resp = requests.delete(url,  headers=header, auth=self.auth, verify=False)
         return resp

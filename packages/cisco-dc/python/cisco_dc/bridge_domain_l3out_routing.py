@@ -50,6 +50,8 @@ def _set_hidden_leaves(root, bd, address_family, log):
 
             bgp.as_number = root.cisco_dc__dc_site[bd.site].fabric_parameters.as_number
 
+            devices = [
+                node.leaf_id for node in bgp.source_interface.fabric_internal_connection.node]
             if hasattr(bgp.source_interface, 'fabric_internal_connection'):
                 profiles = {
                     peer_route_policy.profile for peer_route_policy in bgp.peer_route_policy}
@@ -59,8 +61,6 @@ def _set_hidden_leaves(root, bd, address_family, log):
                         if hasattr(dc_route_policy, 'tenant') and dc_route_policy.tenant == bd.tenant:
                             for route_policy in dc_route_policy.route_policy:
                                 if route_policy.profile in profiles:
-                                    devices = [
-                                        node.leaf_id for node in bgp.source_interface.fabric_internal_connection.node]
                                     for device in devices:
                                         if (bd._path, device) not in route_policy.device:
                                             route_policy.device.create(

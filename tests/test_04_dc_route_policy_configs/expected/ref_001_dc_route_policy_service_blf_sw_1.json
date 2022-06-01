@@ -1,6 +1,21 @@
 {
     "tailf-ned-cisco-nx:route-map": [
         {
+            "name": "DC_RP_0001_RP_0001",
+            "sequence": 10,
+            "operation": "permit",
+            "match": {
+                "tag": [
+                    12345
+                ]
+            }
+        },
+        {
+            "name": "DC_RP_0001_RP_0001",
+            "sequence": 1000,
+            "operation": "deny"
+        },
+        {
             "name": "DC_RP_0001_RP_0002",
             "sequence": 10,
             "operation": "permit",

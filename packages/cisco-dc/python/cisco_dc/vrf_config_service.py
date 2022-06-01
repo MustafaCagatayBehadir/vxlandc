@@ -100,10 +100,18 @@ def _set_hidden_leaves(root, vrf, id_parameters, log):
     vrf.vlan_id, vrf.vni_id, vrf.fabric_external_vlan_id = id_parameters[
         'vrf-vlan'], id_parameters['l3vni'], id_parameters['fabric-external-vrf-vlan']
 
+    site = root.cisco_dc__dc_site[vrf.site]
+    border_leaves = [
+        node.hostname for node in site.node if node.node_role == 'border-leaf']
+
     for device in vrf.bd_device:
         if (device.kp, device.leaf_id) not in vrf.device:
             vrf.device.create(device.kp, device.leaf_id)
-        
+
+    for leaf_id in border_leaves:
+        if (vrf._path, leaf_id) not in vrf.device:
+            vrf.device.create(vrf._path, leaf_id)
+
     if vrf.direct.exists():
         if vrf.direct.address_family_ipv4_policy:
             dc_route_policies = root.cisco_dc__dc_site[vrf.site].dc_route_policy

@@ -1,4 +1,5 @@
 <config-template xmlns="http://tail-f.com/ns/config/1.0">
+    <?set RM = {concat('RP', '_', string(name))}?>
     <?save-context service?>
     <devices xmlns="http://tail-f.com/ns/ncs">
         <device>
@@ -65,10 +66,10 @@
                                 </maximum-paths>
                                 <redistribute>
                                     <direct when="{direct}">
-                                        <route-map when="{direct/address-family-ipv4-policy}">{direct/address-family-ipv4-policy}</route-map>
+                                        <route-map when="{direct/address-family-ipv4-policy}">{$RM}_{direct/address-family-ipv4-policy}</route-map>
                                     </direct>
                                     <static when="{static}">
-                                        <route-map when="{direct/address-family-ipv4-policy}">{static/address-family-ipv4-policy}</route-map>
+                                        <route-map when="{direct/address-family-ipv4-policy}">{$RM}_{static/address-family-ipv4-policy}</route-map>
                                     </static>
                                 </redistribute>
                             </address-family>
@@ -83,10 +84,10 @@
                                 </maximum-paths>
                                 <redistribute>
                                     <direct when="{direct}">
-                                        <route-map when="{direct/address-family-ipv6-policy}">{direct/address-family-ipv6-policy}</route-map>
+                                        <route-map when="{direct/address-family-ipv6-policy}">{$RM}_{direct/address-family-ipv6-policy}</route-map>
                                     </direct>
                                     <static when="{static}">
-                                        <route-map when="{direct/address-family-ipv6-policy}">{static/address-family-ipv6-policy}</route-map>
+                                        <route-map when="{direct/address-family-ipv6-policy}">{$RM}_{static/address-family-ipv6-policy}</route-map>
                                     </static>
                                 </redistribute>
                             </address-family>

@@ -9,7 +9,11 @@
             "route-map": [
                 {
                     "direction": "in",
-                    "name": "DC_RP_0002_RP_0001"
+                    "name": "RP_0001_TURKCELL_DC_RP_0002_RP_0001"
+                },
+                {
+                    "direction": "out",
+                    "name": "RP_0001_TURKCELL_DC_RP_0002_RP_0003"
                 }
             ],
             "next-hop-self": [

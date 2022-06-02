@@ -90,6 +90,8 @@ def _set_hidden_leaves(root, dc_rpl, log):
                         raise Exception(
                             f'Route-Policy {route_policy.profile} should not contain both ipv4 prefix-lists and ipv6 next-hop vice versa.')
 
+    dc_rpl.dc_route_policy_type_copy = dc_rpl.dc_route_policy_type
+
     if dc_rpl.dc_route_policy_type.string == 'tenant' and hasattr(dc_rpl, 'tenant'):
         dc_rpl.tenant_copy = dc_rpl.tenant
 

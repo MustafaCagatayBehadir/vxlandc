@@ -16,6 +16,10 @@
                                             {
                                                 "direction": "in",
                                                 "profile": "DC_RP_0002_RP_0001"
+                                            },
+                                            {
+                                                "direction": "out",
+                                                "profile": "DC_RP_0002_RP_0003"
                                             }
                                         ]
                                     }
@@ -32,6 +36,10 @@
                                             {
                                                 "direction": "in",
                                                 "profile": "DC_RP_0002_RP_0002"
+                                            },
+                                            {
+                                                "direction": "out",
+                                                "profile": "DC_RP_0002_RP_0004"
                                             }
                                         ]
                                     }
@@ -52,6 +60,10 @@
                                     {
                                         "direction": "in",
                                         "profile": "DC_RP_0001_RP_0002"
+                                    },
+                                    {
+                                        "direction": "out",
+                                        "profile": "DC_RP_0001_RP_0004"
                                     }
                                 ]
                             },
@@ -61,6 +73,10 @@
                                     {
                                         "direction": "in",
                                         "profile": "DC_RP_0001_RP_0003"
+                                    },
+                                    {
+                                        "direction": "out",
+                                        "profile": "DC_RP_0001_RP_0005"
                                     }
                                 ]
                             }

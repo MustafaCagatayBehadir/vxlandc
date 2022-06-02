@@ -1,7 +1,7 @@
 {
     "tailf-ned-cisco-nx:route-map": [
         {
-            "name": "DC_RP_0001_RP_0001",
+            "name": "RP_tcell-grt_DC_RP_0001_RP_0001",
             "sequence": 10,
             "operation": "permit",
             "match": {
@@ -11,19 +11,19 @@
             }
         },
         {
-            "name": "DC_RP_0001_RP_0001",
+            "name": "RP_tcell-grt_DC_RP_0001_RP_0001",
             "sequence": 1000,
             "operation": "deny"
         },
         {
-            "name": "DC_RP_0001_RP_0003",
+            "name": "RP_tcell-grt_DC_RP_0001_RP_0003",
             "sequence": 10,
             "operation": "permit",
             "match": {
                 "ipv6": {
                     "address": {
                         "prefix-list": [
-                            "PL_0003"
+                            "PS_tcell-grt_PL_0003"
                         ]
                     }
                 }
@@ -42,14 +42,14 @@
             }
         },
         {
-            "name": "DC_RP_0001_RP_0003",
+            "name": "RP_tcell-grt_DC_RP_0001_RP_0003",
             "sequence": 20,
             "operation": "permit",
             "match": {
                 "ipv6": {
                     "address": {
                         "prefix-list": [
-                            "PL_0004"
+                            "PS_tcell-grt_PL_0004"
                         ]
                     }
                 }
@@ -65,9 +65,28 @@
             }
         },
         {
-            "name": "DC_RP_0001_RP_0003",
+            "name": "RP_tcell-grt_DC_RP_0001_RP_0003",
             "sequence": 1000,
             "operation": "deny"
+        },
+        {
+            "name": "RP_tcell-grt_DC_RP_0001_RP_0005",
+            "sequence": 10,
+            "operation": "deny",
+            "match": {
+                "ipv6": {
+                    "address": {
+                        "prefix-list": [
+                            "PS_tcell-grt_PL_0006"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "name": "RP_tcell-grt_DC_RP_0001_RP_0005",
+            "sequence": 1000,
+            "operation": "permit"
         }
     ]
 }

@@ -2,7 +2,7 @@
     "tailf-ned-cisco-nx:prefix-list": {
         "prefixes": [
             {
-                "name": "PS_0001_TURKCELL_PL_0001",
+                "name": "PS_tcell-grt_PL_0001",
                 "seq": [
                     {
                         "no": 5,
@@ -18,7 +18,7 @@
                 ]
             },
             {
-                "name": "PS_0001_TURKCELL_PL_0002",
+                "name": "PS_tcell-grt_PL_0002",
                 "seq": [
                     {
                         "no": 5,
@@ -31,7 +31,7 @@
                 ]
             },
             {
-                "name": "PS_0001_TURKCELL_PL_0005",
+                "name": "PS_tcell-grt_PL_0005",
                 "seq": [
                     {
                         "no": 5,

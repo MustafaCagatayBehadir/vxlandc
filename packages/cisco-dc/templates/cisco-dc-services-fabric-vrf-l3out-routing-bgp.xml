@@ -1,4 +1,5 @@
 <config-template xmlns="http://tail-f.com/ns/config/1.0">
+    <?set RM = {concat('RP', '_', string(name))}?>
     <devices xmlns="http://tail-f.com/ns/ncs" foreach="{routing/bgp}">
         <?save-context bgp?>
         <?set DESCRIPTION={concat($VRF, ':', 'eBGP-Extension-Source-Interface')}?>
@@ -67,7 +68,7 @@
                                     <type>unicast</type>
                                     <route-map foreach="{peer-route-policy}">
                                         <direction>{direction}</direction>
-                                        <name>{profile}</name>
+                                        <name>{$RM}_{profile}</name>
                                     </route-map>
                                     <?foreach {peer-af-controls}?>
                                         <send-community when="{current() = 'send-com'}">
@@ -91,7 +92,7 @@
                                     <type>unicast</type>
                                     <route-map foreach="{peer-route-policy}">
                                         <direction>{direction}</direction>
-                                        <name>{profile}</name>
+                                        <name>{$RM}_{profile}</name>
                                     </route-map>
                                     <?foreach {peer-af-controls}?>
                                         <send-community when="{current() = 'send-com'}">

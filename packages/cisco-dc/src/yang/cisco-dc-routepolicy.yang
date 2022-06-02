@@ -39,6 +39,17 @@ submodule cisco-dc-routepolicy {
                 enum tenant;
             }
             mandatory true;
+
+            must "not(../dc-route-policy-type-copy) or ../dc-route-policy-type-copy = ." {
+                error-message
+                  "Route policy type can't be changed ones the dc-route-policy is deployed";
+            }
+        }
+
+        leaf dc-route-policy-type-copy {
+            tailf:info "only to suppress compiler warning on must expression";
+            type string;
+            tailf:hidden "dc";
         }
 
         leaf tenant {

@@ -2,7 +2,7 @@
     "tailf-ned-cisco-nx:prefix-list": {
         "prefixes": [
             {
-                "name": "PL_0001",
+                "name": "PS_0001_TURKCELL_PL_0001",
                 "seq": [
                     {
                         "no": 5,
@@ -18,7 +18,7 @@
                 ]
             },
             {
-                "name": "PL_0002",
+                "name": "PS_0001_TURKCELL_PL_0002",
                 "seq": [
                     {
                         "no": 5,
@@ -27,6 +27,16 @@
                     {
                         "no": 10,
                         "permit": "192.168.3.0/24"
+                    }
+                ]
+            },
+            {
+                "name": "PS_0001_TURKCELL_PL_0005",
+                "seq": [
+                    {
+                        "no": 5,
+                        "permit": "0.0.0.0/0",
+                        "eq": 32
                     }
                 ]
             }

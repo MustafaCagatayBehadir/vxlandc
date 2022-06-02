@@ -62,6 +62,24 @@
                                         "ip": "2001:db8:0003::/48"
                                     }
                                 ]
+                            },
+                            {
+                                "name": "PL_0005",
+                                "prefix": [
+                                    {
+                                        "ip": "0.0.0.0/0",
+                                        "equal": 32
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "PL_0006",
+                                "prefix": [
+                                    {
+                                        "ip": "::/0",
+                                        "equal": 128
+                                    }
+                                ]
                             }
                         ],
                         "set-rules": [
@@ -190,6 +208,42 @@
                                     "action": "deny"
                                 }
                             ]
+                        },
+                        {
+                            "profile": "DC_RP_0001_RP_0004",
+                            "match-and-set-group": [
+                                {
+                                    "order": 10,
+                                    "action": "deny",
+                                    "match-rules": [
+                                        {
+                                            "name": "PL_0005"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "order": 1000,
+                                    "action": "permit"
+                                }
+                            ]
+                        },
+                        {
+                            "profile": "DC_RP_0001_RP_0005",
+                            "match-and-set-group": [
+                                {
+                                    "order": 10,
+                                    "action": "deny",
+                                    "match-rules": [
+                                        {
+                                            "name": "PL_0006"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "order": 1000,
+                                    "action": "permit"
+                                }
+                            ]
                         }
                     ]
                 },
@@ -248,6 +302,24 @@
                                         "ip": "2001:db8:0003::/48"
                                     }
                                 ]
+                            },
+                            {
+                                "name": "PL_0005",
+                                "prefix": [
+                                    {
+                                        "ip": "0.0.0.0/0",
+                                        "equal": 32
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "PL_0006",
+                                "prefix": [
+                                    {
+                                        "ip": "::/0",
+                                        "equal": 128
+                                    }
+                                ]
                             }
                         ],
                         "set-rules": [
@@ -271,6 +343,14 @@
                                     "asn": 34984,
                                     "lastnum": 5
                                 }
+                            },
+                            {
+                                "name": "ip_nexthop",
+                                "nh-address": "10.0.0.1"
+                            },
+                            {
+                                "name": "ipv6_nexthop",
+                                "nh-address": "2001:db8:cafe::1"
                             },
                             {
                                 "name": "local_preference_150",
@@ -350,6 +430,52 @@
                                     "match-rules": [
                                         {
                                             "name": "PL_0004"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "order": 1000,
+                                    "action": "deny"
+                                }
+                            ]
+                        },
+                        {
+                            "profile": "DC_RP_0002_RP_0003",
+                            "match-and-set-group": [
+                                {
+                                    "order": 10,
+                                    "action": "permit",
+                                    "set-rules": [
+                                        {
+                                            "name": "ip_nexthop"
+                                        }
+                                    ],
+                                    "match-rules": [
+                                        {
+                                            "name": "PL_0005"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "order": 1000,
+                                    "action": "deny"
+                                }
+                            ]
+                        },
+                        {
+                            "profile": "DC_RP_0002_RP_0004",
+                            "match-and-set-group": [
+                                {
+                                    "order": 10,
+                                    "action": "permit",
+                                    "set-rules": [
+                                        {
+                                            "name": "ipv6_nexthop"
+                                        }
+                                    ],
+                                    "match-rules": [
+                                        {
+                                            "name": "PL_0006"
                                         }
                                     ]
                                 },

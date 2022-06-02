@@ -1,7 +1,7 @@
 {
     "tailf-ned-cisco-nx:address-family": [
         {
-            "proto": "ipv6",
+            "proto": "ipv4",
             "type": "unicast",
             "allowas-in": {
                 "occurrences": 3
@@ -9,11 +9,11 @@
             "route-map": [
                 {
                     "direction": "in",
-                    "name": "RP_0001_TURKCELL_DC_RP_0002_RP_0002"
+                    "name": "RP_tcell-grt_DC_RP_0001_RP_0002"
                 },
                 {
                     "direction": "out",
-                    "name": "RP_0001_TURKCELL_DC_RP_0002_RP_0004"
+                    "name": "RP_tcell-grt_DC_RP_0001_RP_0004"
                 }
             ],
             "next-hop-self": [

@@ -11,7 +11,7 @@
             },
             "redistribute": {
                 "direct": {
-                    "route-map": "DC_RP_0001_RP_0001"
+                    "route-map": "RP_tcell-grt_DC_RP_0001_RP_0001"
                 }
             }
         },
@@ -26,7 +26,7 @@
             },
             "redistribute": {
                 "direct": {
-                    "route-map": "DC_RP_0001_RP_0001"
+                    "route-map": "RP_tcell-grt_DC_RP_0001_RP_0001"
                 }
             }
         }

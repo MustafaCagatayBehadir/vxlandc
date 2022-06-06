@@ -1,9 +1,12 @@
+from select import select
 import ncs
 import _ncs
 import ncs.maapi as maapi
 import ncs.maagic as maagic
+
 from . import utils
 from .resource_manager import id_allocator
+from .diff_iterate import DiffIterator
 from collections import defaultdict
 
 
@@ -17,17 +20,31 @@ class PortServiceCallback(ncs.application.Service):
                 utils.get_service_operation(op)))
         # If op is delete, validate port is in physical down state
         try:
-            if op == _ncs.dp.NCS_SERVICE_DELETE:
-               with ncs.maapi.single_read_trans('admin', 'python') as t:
-                    port = maagic.get_node(t, str(kp))
-                    
-                    # raise Exception(" invalid delete operation")
+            if op == _ncs.dp.NCS_SERVICE_CREATE:
+                m = maapi.Maapi()
+                th = m.attach(tctx)
+
+                port = maagic.get_node(th, str(kp))
+                # raise Exception("invalid create operation")
+                self._is_port_used(root, port)
+
+            elif op == _ncs.dp.NCS_SERVICE_UPDATE:
+                m = maapi.Maapi()
+                th = m.attach(tctx)
+
+                port = maagic.get_node(th, str(kp))
+                # raise Exception("invalid update operation")
+                self._is_port_used(root, port)
+
+            elif op == _ncs.dp.NCS_SERVICE_DELETE:
+                with ncs.maapi.single_write_trans('admin', 'python') as th:
+                    port = maagic.get_node(th, str(kp))
+                    # raise Exception("invalid delete operation")
                     self._is_port_down(root, port)
-        
+
         except Exception as e:
             self.log.error(e)
             raise
-
 
     def _is_port_down(self, root, port):
         """Function to check port physical state
@@ -35,28 +52,32 @@ class PortServiceCallback(ncs.application.Service):
         Args:
             root: Maagic object pointing to the root of the CDB
             port: service node
-        
+
         """
         if port.port_type == 'ethernet':
             eth = port.ethernet
             device = root.ncs__devices.device[eth.node]
-            result = utils.send_show_command(device, 'interface status | json-pretty', self.log)
+            result = utils.send_show_command(
+                device, 'interface status | json-pretty', self.log)
             for node_port in eth.node_port:
                 for interface in result['TABLE_interface']['ROW_interface']:
                     if interface['interface'] == f'Ethernet{node_port}':
                         if interface['state'] == 'connected':
-                            raise Exception(f'Port {port.name} state is connected, port can not be deleted.')
+                            raise Exception(
+                                f'Port {port.name} state is connected, port can not be deleted.')
                         else:
                             break
-        
+
         elif port.port_type == 'port-channel':
             pc = port.port_channel
             device = root.ncs__devices.device[pc.node]
-            result = utils.send_show_command(device, 'interface status | json-pretty', self.log)
+            result = utils.send_show_command(
+                device, 'interface status | json-pretty', self.log)
             for interface in result['TABLE_interface']['ROW_interface']:
                 if interface['interface'] == f'port-channel{pc.allocated_port_channel_id}':
                     if interface['state'] == 'connected':
-                        raise Exception(f'Port {port.name} state is connected, port can not be deleted.')
+                        raise Exception(
+                            f'Port {port.name} state is connected, port can not be deleted.')
                     else:
                         break
 
@@ -64,13 +85,75 @@ class PortServiceCallback(ncs.application.Service):
             vpc = port.vpc_port_channel
             for node in vpc.node:
                 device = root.ncs__devices.device[node.name]
-                result = utils.send_show_command(device, 'interface status | json-pretty', self.log)
+                result = utils.send_show_command(
+                    device, 'interface status | json-pretty', self.log)
                 for interface in result['TABLE_interface']['ROW_interface']:
                     if interface['interface'] == f'port-channel{vpc.allocated_port_channel_id}':
                         if interface['state'] == 'connected':
-                            raise Exception(f'Port {port.name} state is connected, port can not be deleted.')
+                            raise Exception(
+                                f'Port {port.name} state is connected, port can not be deleted.')
                         else:
                             break
+
+    def _is_port_used(self, root, port):
+        """Function to check if port is manually configured
+
+        Args:
+            root: Maagic object pointing to the root of the CDB
+            port: service node
+
+        """
+        if port.port_type == 'ethernet':
+            eth = port.ethernet
+            node_port = eth.node_port
+            device = root.ncs__devices.device[eth.node]
+            ethernet = device.config.nx__interface.Ethernet
+            for _port in node_port:
+                if not ethernet[_port].enable.switchport:
+                    raise Exception(
+                        f'Switch {eth.node} port {_port} is not a switchport.')
+
+                if ethernet[_port].description:
+                    if port.description:
+                        if ethernet[_port].description != port.description:
+                            raise Exception(
+                                f'Switch {eth.node} port {_port} has a different description.')
+                    else:
+                        if ethernet[_port].description != utils.get_description(port):
+                            raise Exception(
+                                f'Switch {eth.node} port {_port} has a different description.')
+
+        elif port.port_type == 'port-channel':
+            pc = port.port_channel
+            node_port = pc.node_port
+            device = root.ncs__devices.device[pc.node]
+            ethernet = device.config.nx__interface.Ethernet
+            for _port in node_port:
+                if not ethernet[_port].enable.switchport:
+                    raise Exception(
+                        f'Switch {pc.node} port {_port} is not a switchport.')
+
+                if ethernet[_port].description:
+                    if ethernet[_port].description != utils.get_po_member_description(port):
+                        raise Exception(
+                            f'Switch {pc.node} port {_port} has a different description.')
+
+        else:
+            node_1, node_2 = utils.get_vpc_nodes_from_port(root, port)
+            vpc_nodes = [(node_1, port.vpc_port_channel.node_1_port),
+                         (node_2, port.vpc_port_channel.node_2_port)]
+            for node, node_port in vpc_nodes:
+                device = root.ncs__devices.device[node]
+                ethernet = device.config.nx__interface.Ethernet
+                for _port in node_port:
+                    if not ethernet[_port].enable.switchport:
+                        raise Exception(
+                            f'Switch {node} port {_port} is not a switchport.')
+
+                    if ethernet[_port].description:
+                        if ethernet[_port].description != utils.get_po_member_description(port):
+                            raise Exception(
+                                f'Switch {node} port {_port} has a different description.')
 
 
 class PortServiceSelfComponent(ncs.application.NanoService):
@@ -109,6 +192,7 @@ def _id_requested(root, port, tctx, log):
         id_allocator.id_request(port, svc_xpath, tctx.username, utils.get_port_channel_id_pool_name(
             root, port), f'{port.site}:{port.port_group}:{port.name}', False, requested_id)
         log.info(f'Port-Channel id is requested for port {port.name}')
+
     elif port.port_type == 'vpc-port-channel':
         requested_id = port.vpc_port_channel.port_channel_id if port.vpc_port_channel.port_channel_id else -1
         svc_xpath = "/cisco-dc:dc-site[cisco-dc:fabric='{}']/cisco-dc:port-configs[cisco-dc:name='{}']/cisco-dc:port-config[cisco-dc:name='{}']"
@@ -131,6 +215,7 @@ def _configure_port(root, port, tctx, log):
     id_parameters = dict()
     _create_service_parameters(
         root, port, tctx, id_parameters, log)
+    _raise_service_exceptions(root, port, tctx, id_parameters, log)
     _set_hidden_leaves(root, port, tctx, id_parameters, log)
 
 
@@ -151,6 +236,35 @@ def _create_service_parameters(root, port, tctx, id_parameters, log):
     elif port.port_type == 'vpc-port-channel':
         id_parameters['port-channel-id'] = id_allocator.id_read(
             tctx.username, root, utils.get_port_channel_id_pool_name(root, port), f'{port.site}:{port.port_group}:{port.name}')
+    log.info('Id Parameters: ', id_parameters)
+
+
+def _raise_service_exceptions(root, port, tctx, id_parameters, log):
+    """Function to raise exception based on service prechecks
+
+    Args:
+        root: Maagic object pointing to the root of the CDB
+        port: service node
+        tctx: transaction context (TransCtxRef)
+        id_parameters: dict object
+        log: log object(self.log)
+
+    """
+    log.info('Id Parameters: ', id_parameters)
+    if port.port_type == 'port-channel':
+        pc = port.port_channel
+        device = root.ncs__devices.device[pc.node]
+        if id_parameters['port-channel-id'] in device.config.nx__interface.port_channel:
+            raise Exception(
+                f'Port-channel id {id_parameters["port-channel-id"]} is already used in device {pc.node}.')
+
+    elif port.port_type == 'vpc-port-channel':
+        vpc_nodes = utils.get_vpc_nodes_from_port(root, port)
+        for node in vpc_nodes:
+            device = root.ncs__devices.device[node]
+            if id_parameters['port-channel-id'] in device.config.nx__interface.port_channel:
+                raise Exception(
+                    f'Port-channel id {id_parameters["port-channel-id"]} is already used in device {pc.node}.')
 
 
 def _set_hidden_leaves(root, port, tctx, id_parameters, log):
@@ -188,7 +302,7 @@ def _set_hidden_leaves(root, port, tctx, id_parameters, log):
 
     port_group = root.cisco_dc__dc_site[port.site].port_configs[port.port_group]
     port.mode = port_group.mode
-    
+
     bd_services = port_group.bd_service
     for bd_service in bd_services:
         try:
@@ -213,7 +327,7 @@ def _set_hidden_leaves(root, port, tctx, id_parameters, log):
                         bd.port_device.create(port._path, node_1)
                     if (port._path, node_2) not in bd.port_device:
                         bd.port_device.create(port._path, node_2)
-                else:            
+                else:
                     pc = port.port_channel
                     node = pc.node
                     if (port._path, node) not in bd.port_device:
@@ -226,10 +340,11 @@ def _set_hidden_leaves(root, port, tctx, id_parameters, log):
                 if (port._path, node_2) not in bd.port_device:
                     bd.port_device.create(port._path, node_2)
 
-            log.info(f'Bridge-domain {bd.name} is activated by port {port.name}')
-        
+            log.info(
+                f'Bridge-domain {bd.name} is activated by port {port.name}')
+
         except KeyError:
-            
+
             log.error(f'Bridge-domain {bd_service.kp} can not be found.')
 
 
@@ -247,101 +362,3 @@ def _apply_template(port):
     vars.add('BUM', float(port.bum) if port.bum else float(port.auto_bum))
     template = ncs.template.Template(port)
     template.apply('cisco-dc-services-fabric-port-service', vars)
-
-
-class PortConfigServiceValidator(object):
-    def __init__(self, log):
-        self.log = log
-
-    def cb_validate(self, tctx, kp, newval):
-        '''
-        Validating node port values are not overlapping for port-configs services
-        '''
-
-        try:
-            self.log.debug("Validating port-config service")
-            m = maapi.Maapi()
-            th = m.attach(tctx)
-
-            service = maagic.get_node(th, str(kp))
-            dc_site = maagic.cd(service, '../..')
-            fabric = dc_site.fabric
-
-            self.log.info('Port config service validation keypath: ', kp)
-            # raise Exception("Invalid port config")
-            self._no_interface_id_overlap_validation(th, service, fabric)
-
-        except Exception as e:
-            self.log.error(e)
-            raise
-        return _ncs.OK
-
-    def _no_interface_id_overlap_validation(self, th, port, fabric):
-        '''
-        :th: ncs.maapi.Transaction
-        :port: ncs.maagic.ListElement
-        :fabric: fabric name string
-        '''
-        current_interface_id = self._get_interface_id(th, port)
-        self._check_no_interface_id_overlap(
-            th, current_interface_id, port, fabric)
-
-    def _get_interface_id(self, th, port):
-        '''
-        :th: ncs.maapi.Transaction
-        :port: ncs.maagic.ListElement
-        '''
-        interface_id = defaultdict(set)
-        if port.port_type == 'ethernet':
-            node = port.ethernet.node
-            interface_id[node] = {id for id in port.ethernet.node_port}
-        elif port.port_type == 'port-channel':
-            node = port.port_channel.node
-            interface_id[node] = {id for id in port.port_channel.node_port}
-        elif port.port_type == 'vpc-port-channel':
-            node_1, node_2 = utils.get_vpc_nodes_from_port(
-                ncs.maagic.get_root(th), port)
-            interface_id[node_1], interface_id[node_2] = {id for id in port.vpc_port_channel.node_1_port}, {
-                id for id in port.vpc_port_channel.node_2_port}
-        return interface_id
-
-    def _check_no_interface_id_overlap(self, th, current_interface_id, current_port, fabric):
-        '''
-        :th: ncs.maapi.Transaction
-        :current_interface_id: default dict object
-        :current_port: ncs.maagic.ListElement
-        :fabric: fabric name string
-        '''
-        root = ncs.maagic.get_root(th)
-        port_configs = root.cisco_dc__dc_site[fabric].port_configs
-        for port_group in port_configs:
-            for port in port_group.port_config:
-                if port.name != current_port.name:
-                    if port.port_type == 'ethernet':
-                        node = port.ethernet.node
-                        node_port = {id for id in port.ethernet.node_port}
-                        if current_interface_id.get(node):
-                            if current_interface_id[node].intersection(node_port):
-                                raise Exception(
-                                    f'Interface id is already used for port {port.name}')
-                    elif port.port_type == 'port-channel':
-                        node = port.port_channel.node
-                        node_port = {
-                            id for id in port.port_channel.node_port}
-                        if current_interface_id.get(node):
-                            if current_interface_id[node].intersection(node_port):
-                                raise Exception(
-                                    f'Interface id is already used for port {port.name}')
-                    elif port.port_type == 'vpc-port-channel':
-                        node_1, node_2 = utils.get_vpc_nodes_from_port(
-                            ncs.maagic.get_root(th), port)
-                        node_1_port, node_2_port = {id for id in port.vpc_port_channel.node_1_port}, {
-                            id for id in port.vpc_port_channel.node_2_port}
-                        if current_interface_id.get(node_1):
-                            if current_interface_id[node_1].intersection(node_1_port):
-                                raise Exception(
-                                    f'Interface id is already used for port {port.name}')
-                        if current_interface_id.get(node_2):
-                            if current_interface_id[node_2].intersection(node_2_port):
-                                raise Exception(
-                                    f'Interface id is already used for port {port.name}')

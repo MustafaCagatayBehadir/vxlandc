@@ -3,6 +3,8 @@ import _ncs
 from ncs.experimental import Query
 import json
 
+from .nxapi import Nxapi
+
 
 def get_port_channel_id_pool_name(root, port):
     """Function to return port-channel id pool name for a given node
@@ -287,6 +289,26 @@ def get_node_connections(site):
             node_connections.append((node, connection))
     return node_connections
 
+
+def get_basic_authentication(root, device):
+    """Function to return basic authentication tuple
+
+    Args:
+        root: Maagic object pointing to the root of the CDB
+        device: Device ncs.maagic ListElement
+
+    Return:
+        Tuple: username, password
+
+    """
+    auth_group = device.authgroup
+    default_map = root.ncs__devices.authgroups.group[auth_group].default_map
+    username = default_map.remote_name
+    password = default_map.remote_password
+    password = _ncs.decrypt(password)
+    return username, password
+
+
 def truncate_vlan_name(vlan_name):
     """Function to truncate vlan name (vlan-name > 32 char is not allowed.)
 
@@ -334,7 +356,7 @@ def is_node_vpc(root, port):
     elif port.port_type == 'port-channel':
         pc = port.port_channel
         node = pc.node
-        return site.node[node].node_type == 'vpc'        
+        return site.node[node].node_type == 'vpc'
     return True
 
 
@@ -355,6 +377,24 @@ def send_show_command(device, cmd, log):
     result = show.request(input).result
     log.debug(f'Result :', result)
     return json.loads(result)
+
+
+def nxapi_send_show_command(root, device, cmd, log):
+    """Function to send show command via nxapi
+
+    Args:
+        root: Maagic object pointing to the root of the CDB
+        device: Device ncs.maagic ListElement
+        cmd: Command to run
+        log: log object(self.log)
+
+    Returns:
+        result: Json Object
+    """
+    switch = device.address
+    username, password = get_basic_authentication(root, device)
+    nxapi = Nxapi(switch, username, password, log)
+    return nxapi.send_show_command(cmd)
 
 
 def apply_template(service, template_name, template_vars):

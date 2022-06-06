@@ -5,7 +5,7 @@
                 "error-type": "application",
                 "error-tag": "malformed-message",
                 "error-path": "/cisco-dc:dc-site[fabric='avr-dss1-lbox-yaani-fabric']/port-configs[name='VPC_PG_1_ACCESS']/port-config[name='VPC100003']",
-                "error-message": "/dc-site{avr-dss1-lbox-yaani-fabric}/port-configs{VPC_PG_1_ACCESS}/port-config{VPC100003}: Python cb_validate error. Interface id is already used for port VPC100001"
+                "error-message": "Python cb_pre_modification error. Switch nw_lf_cnx9_001.dsslab_site1 port 1/10 has a different description."
             }
         ]
     }

@@ -29,10 +29,6 @@ class Main(ncs.application.Application):
         self.register_nano_service('port-config-servicepoint', 'ncs:self',
                                    'cisco-dc:port-configured', port_config_service.PortServiceSelfComponent)
 
-        # Port Config Service Validation
-        self.port_config_val = validate_callback.ValPointRegistrar(
-            self.log, 'port-config-val', 'port-config-service-validation', port_config_service.PortConfigServiceValidator(self.log))
-
         # Bridge Domain Registration
         self.register_nano_service('bridge-domain-config-servicepoint', 'ncs:self',
                                    'cisco-dc:id-allocated', bridge_domain_service.BridgeDomainServiceSelfComponent)
@@ -64,7 +60,6 @@ class Main(ncs.application.Application):
         # Tenant Service Validation
         self.tenant_service_val = validate_callback.ValPointRegistrar(
             self.log, 'tenant-service-val', 'tenant-service-validation', tenant_service.TenantServiceValidator(self.log))
-
         ############################################################################################
 
         # DC-ACTIONS

@@ -2,7 +2,7 @@
     "port-config": [
         {
             "name": "ETH100003",
-            "description": "CUSTOM_DESCRIPTION_ETH100001",
+            "description": "CUSTOM_DESCRIPTION_ETH100003",
             "connection": "host",
             "speed": "1G",
             "ethernet": {

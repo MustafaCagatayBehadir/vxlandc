@@ -1,0 +1,12 @@
+{
+    "ietf-restconf:errors": {
+        "error": [
+            {
+                "error-type": "application",
+                "error-tag": "invalid-value",
+                "error-path": "/cisco-dc:dc-site[fabric='avr-dss1-lbox-yaani-fabric']/dc-route-policy[name='DC_RP_0001']/dc-route-policy-type",
+                "error-message": "/dc-site{avr-dss1-lbox-yaani-fabric}/dc-route-policy{DC_RP_0001}/dc-route-policy-type (value \"tenant\"): Route policy type can't be changed ones the dc-route-policy is deployed"
+            }
+        ]
+    }
+}

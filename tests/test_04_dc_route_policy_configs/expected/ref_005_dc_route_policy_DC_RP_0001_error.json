@@ -1,0 +1,12 @@
+{
+    "ietf-restconf:errors": {
+        "error": [
+            {
+                "error-type": "application",
+                "error-tag": "invalid-value",
+                "error-path": "/cisco-dc:dc-site[fabric='avr-dss1-lbox-yaani-fabric']/dc-route-policy[name='DC_RP_0001']/vrf",
+                "error-message": "/dc-site{avr-dss1-lbox-yaani-fabric}/dc-route-policy{DC_RP_0001}/vrf (value \"pdu-mgmt\"): Vrf can't be changed ones the dc-route-policy is deployed"
+            }
+        ]
+    }
+}

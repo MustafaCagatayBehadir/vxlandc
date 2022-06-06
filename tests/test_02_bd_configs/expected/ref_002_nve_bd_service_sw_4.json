@@ -1,0 +1,32 @@
+{
+    "tailf-ned-cisco-nx:member": {
+        "vni": [
+            {
+                "id": 60001,
+                "mcast-group": "239.255.0.0",
+                "suppress-arp": [
+                    null
+                ]
+            },
+            {
+                "id": 60004,
+                "mcast-group": "239.255.0.0",
+                "suppress-arp": [
+                    null
+                ]
+            },
+            {
+                "id": 80000,
+                "associate-vrf": [
+                    null
+                ]
+            },
+            {
+                "id": 80001,
+                "associate-vrf": [
+                    null
+                ]
+            }
+        ]
+    }
+}

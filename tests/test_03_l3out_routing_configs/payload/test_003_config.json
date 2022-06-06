@@ -1,0 +1,14 @@
+{
+    "bgp": [
+        {
+            "peer-address": "10.0.0.2",
+            "peer-af-controls": [
+                "send-com",
+                "nh-self",
+                "dis-peer-as-check",
+                "allow-self-as",
+                "as-override"
+            ]
+        }
+    ]
+}

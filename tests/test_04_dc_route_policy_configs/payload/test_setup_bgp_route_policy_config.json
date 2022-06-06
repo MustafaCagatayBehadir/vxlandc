@@ -1,0 +1,89 @@
+{
+    "cisco-dc:dc-site": [
+        {
+            "fabric": "avr-dss1-lbox-yaani-fabric",
+            "tenant-service": [
+                {
+                    "name": "0001_TURKCELL",
+                    "bridge-domain": [
+                        {
+                            "name": "BD-SERVICE-1",
+                            "routing": {
+                                "bgp": [
+                                    {
+                                        "peer-address": "10.0.0.2",
+                                        "peer-route-policy": [
+                                            {
+                                                "direction": "in",
+                                                "profile": "DC_RP_0002_RP_0001"
+                                            },
+                                            {
+                                                "direction": "out",
+                                                "profile": "DC_RP_0002_RP_0003"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "BD-SERVICE-2",
+                            "routing": {
+                                "bgp": [
+                                    {
+                                        "peer-address": "2001:db8:cafe::2",
+                                        "peer-route-policy": [
+                                            {
+                                                "direction": "in",
+                                                "profile": "DC_RP_0002_RP_0002"
+                                            },
+                                            {
+                                                "direction": "out",
+                                                "profile": "DC_RP_0002_RP_0004"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ],
+            "vrf-config": [
+                {
+                    "name": "tcell-grt",
+                    "routing": {
+                        "bgp": [
+                            {
+                                "peer-address": "172.16.0.1",
+                                "peer-route-policy": [
+                                    {
+                                        "direction": "in",
+                                        "profile": "DC_RP_0001_RP_0002"
+                                    },
+                                    {
+                                        "direction": "out",
+                                        "profile": "DC_RP_0001_RP_0004"
+                                    }
+                                ]
+                            },
+                            {
+                                "peer-address": "2001:db8:cafe:4::1",
+                                "peer-route-policy": [
+                                    {
+                                        "direction": "in",
+                                        "profile": "DC_RP_0001_RP_0003"
+                                    },
+                                    {
+                                        "direction": "out",
+                                        "profile": "DC_RP_0001_RP_0005"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

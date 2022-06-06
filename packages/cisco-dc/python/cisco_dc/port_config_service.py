@@ -7,6 +7,72 @@ from .resource_manager import id_allocator
 from collections import defaultdict
 
 
+class PortServiceCallback(ncs.application.Service):
+    @ncs.application.Service.pre_modification
+    def cb_pre_modification(self, tctx, op, kp, root, proplist):
+
+        self.log.info(
+            "ENTRY_POINT for {} at pre_mod of PortConfigService, operation: {}" .format(
+                utils.get_kp_service_id(kp),
+                utils.get_service_operation(op)))
+        # If op is delete, validate port is in physical down state
+        try:
+            if op == _ncs.dp.NCS_SERVICE_DELETE:
+               with ncs.maapi.single_read_trans('admin', 'python') as t:
+                    port = maagic.get_node(t, str(kp))
+                    
+                    # raise Exception(" invalid delete operation")
+                    self._is_port_down(root, port)
+        
+        except Exception as e:
+            self.log.error(e)
+            raise
+
+
+    def _is_port_down(self, root, port):
+        """Function to check port physical state
+
+        Args:
+            root: Maagic object pointing to the root of the CDB
+            port: service node
+        
+        """
+        if port.port_type == 'ethernet':
+            eth = port.ethernet
+            device = root.ncs__devices.device[eth.node]
+            result = utils.send_show_command(device, 'interface status | json-pretty', self.log)
+            for node_port in eth.node_port:
+                for interface in result['TABLE_interface']['ROW_interface']:
+                    if interface['interface'] == f'Ethernet{node_port}':
+                        if interface['state'] == 'connected':
+                            raise Exception(f'Port {port.name} state is connected, port can not be deleted.')
+                        else:
+                            break
+        
+        elif port.port_type == 'port-channel':
+            pc = port.port_channel
+            device = root.ncs__devices.device[pc.node]
+            result = utils.send_show_command(device, 'interface status | json-pretty', self.log)
+            for interface in result['TABLE_interface']['ROW_interface']:
+                if interface['interface'] == f'port-channel{pc.allocated_port_channel_id}':
+                    if interface['state'] == 'connected':
+                        raise Exception(f'Port {port.name} state is connected, port can not be deleted.')
+                    else:
+                        break
+
+        elif port.port_type == 'vpc-port-channel':
+            vpc = port.vpc_port_channel
+            for node in vpc.node:
+                device = root.ncs__devices.device[node.name]
+                result = utils.send_show_command(device, 'interface status | json-pretty', self.log)
+                for interface in result['TABLE_interface']['ROW_interface']:
+                    if interface['interface'] == f'port-channel{vpc.allocated_port_channel_id}':
+                        if interface['state'] == 'connected':
+                            raise Exception(f'Port {port.name} state is connected, port can not be deleted.')
+                        else:
+                            break
+
+
 class PortServiceSelfComponent(ncs.application.NanoService):
     """
     NanoService callback handler for the self component of port-config service.
@@ -23,6 +89,7 @@ class PortServiceSelfComponent(ncs.application.NanoService):
 
         elif state == 'cisco-dc:port-configured':
             _configure_port(root, service, tctx, self.log)
+            _apply_template(service)
 
 
 def _id_requested(root, port, tctx, log):
@@ -65,7 +132,6 @@ def _configure_port(root, port, tctx, log):
     _create_service_parameters(
         root, port, tctx, id_parameters, log)
     _set_hidden_leaves(root, port, tctx, id_parameters, log)
-    _create_port_config(port)
 
 
 def _create_service_parameters(root, port, tctx, id_parameters, log):
@@ -100,67 +166,87 @@ def _set_hidden_leaves(root, port, tctx, id_parameters, log):
     """
     if port.port_type == 'ethernet':
         port.type = 'ethernet'
+        port.ethernet.node_copy = port.ethernet.node
     elif port.port_type == 'port-channel':
         port.type = 'port-channel'
+        port.port_channel.node_copy = port.port_channel.node
         port.port_channel.allocated_port_channel_id = id_parameters.get(
             'port-channel-id')
     elif port.port_type == 'vpc-port-channel':
         port.type = 'vpc-port-channel'
+        port.vpc_port_channel.node_group_copy = port.vpc_port_channel.node_group
         port.vpc_port_channel.allocated_port_channel_id = id_parameters.get(
             'port-channel-id')
         node_1, node_2 = utils.get_vpc_nodes_from_port(root, port)
         vpc_nodes = [(node_1, port.vpc_port_channel.node_1_port),
-                    (node_2, port.vpc_port_channel.node_2_port)]
+                     (node_2, port.vpc_port_channel.node_2_port)]
         for node, node_port in vpc_nodes:
             vpc_node = port.vpc_port_channel.node.create(node)
             vpc_node.node_port = node_port
-    port.bum = utils.get_bum(port.speed)
-    kp = '/dc-site{}/tenant-service{}/bridge-domain{}'
-    bd_services = root.cisco_dc__dc_site[port.site].port_configs[port.port_group].bd_service
+
+    port.auto_bum = utils.get_bum(port.speed)
+
+    port_group = root.cisco_dc__dc_site[port.site].port_configs[port.port_group]
+    port.mode = port_group.mode
+    
+    bd_services = port_group.bd_service
     for bd_service in bd_services:
-        bd = ncs.maagic.get_node(tctx, kp.format(
-            port.site, bd_service.tenant, bd_service.bd))
-        if port.port_type == 'ethernet':
-            eth = port.ethernet
-            if (eth.node, port.name) not in bd.port:
-                bd_port = bd.port.create(eth.node, eth.name)
-                bd_port.interface_id = eth.node_port
-            else:
-                bd.port[eth.node, eth.name].interface_id = eth.node_port
-        elif port.port_type == 'port-channel':
-            pc = port.port_channel
-            if (pc.node, port.name) not in bd.direct_pc:
-                bd_direct_pc = bd.direct_pc.create(pc.node, port.name)
-                bd_direct_pc.port_channel_id = pc.allocated_port_channel_id
-            else:
-                bd.direct_pc[pc.node,
-                             port.name].port_channel_id = pc.allocated_port_channel_id
-        elif port.port_type == 'vpc-port-channel':
-            vpc = port.vpc_port_channel
-            node_1, node_2 = utils.get_vpc_nodes_from_port(root, port)
-            if (node_1, port.name) not in bd.virtual_pc:
-                bd_virtual_pc = bd.virtual_pc.create(node_1, port.name)
-                bd_virtual_pc.port_channel_id = vpc.allocated_port_channel_id
-            else:
-                bd_virtual_pc[node_1,
-                              port.name].port_channel_id = vpc.allocated_port_channel_id
-            if (node_2, port.name) not in bd.virtual_pc:
-                bd_virtual_pc = bd.virtual_pc.create(node_2, port.name)
-                bd_virtual_pc.port_channel_id = vpc.allocated_port_channel_id
-            else:
-                bd_virtual_pc[node_2,
-                              port.name].port_channel_id = vpc.allocated_port_channel_id
+        try:
+            bd = ncs.maagic.cd(root, bd_service.kp)
+            if port.port_type == 'ethernet':
+                if utils.is_node_vpc(root, port):
+                    node_1, node_2 = utils.get_vpc_nodes_from_port(root, port)
+                    if (port._path, node_1) not in bd.port_device:
+                        bd.port_device.create(port._path, node_1)
+                    if (port._path, node_2) not in bd.port_device:
+                        bd.port_device.create(port._path, node_2)
+                else:
+                    eth = port.ethernet
+                    node = eth.node
+                    if (port._path, node) not in bd.port_device:
+                        bd.port_device.create(port._path, node)
+
+            elif port.port_type == 'port-channel':
+                if utils.is_node_vpc(root, port):
+                    node_1, node_2 = utils.get_vpc_nodes_from_port(root, port)
+                    if (port._path, node_1) not in bd.port_device:
+                        bd.port_device.create(port._path, node_1)
+                    if (port._path, node_2) not in bd.port_device:
+                        bd.port_device.create(port._path, node_2)
+                else:            
+                    pc = port.port_channel
+                    node = pc.node
+                    if (port._path, node) not in bd.port_device:
+                        bd.port_device.create(port._path, node)
+
+            elif port.port_type == 'vpc-port-channel':
+                node_1, node_2 = utils.get_vpc_nodes_from_port(root, port)
+                if (port._path, node_1) not in bd.port_device:
+                    bd.port_device.create(port._path, node_1)
+                if (port._path, node_2) not in bd.port_device:
+                    bd.port_device.create(port._path, node_2)
+
+            log.info(f'Bridge-domain {bd.name} is activated by port {port.name}')
+        
+        except KeyError:
+            
+            log.error(f'Bridge-domain {bd_service.kp} can not be found.')
 
 
-def _create_port_config(port):
+def _apply_template(port):
     """Function to create port configuration
 
     Args:
         port: service node
 
     """
+    vars = ncs.template.Variables()
+    vars.add('DESCRIPTION',
+             port.description if port.description else utils.get_description(port))
+    vars.add('MEMBER_DESCRIPTION', utils.get_po_member_description(port))
+    vars.add('BUM', float(port.bum) if port.bum else float(port.auto_bum))
     template = ncs.template.Template(port)
-    template.apply('cisco-dc-services-fabric-port-service')
+    template.apply('cisco-dc-services-fabric-port-service', vars)
 
 
 class PortConfigServiceValidator(object):
@@ -181,6 +267,7 @@ class PortConfigServiceValidator(object):
             dc_site = maagic.cd(service, '../..')
             fabric = dc_site.fabric
 
+            self.log.info('Port config service validation keypath: ', kp)
             # raise Exception("Invalid port config")
             self._no_interface_id_overlap_validation(th, service, fabric)
 

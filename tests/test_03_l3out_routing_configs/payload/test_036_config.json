@@ -1,0 +1,21 @@
+{
+    "routing": {
+        "static-route": {
+            "destination": [
+                {
+                    "address": "2001:db8:1::/48",
+                    "ip-nexthop": "2001:db8:cafe::2",
+                    "source-node": {
+                        "apply-specific-nodes": {
+                            "node-group": [
+                                {
+                                    "id": 1
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}

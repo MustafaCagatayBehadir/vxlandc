@@ -8,7 +8,7 @@
             "switchport": {
                 "mode": "trunk"
             },
-            "description": "ETH100002_TRUNK_10G_ETH",
+            "description": "ETH100002:trunk:10G",
             "mtu": 9216,
             "spanning-tree": {
                 "guard": "root",
@@ -30,7 +30,7 @@
                     "level": "2.0"
                 },
                 "action": {
-                    "trap": [
+                    "shutdown": [
                         null
                     ]
                 }

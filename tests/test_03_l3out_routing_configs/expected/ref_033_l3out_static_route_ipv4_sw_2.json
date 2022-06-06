@@ -1,0 +1,113 @@
+{
+    "tailf-ned-cisco-nx:vrf": {
+        "context": [
+            {
+                "id": "management",
+                "ip": {
+                    "route": {
+                        "ip-route-list": [
+                            {
+                                "prefix-mask": "0.0.0.0/0",
+                                "next-hop": "10.211.101.254"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "id": "pdu-mgmt",
+                "vni": 80000,
+                "rd": "auto",
+                "address-family": {
+                    "ipv4": {
+                        "unicast": {
+                            "route-target": [
+                                {
+                                    "method": "both",
+                                    "asn": "auto",
+                                    "target-evpn": "evpn"
+                                },
+                                {
+                                    "method": "both",
+                                    "asn": "auto",
+                                    "target-evpn": "non-evpn"
+                                }
+                            ]
+                        }
+                    },
+                    "ipv6": {
+                        "unicast": {
+                            "route-target": [
+                                {
+                                    "method": "both",
+                                    "asn": "auto",
+                                    "target-evpn": "evpn"
+                                },
+                                {
+                                    "method": "both",
+                                    "asn": "auto",
+                                    "target-evpn": "non-evpn"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "ip": {
+                    "route": {
+                        "ip-route-list": [
+                            {
+                                "prefix-mask": "10.0.0.0/8",
+                                "next-hop": "10.0.1.2",
+                                "name": "0002_TURKCELL:BD-SERVICE-4"
+                            },
+                            {
+                                "prefix-mask": "10.0.0.0/16",
+                                "next-hop": "10.0.1.2",
+                                "name": "0002_TURKCELL:BD-SERVICE-6"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "id": "tcell-grt",
+                "vni": 80001,
+                "rd": "auto",
+                "address-family": {
+                    "ipv4": {
+                        "unicast": {
+                            "route-target": [
+                                {
+                                    "method": "both",
+                                    "asn": "auto",
+                                    "target-evpn": "evpn"
+                                },
+                                {
+                                    "method": "both",
+                                    "asn": "auto",
+                                    "target-evpn": "non-evpn"
+                                }
+                            ]
+                        }
+                    },
+                    "ipv6": {
+                        "unicast": {
+                            "route-target": [
+                                {
+                                    "method": "both",
+                                    "asn": "auto",
+                                    "target-evpn": "evpn"
+                                },
+                                {
+                                    "method": "both",
+                                    "asn": "auto",
+                                    "target-evpn": "non-evpn"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        ]
+    }
+}

@@ -1,0 +1,56 @@
+---
+
+- name: yum install wget and centos-release-scl (part 1)
+  become: true
+  yum:
+    name:
+      - wget
+      - ntp
+      - rsync
+      - centos-release-scl
+    state: latest
+    update_cache: no
+
+- name: yum install rh-python38 and java-11-openjdk (part 2)
+  yum:
+    name:
+      - ant
+      - rh-python38
+      - java-11-openjdk
+      - "@Development tools"
+      - python-devel
+      - python-setuptools
+    state: latest
+    update_cache: no
+  become: true
+
+- pip:
+    executable: /opt/rh/rh-python38/root/usr/bin/pip
+    name: "{{ item }}"
+  loop: 
+    - ipaddress
+    - requests
+    - urllib3
+    - paramiko
+    - enum34
+  become: true
+
+- name: Add the 'ncsadmin' group
+  group:
+    name: ncsadmin
+    state: present
+  become: true
+
+- name: Add the 'ncsoper' group
+  group:
+    name: ncsoper
+    state: present
+  become: true
+
+- name: Add the 'admin' user
+  user:
+    name: admin
+    shell: /bin/bash
+    groups: ncsadmin
+    append: yes
+  become: true

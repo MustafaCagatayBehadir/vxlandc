@@ -1,5 +1,7 @@
 import ncs
+import _ncs
 from ncs.experimental import Query
+import json
 
 
 def get_port_channel_id_pool_name(root, port):
@@ -45,38 +47,51 @@ def get_node_group(root, port, device):
                 return int(r[0])
 
 
-def get_description(port, port_parameters):
+def get_description(port):
     """Function to create port description for Ethernet & Port-Channel & VPC Port-Channel on devices
 
     Args:
         port: service node
-        port_parameters: port configuration elements dictionary
 
     Returns:
         String: Port description
 
     """
-    description = f"{port_parameters['name']}_{port_parameters['mode']}_{port_parameters['speed']}".upper(
-    )
-    if port_parameters['type'] == 'ethernet':
-        return f"{description}_ETH"
-    elif port_parameters['type'] == 'port-channel':
-        return f"{description}_PC"
-    return f"{description}_VPC"
+    if port.port_type == 'ethernet':
+        return f'{port.name}:{port.mode}:{port.speed}'
+    elif port.port_type == 'port-channel':
+        return f'{port.name}:{port.mode}:{get_port_channel_speed(port)}'
+    elif port.port_type == 'vpc-port-channel':
+        return f'{port.name}:{port.mode}:{get_port_channel_speed(port)}'
 
 
-def get_po_member_description(node_port, port_parameters):
+def get_po_member_description(port):
     """Function to create port channel member port description
 
     Args:
-        node_port: Port id like 1/10
-        port_parameters: port configuration elements dictionary
+        port: service node
 
     Returns:
         String: Port channel member port description
 
     """
-    return f"PO{port_parameters['port-channel-id']}_MEMBER_ETH_{node_port}"
+    return f'{port.name}:MEMBER'
+
+
+def get_port_channel_speed(port):
+    """Function to get port channel speed
+
+    Args:
+        port: service node
+
+    Returns:
+        String: Port channel speed ex. 30G, 4G, 100G
+
+    """
+    if port.port_type == 'port-channel':
+        return f'{len(port.port_channel.node_port) * int(port.speed.string[:-1])}G'
+    elif port.port_type == 'vpc-port-channel':
+        return f'{len(port.vpc_port_channel.node_1_port) * int(port.speed.string[:-1])}G'
 
 
 def get_bum(speed):
@@ -108,7 +123,17 @@ def get_vpc_nodes_from_port(root, port):
 
     """
     site = root.cisco_dc__dc_site[port.site]
-    node_group = site.node_group[port.vpc_port_channel.node_group]
+    if port.port_type == 'ethernet':
+        eth = port.ethernet
+        node = site.node[eth.node]
+        node_group = site.node_group[node.vpc_id]
+    elif port.port_type == 'port-channel':
+        pc = port.port_channel
+        node = site.node[pc.node]
+        node_group = site.node_group[node.vpc_id]
+    else:
+        vpc = port.vpc_port_channel
+        node_group = site.node_group[vpc.node_group]
     return node_group.node_1, node_group.node_2
 
 
@@ -129,24 +154,207 @@ def get_vpc_nodes_from_bd(root, bd, vlan_dict):
     return [node_group.node_1, node_group.node_2]
 
 
-def is_node_vpc(root, port, port_parameters):
+def get_vpc_nodes_from_l3out(root, bd, id):
+    """Function to return vPC nodes
+
+    Args:
+        root: Maagic object pointing to the root of the CDB
+        bd: service node
+        id: node group id
+
+    Returns:
+        List: vPC node1 & vPC node2 list object
+
+    """
+    site = root.cisco_dc__dc_site[bd.site]
+    node_group = site.node_group[id]
+    return [node_group.node_1, node_group.node_2]
+
+
+def getIpAddress(addr):
+    """Return the Ip part of a 'Ip/Net' string.
+
+    Args:
+        addr: IPv4 or IPv6 address with prefix length
+
+    Returns:
+        String: Ipv4 or IPv6 address
+
+    """
+    parts = addr.split('/')
+    return parts[0]
+
+
+def getIpPrefix(addr):
+    """Return the Net part of a 'Ip/Net' string.
+
+    Args:
+        addr: IPv4 or IPv6 address with prefix length
+
+    Returns:
+        String: Prefix length    
+
+    """
+    parts = addr.split('/')
+    return parts[1]
+
+
+def get_kp_service_id(kp):
+    kpath = str(kp)
+    service = kpath[kpath.rfind("{") + 1:len(kpath) - 1]
+    return service
+
+
+def get_service_operation(op):
+    if op == _ncs.dp.NCS_SERVICE_CREATE:
+        return "SERVICE_CREATE"
+    elif op == _ncs.dp.NCS_SERVICE_UPDATE:
+        return "SERVICE_UPDATE"
+    else:
+        return "SERVICE_DELETE"
+
+
+def get_network_vlan_name(bd):
+    """Function to return network vlan name
+
+    Args:
+        bd: Service node
+
+    Returns:
+        String: Vlan name
+
+    """
+    vlan_name = f'{bd.tenant}:{bd.name}:network-vlan'
+    return truncate_vlan_name(vlan_name) if len(vlan_name) > 32 else vlan_name
+
+
+def get_vrf_vlan_name(vrf):
+    """Function to return vrf vlan name
+
+    Args:
+        vrf: Service node
+
+    Returns:
+        String: Vlan name
+
+    """
+    vlan_name = f'{vrf.name}:vrf-vlan'
+    return truncate_vlan_name(vlan_name) if len(vlan_name) > 32 else vlan_name
+
+
+def get_static_route_name(bd):
+    """Function to return static route name
+
+    Args:
+        bd: Service node
+
+    Returns:
+        String: Static route name
+
+    """
+    static_route_name = f'{bd.tenant}:{bd.name}'
+    return truncate_static_route_name(static_route_name) if len(static_route_name) > 50 else static_route_name
+
+
+def get_svi_description(bd):
+    """Function to return svi description
+
+    Args:
+        bd: Service node
+
+    Returns:
+        String: svi description
+
+    """
+    return f'{bd.tenant}:{bd.name}:AGW'
+
+
+def get_node_connections(site):
+    """Function to return border-leaf connections
+
+    Args:
+        site: Maagic site object
+
+    Returns:
+        List: List of tuples
+
+    """
+    node_connections = list()
+    nodes = [node.hostname for node in site.node if node.node_role == 'border-leaf']
+    connections = ['uplink-to-dci-gw-01', 'uplink-to-dci-gw-02']
+    for node in nodes:
+        for connection in connections:
+            node_connections.append((node, connection))
+    return node_connections
+
+def truncate_vlan_name(vlan_name):
+    """Function to truncate vlan name (vlan-name > 32 char is not allowed.)
+
+    Args:
+        vlan_name: Vlan name more than 32 char
+
+
+    Return:
+        String: Truncated vlan name
+
+    """
+    return f'{vlan_name[:29]}...'
+
+
+def truncate_static_route_name(static_route_name):
+    """Function to truncate static route name (static-route-name > 50 char is not allowed.)
+
+    Args:
+        static_route_name: Static route name more than 50 char
+
+
+    Return:
+        String: Truncated static route name
+
+    """
+    return f'{static_route_name[:47]}...'
+
+
+def is_node_vpc(root, port):
     """Function to check if node is Standalone or vPC
 
     Args:
         root: Maagic object pointing to the root of the CDB
         port: service node
-        port_parameters: port configuration elements dictionary
 
     Returns:
         Boolean: True if node is a vPC node
 
     """
     site = root.cisco_dc__dc_site[port.site]
-    if port_parameters['type'] == 'ethernet':
-        return site.node[port_parameters['node']].node_type == 'vpc'
-    elif port_parameters['type'] == 'port-channel':
-        return site.node[port_parameters['node']].node_type == 'vpc'
+    if port.port_type == 'ethernet':
+        eth = port.ethernet
+        node = eth.node
+        return site.node[node].node_type == 'vpc'
+    elif port.port_type == 'port-channel':
+        pc = port.port_channel
+        node = pc.node
+        return site.node[node].node_type == 'vpc'        
     return True
+
+
+def send_show_command(device, cmd, log):
+    """Function to send live status exec show command
+
+    Args:
+        device: Device ncs.maagic ListElement
+        cmd: Command to run
+        log: log object(self.log)
+
+    Returns:
+        result: Json Object
+    """
+    show = device.live_status.__getitem__('exec').show
+    input = show.get_input()
+    input.args = [cmd]
+    result = show.request(input).result
+    log.debug(f'Result :', result)
+    return json.loads(result)
 
 
 def apply_template(service, template_name, template_vars):

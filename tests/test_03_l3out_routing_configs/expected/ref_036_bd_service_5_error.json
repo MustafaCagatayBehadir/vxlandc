@@ -1,0 +1,12 @@
+{
+    "ietf-restconf:errors": {
+        "error": [
+            {
+                "error-type": "application",
+                "error-tag": "malformed-message",
+                "error-path": "/cisco-dc:dc-site[fabric='avr-dss1-lbox-yaani-fabric']/tenant-service[name='0002_TURKCELL']/bridge-domain[name='BD-SERVICE-5']/routing",
+                "error-message": "Python cb_nano_create error. Node nw_lf_cnx9_001.dsslab_site1 is not attached to bd BD-SERVICE-5"
+            }
+        ]
+    }
+}

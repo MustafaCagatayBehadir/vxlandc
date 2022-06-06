@@ -1,0 +1,15 @@
+/var/log/ncs/*.log /var/log/ncs/*.access /var/log/ncs/*.trace {
+    daily 
+    rotate 30
+    maxsize 50M
+    maxage 60
+    copytruncate
+    missingok
+    notifempty
+    compress
+    sharedscripts
+    nocreate
+    postrotate
+        /opt/ncs/current/bin/ncs_cmd -c reopen_logs > /dev/null || true
+    endscript
+}

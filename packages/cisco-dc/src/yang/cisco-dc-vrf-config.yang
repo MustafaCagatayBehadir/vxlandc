@@ -1,0 +1,186 @@
+submodule cisco-dc-vrf-config {
+    belongs-to cisco-dc {
+        prefix "cisco-dc";
+    }
+
+    yang-version 1.1;
+
+    import ietf-inet-types {
+        prefix inet;
+    }
+
+    import tailf-common {
+        prefix tailf;
+    }
+
+    import tailf-ncs {
+        prefix ncs;
+    }
+
+    include cisco-dc-common {
+        revision-date "2022-01-17";
+    }
+
+    revision 2022-01-17 {
+        description
+          "Initial Revision.";
+    }
+
+    grouping vrf-config-service {
+
+        leaf name {
+            tailf:info "Define VRF name";
+            type dc-string;
+        }
+
+        container l3vni {
+            tailf:info "Layer 3 VNI Configuration Parameters";
+
+            leaf vlan-id {
+                tailf:info "Vlan id is allocated by resource-manager, use this field to overwrite the default behavior.";
+                type vlan;
+            }
+
+            leaf vni-id {
+                tailf:info "Vni id is allocated by resource-manager, use this field to overwrite the default behavior.";
+                type vxlan-id;
+            }
+
+            leaf fabric-external-vlan-id {
+                tailf:info "Fabric external vlan id is allocated by resource-manager, use this field to overwrite the default behavior.";
+                type vlan;
+            }
+        }
+
+        container direct {
+            presence
+              "present if direct redistribution is needed";
+
+            leaf address-family-ipv4-policy {
+                tailf:info "Attach route policy name under ipv4 address-family";
+                type leafref {
+                    path "../../../cisco-dc:dc-route-policy/cisco-dc:route-policy/cisco-dc:profile";
+                }
+                must "deref(current())/../../dc-route-policy-type = 'vrf'" {
+                    tailf:dependency ".";
+                    error-message
+                      "Route policy type should be vrf.";
+                }
+            }
+
+            leaf address-family-ipv6-policy {
+                tailf:info "Attach route policy name under ipv6 address-family";
+                type leafref {
+                    path "../../../cisco-dc:dc-route-policy/cisco-dc:route-policy/cisco-dc:profile";
+                }
+                must "deref(current())/../../dc-route-policy-type = 'vrf'" {
+                    tailf:dependency ".";
+                    error-message
+                      "Route policy type should be vrf.";
+                }
+            }
+        }
+
+        container static {
+            presence
+              "present if static redistribution is needed";
+
+            leaf address-family-ipv4-policy {
+                tailf:info "Attach route policy name under ipv4 address-family";
+                type leafref {
+                    path "../../../cisco-dc:dc-route-policy/cisco-dc:route-policy/cisco-dc:profile";
+                }
+                must "deref(current())/../../dc-route-policy-type = 'vrf'" {
+                    tailf:dependency ".";
+                    error-message
+                      "Route policy type should be vrf.";
+                }
+                must "deref(current())/../address-family != 'ipv6'" {
+                    tailf:dependency ".";
+                    error-message
+                      "Route policy address-family should not be IPv6.";
+                }
+            }
+
+            leaf address-family-ipv6-policy {
+                tailf:info "Attach route policy name under ipv6 address-family";
+                type leafref {
+                    path "../../../cisco-dc:dc-route-policy/cisco-dc:route-policy/cisco-dc:profile";
+                }
+                must "deref(current())/../../dc-route-policy-type = 'vrf'" {
+                    tailf:dependency ".";
+                    error-message
+                      "Route policy type should be vrf.";
+                }
+                must "deref(current())/../address-family != 'ipv4'" {
+                    tailf:dependency ".";
+                    error-message
+                      "Route policy address-family should not be IPv4.";
+                }
+            }
+        }
+
+        list bd-device {
+            tailf:hidden "Attach device defined in infra by bd service";
+            key "kp leaf-id";
+
+            leaf kp {
+                tailf:info "Attach bridge-domain keypath";
+                type string;
+            }
+
+            leaf leaf-id {
+                tailf:info "Define Leaf Node ID";
+                type string;
+            }
+        }
+
+        list device {
+            tailf:hidden "Attach vrf device defined in infra by vrf service";
+            key "kp leaf-id";
+
+            leaf kp {
+                tailf:info "Attach bridge-domain & vrf keypath";
+                type string;
+            }
+
+            leaf leaf-id {
+                tailf:info "Define Leaf Node ID";
+                type string;
+            }
+        }
+
+        leaf vlan-id {
+            tailf:hidden "dc";
+            type vlan;
+        }
+
+        leaf vni-id {
+            tailf:hidden "dc";
+            type vxlan-id;
+        }
+
+        leaf fabric-external-vlan-id {
+            tailf:hidden "dc";
+            type vlan;
+        }
+
+        leaf site {
+            tailf:hidden "Just for convenience";
+            type string;
+            tailf:default-ref "../../cisco-dc:fabric";
+        }
+
+        leaf as-number {
+            tailf:hidden "Just for convenience";
+            type inet:as-number;
+            tailf:default-ref "../../cisco-dc:fabric-parameters/cisco-dc:as-number";
+        }
+
+        leaf approved {
+            tailf:info "Approved will set to true if id is allocated";
+            type boolean;
+            default false;
+        }
+    }
+}

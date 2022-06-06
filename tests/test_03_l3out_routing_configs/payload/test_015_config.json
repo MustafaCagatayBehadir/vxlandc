@@ -1,0 +1,11 @@
+{
+    "bgp": [
+        {
+            "peer-address": "2001:db8:cafe::2",
+            "timers": {
+                "keepalive": 5,
+                "holdtime": 15
+            }
+        }
+    ]
+}

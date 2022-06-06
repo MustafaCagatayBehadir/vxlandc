@@ -102,9 +102,12 @@ def create_resource_pool_reference(node, pool_name, scope):
         resource_pool = node.resource_pools
         if 'l2-network-vlan' in pool_name:
             resource_pool.l2_network_vlan = pool_name
+        elif 'fabric-external-l3-vrf-vlan' in pool_name:
+            resource_pool.fabric_external_l3_vrf_vlan = pool_name
         elif 'l3-vrf-vlan' in pool_name:
             resource_pool.l3_vrf_vlan = pool_name
         elif 'l2-vxlan-vni' in pool_name:
             resource_pool.l2_vxlan_vni = pool_name
         elif 'l3-vxlan-vni' in pool_name:
             resource_pool.l3_vxlan_vni = pool_name
+

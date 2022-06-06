@@ -1,0 +1,115 @@
+---
+
+- debug:
+    msg: System {{ nso.installer_url }}
+
+- name: Upload NSO image file
+  copy:
+    src: "/tmp/{{ nso.image }}"
+    dest: "/tmp/{{ nso.image }}"
+
+- name: Extract NSO image
+  shell: |
+    cd /tmp
+    sh {{ nso.image }}
+  become: true
+
+- name: Install NSO in system mode
+  shell: |
+    sh /tmp/{{ nso.installer }} \
+    --system-install \
+    --install-dir /opt/ncs \
+    --config-dir /etc/ncs \
+    --run-dir /var/opt/ncs \
+    --log-dir /var/log/ncs \
+    --run-as-user admin
+    chown -R admin /opt/ncs
+    chown -R admin /var/opt/ncs
+    chown -R admin /var/log/ncs
+    chown -R admin /etc/ncs
+    chgrp -R ncsadmin /opt/ncs
+    chgrp -R ncsadmin /var/log/ncs
+    chgrp -R ncsadmin /var/opt/ncs
+    chgrp -R ncsadmin /etc/ncs
+  become: true
+  ignore_errors: yes
+
+- name: Copy ncs-start-python3-vm file
+  template:
+    src: templates/ncs-start-python3-vm.j2
+    dest: '/opt/ncs/ncs-{{ nso.ncs_vers }}/bin/ncs-start-python3-vm'
+    owner: admin
+    group: ncsadmin
+    mode: u+rx,g+rx,o+rx
+  become: true
+
+- name: Update ncs.conf from template
+  template:
+    src: templates/ncs.conf.j2
+    dest: /etc/ncs/ncs.conf
+    owner: admin
+    group: ncsadmin
+    mode: u=r
+  become: true
+
+- name: disable memory overcommit
+  lineinfile:
+    path: /etc/sysctl.conf
+    insertafter: EOF
+    line: "vm.overcommit_memory = 2"
+    state: present
+  become: true
+
+- name: start ncs application
+  shell: /etc/init.d/ncs start
+  become: true
+
+- name: Add ncssrc to profile
+  lineinfile:
+    dest={{ item }}
+    line="source /opt/ncs/current/ncsrc"
+    state=present
+  loop:
+      - /etc/profile
+      - /home/admin/.bash_profile
+  become: true
+
+- name: Add USER
+  lineinfile:
+    dest=/home/admin/.bash_profile
+    line="export USER=admin"
+    state=present
+  become: true
+
+- name: Switch NSO cli
+  xml:
+    namespaces:
+      ns: "{{ nso_xml_namespace }}"
+    path: "{{ nso_config_file }}"
+    xpath: /ns:ncs-config/ns:cli/ns:style
+    value: c
+  become: true
+
+- name: configure logrotate
+  template:
+    src: templates/logrotate.j2
+    dest: /etc/logrotate.conf
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+
+- name: Restart server
+  command: "sleep 5 && reboot"
+  async: 1
+  poll: 0
+  become: true
+
+- name: Wait for the reboot to complete.
+  wait_for_connection:
+    connect_timeout: 20
+    sleep: 5
+    delay: 5
+    timeout: 300
+
+...

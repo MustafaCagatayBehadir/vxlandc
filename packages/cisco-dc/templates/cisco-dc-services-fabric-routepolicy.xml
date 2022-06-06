@@ -1,0 +1,106 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+    <?set PL = 'PS'?>
+    <?set RM = 'RP'?>
+    <?if {dc-route-policy-type = 'tenant'}?>
+        <?set PL = {concat($PL, '_', string(tenant))}?>
+        <?set RM = {concat($RM, '_', string(tenant))}?>
+    <?else?>
+        <?set PL = {concat($PL, '_', string(vrf))}?>
+        <?set RM = {concat($RM, '_', string(vrf))}?>
+    <?end?>       
+    <devices xmlns="http://tail-f.com/ns/ncs" foreach="{route-policy}">
+        <?save-context route-policy?>
+        <device>
+            <name>{device/leaf-id}</name>
+            <?switch-context route-policy?>
+            <config>
+                <?foreach {match-and-set-group}?>
+                    <?foreach {match-rules}?>
+                        <?set-context-node {deref(name)/..}?>
+                        <?set i=1?>
+                        <ip xmlns="http://tail-f.com/ned/cisco-nx" when="{address-family='ipv4'}" foreach="{prefix}">
+                            <?save-context prefix?>
+                            <prefix-list>
+                                <prefixes>
+                                    <name>{$PL}_{../name}</name>
+                                    <seq>
+                                        <no>{$i*5}</no>
+                                        <?switch-context prefix?>
+                                        <permit>{ip}</permit>
+                                        <eq when="{equal}">{equal}</eq>
+                                        <ge when="{from-prefix!=0}">{from-prefix}</ge>
+                                        <le when="{to-prefix!=0}">{to-prefix}</le>
+                                    </seq>
+                                </prefixes>
+                            </prefix-list>
+                            <?set i={$i+1}?>
+                        </ip>
+                        <ipv6 xmlns="http://tail-f.com/ned/cisco-nx" when="{address-family='ipv6'}" foreach="{prefix}">
+                            <?save-context prefix?>
+                            <prefix-list>
+                                <prefixes>
+                                    <name>{$PL}_{../name}</name>
+                                    <seq>
+                                        <no>{$i*5}</no>
+                                        <?switch-context prefix?>
+                                        <permit>{ip}</permit>
+                                        <eq when="{equal}">{equal}</eq>
+                                        <ge when="{from-prefix!=0}">{from-prefix}</ge>
+                                        <le when="{to-prefix!=0}">{to-prefix}</le>
+                                    </seq>
+                                </prefixes>
+                            </prefix-list>
+                            <?set i={$i+1}?>
+                        </ipv6>
+                    <?end?>
+                    <route-map xmlns="http://tail-f.com/ned/cisco-nx">
+                        <name>{$RM}_{../profile}</name>
+                        <sequence>{order}</sequence>
+                        <operation>{action}</operation>
+                        <match foreach="{match-rules}">
+                            <?set-context-node {deref(name)/..}?>
+                            <community when="{community}">{community}</community>
+                            <tag when="{tag}">{tag}</tag>
+                            <ip when="{address-family='ipv4'}">
+                                <address>
+                                    <prefix-list>{$PL}_{name}</prefix-list>
+                                </address>
+                            </ip>
+                            <ipv6 when="{address-family='ipv6'}">
+                                <address>
+                                    <prefix-list>{$PL}_{name}</prefix-list>
+                                </address>
+                            </ipv6>
+                        </match>
+                        <set foreach="{set-rules}">
+                            <?set-context-node {deref(name)/..}?>
+                            <as-path when="{aspath-asn}">
+                                <prepend>
+                                    <as-list>{aspath-asn/asn}</as-list>
+                                    <last-as>{aspath-asn/lastnum}</last-as>
+                                </prepend>
+                            </as-path>
+                            <community foreach="{additional-community}">
+                                <community-number>{community}</community-number>
+                                <additive when="{criteria='append'}" />
+                            </community>
+                            <ip when="{nh-address and address-family='ipv4'}">
+                                <next-hop>
+                                    <next-hop-addr>{nh-address}</next-hop-addr>
+                                </next-hop>
+                            </ip>
+                            <ipv6 when="{nh-address and address-family='ipv6'}">
+                                <next-hop>
+                                    <next-hop-addr>{nh-address}</next-hop-addr>
+                                </next-hop>
+                            </ipv6>
+                            <local-preference when="{local-preference}">{local-preference}</local-preference>
+                            <tag when="{tag}">{tag}</tag>
+                            <weight when="{weight}">{weight}</weight>
+                        </set>
+                    </route-map>
+                <?end?>
+            </config>
+        </device>
+    </devices>
+</config-template>

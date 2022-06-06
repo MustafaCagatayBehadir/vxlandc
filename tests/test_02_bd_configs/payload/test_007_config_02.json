@@ -1,0 +1,13 @@
+{
+    "cisco-dc:bridge-domain": [
+        {
+            "name": "BD-SERVICE-2",
+            "cisco-dc:bd-subnet": [
+                {
+                    "address": "2001:db8:cafe::1/64",
+                    "preferred": "yes"
+                }
+            ]
+        }
+    ]
+}

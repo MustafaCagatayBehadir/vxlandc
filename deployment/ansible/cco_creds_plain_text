@@ -1,0 +1,3 @@
+# Ensure to use ansible-valut create cco-creds and add your creds securly!
+cco_user: <cco_user>
+cco_pass: <cco_pass>

@@ -1,0 +1,4 @@
+{
+    "dc-route-policy-type": "vrf",
+    "vrf": "tcell-grt"
+}

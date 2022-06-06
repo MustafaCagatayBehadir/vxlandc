@@ -1,0 +1,16 @@
+{
+    "port-config": [
+        {
+            "name": "PC100003",
+            "description": "CUSTOM_DESCRIPTION_PC100003",
+            "connection": "host",
+            "speed": "1G",
+            "port-channel": {
+                "node": "nw_lf_cnx9_003.dsslab_site1",
+                "node-port": [
+                    "1/10"
+                ]
+            }
+        }
+    ]
+}

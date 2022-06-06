@@ -34,6 +34,18 @@ module cisco-dc {
         revision-date "2022-01-17";
     }
 
+    include cisco-dc-vrf-config {
+        revision-date "2022-01-17";
+    }
+
+    include cisco-dc-routepolicy {
+        revision-date "2022-01-17";
+    }
+
+    include cisco-dc-l3out-routing {
+        revision-date "2022-01-17";
+    }
+
     description
       "Cisco VXLAN EVPN Datacenter";
 
@@ -48,6 +60,10 @@ module cisco-dc {
         key fabric;
 
         uses site-configs;
+
+        tailf:validate "tenant-service-validation" {
+            tailf:dependency "tenant-service/name";
+        }
 
         list tenant-service {
             description
@@ -68,20 +84,44 @@ module cisco-dc {
                 key name;
 
                 uses bridge-domain;
+
+                uses l3out-routing {
+                    when "bd-subnet";
+
+                    refine routing/l3out-type {
+                        default fabric-internal;
+                    }
+
+                    refine routing/bgp/peer-route-policy/profile {
+                        must "deref(current())/../../dc-route-policy-type = 'tenant'" {
+                            tailf:dependency ".";
+                            error-message
+                              "Route policy type should be tenant.";
+                        }
+
+                        must "deref(current())/../../tenant = current()/../../../../tenant" {
+                            tailf:dependency ".";
+                            error-message
+                              "Route policy tenant should be match with bridge-domain tenant.";
+                        }
+                    }
+                }
             }
         }
 
         list port-configs {
-            tailf:info "Deploy different type of port services [ethernet, port-channel, virtual-port-channel]";
+            tailf:info "Deploy port groups configurations.";
+            description
+              "List of port groups definitions";
 
             key name;
 
             uses port-configs;
 
             list port-config {
-                tailf:info "Port config service for VXLAN-EVPN configurations.";
+                tailf:info "Deploy different type of port services [ethernet, port-channel, virtual-port-channel].";
                 description
-                  "Port config service for VXLAN-EVPN configurations.";
+                  "Deploy different type of port services [ethernet, port-channel, virtual-port-channel]";
 
                 uses ncs:nano-plan-data;
                 uses ncs:service-data;
@@ -91,44 +131,58 @@ module cisco-dc {
                 uses port-config-service;
             }
         }
+
+        list vrf-config {
+            tailf:info "Vrf config service for VXLAN-EVPN configurations.";
+            description
+              "Vrf config service for VXLAN-EVPN configurations.";
+
+            uses ncs:nano-plan-data;
+            uses ncs:service-data;
+            ncs:servicepoint vrf-config-servicepoint;
+            key name;
+
+            uses vrf-config-service;
+
+            uses l3out-routing {
+                refine routing/l3out-type {
+                    default fabric-external;
+                }
+
+                refine routing/bgp/peer-route-policy/profile {
+                    must "deref(current())/../../dc-route-policy-type = 'vrf'" {
+                        tailf:dependency ".";
+                        error-message
+                          "Route policy type should be vrf.";
+                    }
+
+                    must "deref(current())/../../vrf = current()/../../../../name" {
+                        tailf:dependency ".";
+                        error-message
+                          "Route policy vrf should be match with applied vrf.";
+                    }
+                }
+            }
+        }
+
+        list dc-route-policy {
+            tailf:info "Deploy tenant policy service";
+            description
+              "Datacenter route-policies for VXLAN-EVPN configurations.";
+
+            uses ncs:service-data;
+            ncs:servicepoint route-policy-config-servicepoint;
+
+            key name;
+
+            uses routepolicy-service;
+        }
     }
 
     container dc-actions {
         tailf:info "Supported DC actions";
         description
           "Supported DC actions";
-
-        container site-discovery {
-            tailf:action discover-site {
-                tailf:actionpoint discover-site;
-                description
-                  "Action to add devices to NSO and create fabric environment";
-                input {
-                    leaf site {
-                        tailf:info "Site name for discovery";
-                        type leafref {
-                            path "/cisco-dc:dc-site/cisco-dc:fabric";
-                        }
-                    }
-                    leaf spine {
-                        must "contains(., 'SPN')" {
-                            error-message
-                              "Node must be a spine node";
-                            tailf:dependency ".";
-                        }
-                        tailf:info "Spine name for discover the fabric";
-                        type leafref {
-                            path "/ncs:devices/ncs:device/ncs:name";
-                        }
-                    }
-                }
-                output {
-                    leaf success {
-                        type boolean;
-                    }
-                }
-            }
-        }
 
         container resource-pools {
             tailf:action create-site-resource-pools {
@@ -147,6 +201,7 @@ module cisco-dc {
                                 enum l2-network-vlan;
                                 enum l3-vrf-vlan;
                                 enum port-channel-id;
+                                enum fabric-external-l3-vrf-vlan;
                             }
                         }
 

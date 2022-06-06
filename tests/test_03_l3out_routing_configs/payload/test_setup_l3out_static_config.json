@@ -1,0 +1,99 @@
+{
+    "cisco-dc:dc-site": [
+        {
+            "fabric": "avr-dss1-lbox-yaani-fabric",
+            "tenant-service": [
+                {
+                    "name": "0001_TURKCELL",
+                    "bridge-domain": [
+                        {
+                            "name": "BD-SERVICE-2",
+                            "routing": {
+                                "static-route": {
+                                    "destination": [
+                                        {
+                                            "address": "2001:db8:cafe::/48",
+                                            "ip-nexthop": "2001:db8:cafe::2",
+                                            "source-node": {
+                                                "apply-all-nodes": [
+                                                    null
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "0002_TURKCELL",
+                    "bridge-domain": [
+                        {
+                            "name": "BD-SERVICE-4",
+                            "routing": {
+                                "static-route": {
+                                    "destination": [
+                                        {
+                                            "address": "10.0.0.0/8",
+                                            "ip-nexthop": "10.0.1.2",
+                                            "source-node": {
+                                                "apply-all-nodes": [
+                                                    null
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "BD-SERVICE-5",
+                            "routing": {
+                                "static-route": {
+                                    "destination": [
+                                        {
+                                            "address": "2001:db8::/48",
+                                            "ip-nexthop": "2001:db8:cafe::2",
+                                            "source-node": {
+                                                "apply-specific-nodes": {
+                                                    "node-group": [
+                                                        {
+                                                            "id": 2
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "BD-SERVICE-6",
+                            "routing": {
+                                "static-route": {
+                                    "destination": [
+                                        {
+                                            "address": "10.0.0.0/16",
+                                            "ip-nexthop": "10.0.1.2",
+                                            "source-node": {
+                                                "apply-specific-nodes": {
+                                                    "node-group": [
+                                                        {
+                                                            "id": 1
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,34 @@
+{
+    "tailf-ned-cisco-nx:address-family": [
+        {
+            "proto": "ipv4",
+            "type": "unicast",
+            "advertise": {
+                "l2vpn": "evpn"
+            },
+            "maximum-paths": {
+                "ibgp": 2
+            },
+            "redistribute": {
+                "direct": {
+                    "route-map": "RP_tcell-grt_DC_RP_0001_RP_0001"
+                }
+            }
+        },
+        {
+            "proto": "ipv6",
+            "type": "unicast",
+            "advertise": {
+                "l2vpn": "evpn"
+            },
+            "maximum-paths": {
+                "ibgp": 2
+            },
+            "redistribute": {
+                "direct": {
+                    "route-map": "RP_tcell-grt_DC_RP_0001_RP_0001"
+                }
+            }
+        }
+    ]
+}

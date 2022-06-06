@@ -1,0 +1,21 @@
+{
+    "routing": {
+        "static-route": {
+            "destination": [
+                {
+                    "address": "10.1.0.0/16",
+                    "ip-nexthop": "10.0.1.2",
+                    "source-node": {
+                        "apply-specific-nodes": {
+                            "node-group": [
+                                {
+                                    "id": 2
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}

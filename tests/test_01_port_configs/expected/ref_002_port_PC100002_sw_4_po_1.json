@@ -1,14 +1,14 @@
 {
     "tailf-ned-cisco-nx:port-channel": [
         {
-            "name": "1",
+            "name": "2",
             "enable": {
                 "switchport": true
             },
             "switchport": {
                 "mode": "trunk"
             },
-            "description": "PC100002_TRUNK_10G_PC",
+            "description": "PC100002:trunk:20G",
             "mtu": 9216,
             "spanning-tree": {
                 "guard": "root",
@@ -30,7 +30,7 @@
                     "level": "2.0"
                 },
                 "action": {
-                    "trap": [
+                    "shutdown": [
                         null
                     ]
                 }

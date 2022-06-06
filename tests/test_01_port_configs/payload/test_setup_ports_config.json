@@ -13,7 +13,7 @@
                             "connection": "host",
                             "speed": "1G",
                             "ethernet": {
-                                "node": "AVR-DSS1-BIP-SW-01",
+                                "node": "nw_lf_cnx9_001.dsslab_site1",
                                 "node-port": [
                                     "1/1"
                                 ]
@@ -32,7 +32,7 @@
                             "connection": "switch",
                             "speed": "10G",
                             "ethernet": {
-                                "node": "AVR-DSS1-BIP-SW-02",
+                                "node": "nw_lf_cnx9_002.dsslab_site1",
                                 "node-port": [
                                     "1/1",
                                     "1/2"
@@ -53,7 +53,7 @@
                             "speed": "100G",
                             "ethernet": {},
                             "port-channel": {
-                                "node": "AVR-DSS1-BIP-SW-03",
+                                "node": "nw_lf_cnx9_003.dsslab_site1",
                                 "node-port": [
                                     "1/10",
                                     "1/11"
@@ -67,7 +67,7 @@
                             "speed": "10G",
                             "ethernet": {},
                             "port-channel": {
-                                "node": "AVR-DSS1-BIP-SW-04",
+                                "node": "nw_lf_cnx9_004.dsslab_site1",
                                 "node-port": [
                                     "1/10",
                                     "1/11"

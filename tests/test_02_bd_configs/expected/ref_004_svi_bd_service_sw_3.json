@@ -1,0 +1,106 @@
+{
+    "tailf-ned-cisco-nx:Vlan": [
+        {
+            "name": 1,
+            "shutdown": [
+                null
+            ],
+            "ip": {
+                "redirects": false
+            },
+            "ipv6": {
+                "redirects": false
+            }
+        },
+        {
+            "name": 3,
+            "description": "0001_TURKCELL:BD-SERVICE-2:AGW",
+            "vrf": {
+                "member": "tcell-grt"
+            },
+            "ip": {
+                "redirects": false
+            },
+            "ipv6": {
+                "address": {
+                    "addresses": [
+                        {
+                            "addr": "2001:db8:cafe::1/64",
+                            "tag": 12345
+                        },
+                        {
+                            "addr": "2001:db8:cafe:1::1/64",
+                            "tag": 12345
+                        }
+                    ]
+                },
+                "redirects": false
+            },
+            "fabric": {
+                "forwarding": {
+                    "mode": "anycast-gateway"
+                }
+            }
+        },
+        {
+            "name": 6,
+            "description": "0002_TURKCELL:BD-SERVICE-5:AGW",
+            "vrf": {
+                "member": "pdu-mgmt"
+            },
+            "ip": {
+                "redirects": false
+            },
+            "ipv6": {
+                "address": {
+                    "addresses": [
+                        {
+                            "addr": "2001:db8:cafe::1/64",
+                            "tag": 12345
+                        },
+                        {
+                            "addr": "2001:db8:cafe:1::1/64",
+                            "tag": 12345
+                        }
+                    ]
+                },
+                "redirects": false
+            },
+            "fabric": {
+                "forwarding": {
+                    "mode": "anycast-gateway"
+                }
+            }
+        },
+        {
+            "name": 3101,
+            "vrf": {
+                "member": "pdu-mgmt"
+            },
+            "ip": {
+                "forward": [
+                    null
+                ],
+                "redirects": false
+            },
+            "ipv6": {
+                "redirects": false
+            }
+        },
+        {
+            "name": 3102,
+            "vrf": {
+                "member": "tcell-grt"
+            },
+            "ip": {
+                "forward": [
+                    null
+                ],
+                "redirects": false
+            },
+            "ipv6": {
+                "redirects": false
+            }
+        }
+    ]
+}

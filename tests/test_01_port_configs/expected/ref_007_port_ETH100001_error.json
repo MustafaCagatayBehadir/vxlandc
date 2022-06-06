@@ -1,0 +1,12 @@
+{
+    "ietf-restconf:errors": {
+        "error": [
+            {
+                "error-type": "application",
+                "error-tag": "invalid-value",
+                "error-path": "/cisco-dc:dc-site[fabric='avr-dss1-lbox-yaani-fabric']/port-configs[name='ETH_PG_1_ACCESS']/port-config[name='ETH100001']",
+                "error-message": "/dc-site{avr-dss1-lbox-yaani-fabric}/port-configs{ETH_PG_1_ACCESS}/port-config{ETH100001}/ethernet/node (value \"nw_lf_cnx9_002.dsslab_site1\"): Node can't be changed ones the port is deployed"
+            }
+        ]
+    }
+}

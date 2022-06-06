@@ -1,0 +1,152 @@
+{
+    "tailf-ned-cisco-nx:Vlan": [
+        {
+            "name": 1,
+            "shutdown": [
+                null
+            ],
+            "ip": {
+                "redirects": false
+            },
+            "ipv6": {
+                "redirects": false
+            }
+        },
+        {
+            "name": 2,
+            "description": "0001_TURKCELL:BD-SERVICE-1:AGW",
+            "vrf": {
+                "member": "tcell-grt"
+            },
+            "ip": {
+                "address": {
+                    "ipaddr": "10.0.0.1/24",
+                    "tag": 12345
+                },
+                "redirects": false
+            },
+            "ipv6": {
+                "redirects": false
+            },
+            "fabric": {
+                "forwarding": {
+                    "mode": "anycast-gateway"
+                }
+            }
+        },
+        {
+            "name": 4,
+            "description": "0001_TURKCELL:BD-SERVICE-3:AGW",
+            "vrf": {
+                "member": "tcell-grt"
+            },
+            "ip": {
+                "address": {
+                    "ipaddr": "10.0.1.1/24",
+                    "tag": 12345
+                },
+                "secondary-addr": {
+                    "address": [
+                        {
+                            "ipaddr": "10.0.2.1/24",
+                            "secaddr": "secondary",
+                            "tag": 12345
+                        }
+                    ]
+                },
+                "redirects": false
+            },
+            "ipv6": {
+                "redirects": false
+            },
+            "fabric": {
+                "forwarding": {
+                    "mode": "anycast-gateway"
+                }
+            }
+        },
+        {
+            "name": 5,
+            "description": "0002_TURKCELL:BD-SERVICE-4:AGW",
+            "vrf": {
+                "member": "pdu-mgmt"
+            },
+            "ip": {
+                "address": {
+                    "ipaddr": "10.0.0.1/24",
+                    "tag": 12345
+                },
+                "redirects": false
+            },
+            "ipv6": {
+                "redirects": false
+            },
+            "fabric": {
+                "forwarding": {
+                    "mode": "anycast-gateway"
+                }
+            }
+        },
+        {
+            "name": 7,
+            "description": "0002_TURKCELL:BD-SERVICE-6:AGW",
+            "vrf": {
+                "member": "pdu-mgmt"
+            },
+            "ip": {
+                "address": {
+                    "ipaddr": "10.0.1.1/24",
+                    "tag": 12345
+                },
+                "secondary-addr": {
+                    "address": [
+                        {
+                            "ipaddr": "10.0.2.1/24",
+                            "secaddr": "secondary",
+                            "tag": 12345
+                        }
+                    ]
+                },
+                "redirects": false
+            },
+            "ipv6": {
+                "redirects": false
+            },
+            "fabric": {
+                "forwarding": {
+                    "mode": "anycast-gateway"
+                }
+            }
+        },
+        {
+            "name": 3101,
+            "vrf": {
+                "member": "pdu-mgmt"
+            },
+            "ip": {
+                "forward": [
+                    null
+                ],
+                "redirects": false
+            },
+            "ipv6": {
+                "redirects": false
+            }
+        },
+        {
+            "name": 3102,
+            "vrf": {
+                "member": "tcell-grt"
+            },
+            "ip": {
+                "forward": [
+                    null
+                ],
+                "redirects": false
+            },
+            "ipv6": {
+                "redirects": false
+            }
+        }
+    ]
+}

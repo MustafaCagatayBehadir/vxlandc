@@ -1,0 +1,10 @@
+---
+
+- hosts: nso
+
+  roles:
+    - role: nso-deps
+    - role: nso-install
+    - role: os-harden
+
+...

@@ -1,0 +1,43 @@
+{
+    "tailf-ned-cisco-nx:port-channel": [
+        {
+            "name": "10",
+            "enable": {
+                "switchport": true
+            },
+            "switchport": {
+                "mode": "access"
+            },
+            "shutdown": [
+                null
+            ],
+            "description": "CUSTOM_DESCRIPTION_VPC100001",
+            "mtu": 9216,
+            "spanning-tree": {
+                "bpduguard": "enable",
+                "port": {
+                    "type": "edge"
+                }
+            },
+            "storm-control": {
+                "broadcast": {
+                    "level": "5.0"
+                },
+                "unicast": {
+                    "level": "5.0"
+                },
+                "multicast": {
+                    "level": "5.0"
+                },
+                "action": {
+                    "trap": [
+                        null
+                    ]
+                }
+            },
+            "vpc": {
+                "port-channel-number": 10
+            }
+        }
+    ]
+}

@@ -1,0 +1,50 @@
+{
+    "tailf-ned-cisco-nx:neighbor": [
+        {
+            "id": "2001:db8:cafe::2",
+            "inner-remote-as": {
+                "remote-as": 65540
+            },
+            "local-as": 34984,
+            "ebgp-multihop": 5,
+            "update-source": "loopback100",
+            "disable-connected-check": [
+                null
+            ],
+            "timers": {
+                "keepalive": 5,
+                "holdtime": 15
+            },
+            "address-family": [
+                {
+                    "proto": "ipv6",
+                    "type": "unicast",
+                    "allowas-in": {
+                        "occurrences": 3
+                    },
+                    "next-hop-self": [
+                        null
+                    ],
+                    "send-community": {
+                        "attr": "both"
+                    },
+                    "soft-reconfiguration": {
+                        "inbound": [
+                            null
+                        ],
+                        "always": [
+                            null
+                        ]
+                    },
+                    "disable-peer-as-check": [
+                        null
+                    ],
+                    "weight": 1000,
+                    "as-override": [
+                        null
+                    ]
+                }
+            ]
+        }
+    ]
+}

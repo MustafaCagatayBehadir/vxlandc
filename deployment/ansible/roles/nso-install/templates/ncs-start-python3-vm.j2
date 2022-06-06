@@ -1,0 +1,16 @@
+#!/bin/sh
+
+pypath="${NCS_DIR}/src/ncs/pyapi"
+
+# Make sure everyone finds the NCS Python libraries at startup
+if [ "x$PYTHONPATH" != "x" ]; then
+    PYTHONPATH=${pypath}:$PYTHONPATH
+else
+    PYTHONPATH=${pypath}
+fi
+export PYTHONPATH
+
+main="${pypath}/ncs_pyvm/startup.py"
+
+echo "Starting ${main} $*"
+exec /opt/rh/rh-python38/root/usr/bin/python -u ${main} $*

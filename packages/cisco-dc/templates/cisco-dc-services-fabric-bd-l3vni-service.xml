@@ -1,0 +1,126 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+    <?set RM = {concat('RP', '_', string(name))}?>
+    <?save-context service?>
+    <devices xmlns="http://tail-f.com/ns/ncs">
+        <device>
+            <name>{device/leaf-id}</name>
+            <config>
+                <?switch-context service?>
+                <vlan xmlns="http://tail-f.com/ned/cisco-nx">
+                    <vlan-list>
+                        <id>{vlan-id}</id>
+                        <name>{$VLAN_NAME}</name>
+                        <vn-segment>{vni-id}</vn-segment>
+                    </vlan-list>
+                </vlan>
+                <vrf xmlns="http://tail-f.com/ned/cisco-nx">
+                    <context>
+                        <id>{name}</id>
+                        <vni>{vni-id}</vni>
+                        <rd>auto</rd>
+                        <address-family>
+                            <ipv4>
+                                <unicast>
+                                    <route-target>
+                                        <method>both</method>
+                                        <asn>auto</asn>
+                                        <target-evpn>evpn</target-evpn>
+                                    </route-target>
+                                    <route-target>
+                                        <method>both</method>
+                                        <asn>auto</asn>
+                                        <target-evpn>non-evpn</target-evpn>
+                                    </route-target>
+                                </unicast>
+                            </ipv4>
+                            <ipv6>
+                                <unicast>
+                                    <route-target>
+                                        <method>both</method>
+                                        <asn>auto</asn>
+                                        <target-evpn>evpn</target-evpn>
+                                    </route-target>
+                                    <route-target>
+                                        <method>both</method>
+                                        <asn>auto</asn>
+                                        <target-evpn>non-evpn</target-evpn>
+                                    </route-target>
+                                </unicast>
+                            </ipv6>
+                        </address-family>
+                    </context>
+                </vrf>
+                <router xmlns="http://tail-f.com/ned/cisco-nx">
+                    <bgp>
+                        <id>{as-number}</id>
+                        <vrf>
+                            <name>{name}</name>
+                            <address-family>
+                                <proto>ipv4</proto>
+                                <type>unicast</type>
+                                <advertise>
+                                    <l2vpn>evpn</l2vpn>
+                                </advertise>
+                                <maximum-paths>
+                                    <ibgp>2</ibgp>
+                                </maximum-paths>
+                                <redistribute>
+                                    <direct when="{direct}">
+                                        <route-map when="{direct/address-family-ipv4-policy}">{$RM}_{direct/address-family-ipv4-policy}</route-map>
+                                    </direct>
+                                    <static when="{static}">
+                                        <route-map when="{direct/address-family-ipv4-policy}">{$RM}_{static/address-family-ipv4-policy}</route-map>
+                                    </static>
+                                </redistribute>
+                            </address-family>
+                            <address-family>
+                                <proto>ipv6</proto>
+                                <type>unicast</type>
+                                <advertise>
+                                    <l2vpn>evpn</l2vpn>
+                                </advertise>
+                                <maximum-paths>
+                                    <ibgp>2</ibgp>
+                                </maximum-paths>
+                                <redistribute>
+                                    <direct when="{direct}">
+                                        <route-map when="{direct/address-family-ipv6-policy}">{$RM}_{direct/address-family-ipv6-policy}</route-map>
+                                    </direct>
+                                    <static when="{static}">
+                                        <route-map when="{direct/address-family-ipv6-policy}">{$RM}_{static/address-family-ipv6-policy}</route-map>
+                                    </static>
+                                </redistribute>
+                            </address-family>
+                        </vrf>
+                    </bgp>
+                </router>
+                <interface xmlns="http://tail-f.com/ned/cisco-nx">
+                    <Vlan>
+                        <name>{vlan-id}</name>
+                        <vrf>
+                            <member>{name}</member>
+                        </vrf>
+                        <ip>
+                            <forward/>
+                            <redirects>false</redirects>
+                        </ip>
+                        <ipv6>
+                            <redirects>false</redirects>
+                        </ipv6>
+                    </Vlan>
+                </interface>
+                <interface xmlns="http://tail-f.com/ned/cisco-nx">
+                    <nve>
+                        <name>1</name>
+                        <member>
+                            <vni>
+                                <id>{vni-id}</id>
+                                <associate-vrf/>
+                            </vni>
+                        </member>
+                    </nve>
+                </interface>
+            </config>
+        </device>
+    </devices>
+</config-template>

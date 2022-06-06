@@ -1,0 +1,355 @@
+submodule cisco-dc-routepolicy {
+    belongs-to cisco-dc {
+        prefix "cisco-dc";
+    }
+
+    yang-version 1.1;
+
+    import ietf-inet-types {
+        prefix inet;
+    }
+
+    import tailf-common {
+        prefix tailf;
+    }
+
+    import tailf-ncs {
+        prefix ncs;
+    }
+
+    include cisco-dc-common {
+        revision-date "2022-01-17";
+    }
+
+    revision 2022-01-17 {
+        description
+          "Initial Revision.";
+    }
+
+    grouping routepolicy-service {
+        leaf name {
+            tailf:info "Specify dc-route-policy service name";
+            type dc-string;
+        }
+
+        leaf dc-route-policy-type {
+            tailf:info "Type of route-policy can be vrf or tenant";
+            type enumeration {
+                enum vrf;
+                enum tenant;
+            }
+            mandatory true;
+
+            must "not(../dc-route-policy-type-copy) or ../dc-route-policy-type-copy = ." {
+                error-message
+                  "Route policy type can't be changed ones the dc-route-policy is deployed";
+            }
+        }
+
+        leaf dc-route-policy-type-copy {
+            tailf:info "only to suppress compiler warning on must expression";
+            type string;
+            tailf:hidden "dc";
+        }
+
+        leaf tenant {
+            when "current()/../dc-route-policy-type = 'tenant'";
+            tailf:info "Specify tenant name";
+            type leafref {
+                path "/cisco-dc:dc-site[fabric=current()/../../fabric]/cisco-dc:tenant-service/cisco-dc:name";
+            }
+            mandatory true;
+
+            must "not(../tenant-copy) or ../tenant-copy = ." {
+                error-message
+                  "Tenant can't be changed ones the dc-route-policy is deployed";
+            }
+        }
+
+        leaf tenant-copy {
+            when "current()/../dc-route-policy-type = 'tenant'";
+            tailf:info "only to suppress compiler warning on must expression";
+            type string;
+            tailf:hidden "dc";
+        }
+
+        leaf vrf {
+            when "current()/../dc-route-policy-type = 'vrf'";
+            tailf:info "Specify tenant name";
+            type leafref {
+                path "/cisco-dc:dc-site[fabric=current()/../../fabric]/cisco-dc:vrf-config/cisco-dc:name";
+            }
+            mandatory true;
+
+            must "not(../vrf-copy) or ../vrf-copy = ." {
+                error-message
+                  "Vrf can't be changed ones the dc-route-policy is deployed";
+            }
+        }
+
+        leaf vrf-copy {
+            when "current()/../dc-route-policy-type = 'vrf'";
+            tailf:info "only to suppress compiler warning on must expression";
+            type string;
+            tailf:hidden "dc";
+        }
+
+        container rules-set {
+            tailf:info "Define match & set rules";
+            list match-rules {
+                tailf:info "Specify match rules";
+                key name;
+
+                leaf name {
+                    tailf:info "Specify rule name";
+                    type dc-string;
+                }
+                must "current()/../../dc-route-policy-type = 'vrf' or count(current()/../../../dc-route-policy[rules-set/match-rules/name = current()/name][tenant = current()/../../tenant]) <= 1" {
+                    error-message
+                      "match-rules can not be shared with multiple dc-route-policy services of same tenant";
+                }
+
+                choice match-type {
+                    mandatory true;
+
+                    case community {
+                        leaf-list community {
+                            when "not(current()/../prefix) and not(current()/../tag)";
+                            tailf:info "Specify community list\n"
+                            + "example: [ extended:as4-nn2:4:15 regular:as2-nn2:4:15 ]";
+                            type route-target;
+                        }
+                    }
+
+                    case prefix-list {
+                        list prefix {
+                            when "not(current()/../community) and not(current()/../tag)";
+                            tailf:info "Specify route destination ip\n"
+                            + "example: [ ipv4:10.0.0.0/24 ipv6:2001:db8:cafe::/64]";
+                            key ip;
+                            leaf ip {
+                                tailf:info "IP address for the route destination.";
+                                type tailf:ip-address-and-prefix-length;
+                            }
+
+                            leaf from-prefix {
+                                tailf:info "Specifies the prefix length to match. <0..128>[0]";
+                                type uint8 {
+                                    range 0..128;
+                                }
+                                default 0;
+                            }
+
+                            leaf to-prefix {
+                                tailf:info "Specifies the prefix length to match. <0..128>[0]";
+                                type uint8 {
+                                    range 0..128;
+                                }
+                                default 0;
+                            }
+
+                            leaf equal {
+                                tailf:info "Specifies the prefix length to match. <0..128>[0]";
+                                type uint8 {
+                                    range 0..128;
+                                }
+                            }
+
+                            must "number(current()/from-prefix) <= number(current()/to-prefix)" {
+                                error-message
+                                  "from-prefix can not be greater than to prefix";
+                            }
+                        }
+
+                        leaf address-family {
+                            tailf:info "Prefix-List address-family can be IPv4 | IPv6";
+                            tailf:hidden "dc";
+                            type enumeration {
+                                enum ipv4;
+                                enum ipv6;
+                            }
+                        }
+                    }
+
+                    case tag {
+                        leaf tag {
+                            when "not(current()/../community) and not(current()/../prefix)";
+                            tailf:info "Match Route Tag. <0..4294967295>";
+                            type uint32;
+                        }
+                    }
+                }
+            }
+
+            list set-rules {
+                tailf:info "Specify set rules";
+                key name;
+
+                leaf name {
+                    tailf:info "Specify rule name";
+                    type dc-string;
+                }
+                must "current()/../../dc-route-policy-type = 'vrf' or count(current()/../../../dc-route-policy[rules-set/set-rules/name = current()/name][tenant = current()/../../tenant]) <= 1" {
+                    error-message
+                      "set-rules can not be shared with multiple dc-route-policy services of same tenant";
+                }
+
+                container aspath-asn {
+                    tailf:info "Specify AS Path";
+                    presence
+                      "presence if AS Path prepend is needed.";
+
+                    leaf asn {
+                        tailf:info "Set autonomous system (AS) number.";
+                        type uint32;
+                    }
+
+                    leaf lastnum {
+                        tailf:info "number of times to prepend the last AS number. <0..10>";
+                        type uint8 {
+                            range 0..10;
+                        }
+                    }
+                }
+
+                list additional-community {
+                    tailf:info "Specify additional community list\n"+
+                    "example: extended:as4-nn2:5:16";
+                    key community;
+                    leaf community {
+                        tailf:info "Specify community name";
+                        type route-target;
+                    }
+
+                    leaf criteria {
+                        tailf:info "Specify criteria";
+                        type enumeration {
+                            enum "append";
+                            enum "replace";
+                        }
+                        default "append";
+                    }
+                }
+
+                leaf nh-address {
+                    tailf:info "Set Next Hop Address";
+                    type inet:ip-address;
+                }
+
+                leaf tag {
+                    tailf:info "Set Route Tag. <0..4294967295>";
+                    type uint32;
+                }
+
+                leaf local-preference {
+                    tailf:info "Set Preference. <0..4294967295>";
+                    type uint32;
+                }
+
+                leaf weight {
+                    tailf:info "Set weight. <0..65535>";
+                    type uint16;
+                }
+
+                leaf address-family {
+                    tailf:info "Prefix-List address-family can be IPv4 | IPv6";
+                    tailf:hidden "dc";
+                    type enumeration {
+                        enum ipv4;
+                        enum ipv6;
+                    }
+                }
+            }
+        }
+
+        list route-policy {
+            tailf:info "Specify route-policy \n"+
+            "Attach match/set rules to complete policy defination";
+            key profile;
+            leaf profile {
+                tailf:info "Specify route-policy name.";
+                type dc-string;
+            }
+            must "current()/../dc-route-policy-type = 'vrf' or count(current()/../../dc-route-policy[route-policy/profile = current()/profile][tenant = current()/../tenant]) <= 1" {
+                error-message
+                  "route-policy can not be shared with multiple dc-route-policy services of same tenant";
+            }
+
+            list match-and-set-group {
+                tailf:info "Attach match/set rules name";
+                key order;
+
+                leaf order {
+                    tailf:info "Specify order of the policy context, valid range is from 5 to 1000.";
+                    type uint16 {
+                        range "5..1000" {
+                            tailf:step 5;
+                        }
+                    }
+                }
+
+                leaf action {
+                    tailf:info "Set action [permit]";
+                    type enumeration {
+                        enum permit;
+                        enum deny;
+                    }
+                    default permit;
+                }
+
+                list set-rules {
+                    tailf:info "Attach set-rules name";
+                    key name;
+
+                    leaf name {
+                        tailf:info "Set name";
+                        type leafref {
+                            path "../../../../cisco-dc:rules-set/cisco-dc:set-rules/cisco-dc:name";
+                        }
+                    }
+                }
+
+                list match-rules {
+                    tailf:info "Attach match-rules name";
+                    key name;
+                    leaf name {
+                        tailf:info "Match name";
+                        type leafref {
+                            path "../../../../cisco-dc:rules-set/cisco-dc:match-rules/cisco-dc:name";
+                        }
+                    }
+                }
+            }
+
+            leaf address-family {
+                tailf:info "Prefix-List address-family can be IPv4 | IPv6";
+                tailf:hidden "dc";
+                type enumeration {
+                    enum ipv4;
+                    enum ipv6;
+                }
+            }
+
+            list device {
+                tailf:hidden "Attach device defined in infra";
+                key "kp leaf-id";
+
+                leaf kp {
+                    tailf:info "Attach vrf or bd keypath";
+                    type string;
+                }
+
+                leaf leaf-id {
+                    tailf:info "Define Leaf Node ID";
+                    type string;
+                }
+            }
+        }
+
+        leaf site {
+            tailf:hidden "Just for convenience";
+            type string;
+            tailf:default-ref "../../cisco-dc:fabric";
+        }
+    }
+}

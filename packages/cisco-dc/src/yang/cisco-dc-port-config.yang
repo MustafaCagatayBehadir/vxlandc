@@ -32,6 +32,7 @@ submodule cisco-dc-port-config {
 
         leaf mode {
             tailf:info "Port Group Mode can be Access or Trunk";
+            tailf:display-when "not(../mode-oper)";
             type enumeration {
                 enum access;
                 enum trunk;
@@ -39,17 +40,20 @@ submodule cisco-dc-port-config {
             mandatory true;
         }
 
+        leaf mode-oper {
+            tailf:info "Port Group Mode operational value";
+            tailf:cli-show-config;
+            config false;
+            type string;
+            tailf:default-ref "../mode";
+        }
+
         list bd-service {
             tailf:hidden "Attach bridge domain defined in infra";
-            key "tenant bd";
+            key "kp";
 
-            leaf tenant {
-                tailf:info "Specify tenant name";
-                type string;
-            }
-
-            leaf bd {
-                tailf:info "Specify bridge domain name";
+            leaf kp {
+                tailf:info "Specify keypath name";
                 type string;
             }
         }
@@ -100,7 +104,14 @@ submodule cisco-dc-port-config {
 
             case ethernet {
                 container ethernet {
+                    when "not(current()/../port-channel) and not(current()/../vpc-port-channel)";
                     tailf:info "Single Attach Port Type";
+
+                    leaf node-copy {
+                        tailf:info "only to suppress compiler warning on must expression";
+                        type string;
+                        tailf:hidden "dc";
+                    }
 
                     leaf node {
                         must "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../site]" 
@@ -108,6 +119,12 @@ submodule cisco-dc-port-config {
                             error-message
                               "Node type must be access-leaf";
                         }
+
+                        must "not(../node-copy) or ../node-copy = ." {
+                            error-message
+                              "Node can't be changed ones the port is deployed";
+                        }
+
                         tailf:info "Node Name";
                         type leafref {
                             path "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../site]"
@@ -135,6 +152,7 @@ submodule cisco-dc-port-config {
 
             case port-channel {
                 container port-channel {
+                    when "not(current()/../ethernet) and not(current()/../vpc-port-channel)";
                     tailf:info "Port Channel Port Type";
 
                     leaf port-channel-id {
@@ -151,12 +169,24 @@ submodule cisco-dc-port-config {
                         }
                     }
 
+                    leaf node-copy {
+                        tailf:info "only to suppress compiler warning on must expression";
+                        type string;
+                        tailf:hidden "dc";
+                    }
+
                     leaf node {
                         must "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../site]" 
                              + "/cisco-dc:node[cisco-dc:hostname=current()]/cisco-dc:node-role = 'access-leaf'" {
                             error-message
                               "Node type must be access-leaf";
                         }
+
+                        must "not(../node-copy) or ../node-copy = ." {
+                            error-message
+                              "Node can't be changed ones the port is deployed";
+                        }
+
                         tailf:info "Node Name";
                         type leafref {
                             path "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../site]"
@@ -183,6 +213,7 @@ submodule cisco-dc-port-config {
 
             case vpc-port-channel {
                 container vpc-port-channel {
+                    when "not(current()/../ethernet) and not(current()/../port-channel)";
                     tailf:info "VPC Port Channel Port Type";
 
                     leaf port-channel-id {
@@ -199,7 +230,19 @@ submodule cisco-dc-port-config {
                         }
                     }
 
+                    leaf node-group-copy {
+                        tailf:info "only to suppress compiler warning on must expression";
+                        type string;
+                        tailf:hidden "dc";
+                    }
+
                     leaf node-group {
+
+                        must "not(../node-group-copy) or ../node-group-copy = ." {
+                            error-message
+                              "Node-Group can't be changed ones the port is deployed";
+                        }
+
                         tailf:info "Node Group Name";
                         type leafref {
                             path "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../site]"
@@ -239,6 +282,7 @@ submodule cisco-dc-port-config {
                     }
 
                     list node {
+                        tailf:hidden "dc";
 
                         key name;
 
@@ -248,7 +292,6 @@ submodule cisco-dc-port-config {
                         }
 
                         leaf allocated-port-channel-id {
-                            tailf:hidden "Just for convenience";
                             type uint16 {
                                 range "1..500";
                             }
@@ -264,14 +307,52 @@ submodule cisco-dc-port-config {
             }
         }
 
+        list bd-vlan {
+            tailf:hidden "Attach bridge domain vlan id";
+            key "kp vlan";
+
+            leaf kp {
+                tailf:info "Specify keypath name";
+                type string;
+            }
+
+            leaf vlan {
+                tailf:info "Define vlan value";
+                type vlan;
+            }
+        }
+
         leaf shutdown {
             tailf:info "Port administratively down";
             type empty;
         }
 
-        leaf storm-control-action-trap {
-            tailf:info "Change storm control action to trap";
-            type empty;
+        leaf storm-control-action {
+            tailf:info "Storm control action can be trap | shutdown";
+            tailf:cli-show-with-default;
+            type enumeration {
+                enum trap;
+                enum shutdown;
+            }
+            default shutdown;
+        }
+
+        leaf auto-bum {
+            tailf:info "BUM is auto-generated based on port speed.";
+            tailf:cli-show-config;
+            config false;
+            type decimal64 {
+                fraction-digits 2;
+                range "0.0..100.0";
+            }
+        }
+
+        leaf bum {
+            tailf:info "BUM is auto-generated, use this field to overwrite the default behavior.";
+            type decimal64 {
+                fraction-digits 2;
+                range "0.0..100.0";
+            }
         }
 
         leaf site {
@@ -281,9 +362,8 @@ submodule cisco-dc-port-config {
         }
 
         leaf mode {
-            tailf:hidden "Just for convenience";
+            tailf:hidden "dc";
             type string;
-            tailf:default-ref "../../mode";
         }
 
         leaf port-group {
@@ -293,15 +373,8 @@ submodule cisco-dc-port-config {
         }
 
         leaf type {
-            tailf:hidden "Just for convenience";
+            tailf:hidden "dc";
             type string;
-        }
-
-        leaf bum {
-            tailf:hidden "Just for convenience";
-            type decimal64 {
-                fraction-digits 2;
-            }
         }
 
         leaf approved {

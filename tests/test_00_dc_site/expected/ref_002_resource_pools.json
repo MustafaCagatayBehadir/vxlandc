@@ -2,45 +2,10 @@
     "resource-allocator:resource-pools": {
         "id-allocator:id-pool": [
             {
-                "name": "avr-dss1-lbox-yaani-fabric::AVR-DSS1-BIP-BLF-SW-01::port-channel-id",
+                "name": "avr-dss1-lbox-yaani-fabric::fabric-external-l3-vrf-vlan",
                 "range": {
-                    "start": 1,
-                    "end": 500
-                }
-            },
-            {
-                "name": "avr-dss1-lbox-yaani-fabric::AVR-DSS1-BIP-BLF-SW-02::port-channel-id",
-                "range": {
-                    "start": 1,
-                    "end": 500
-                }
-            },
-            {
-                "name": "avr-dss1-lbox-yaani-fabric::AVR-DSS1-BIP-SW-01_AVR-DSS1-BIP-SW-02_VPC-1::port-channel-id",
-                "range": {
-                    "start": 1,
-                    "end": 500
-                }
-            },
-            {
-                "name": "avr-dss1-lbox-yaani-fabric::AVR-DSS1-BIP-SW-03::port-channel-id",
-                "range": {
-                    "start": 1,
-                    "end": 500
-                }
-            },
-            {
-                "name": "avr-dss1-lbox-yaani-fabric::AVR-DSS1-BIP-SW-04::port-channel-id",
-                "range": {
-                    "start": 1,
-                    "end": 500
-                }
-            },
-            {
-                "name": "avr-dss1-lbox-yaani-fabric::AVR-DSS1-BIP-SW-05_AVR-DSS1-BIP-SW-06_VPC-2::port-channel-id",
-                "range": {
-                    "start": 1,
-                    "end": 500
+                    "start": 2,
+                    "end": 4094
                 }
             },
             {
@@ -69,6 +34,34 @@
                 "range": {
                     "start": 80000,
                     "end": 89000
+                }
+            },
+            {
+                "name": "avr-dss1-lbox-yaani-fabric::nw_blf_cnx9_001.dsslab_site1::port-channel-id",
+                "range": {
+                    "start": 1,
+                    "end": 500
+                }
+            },
+            {
+                "name": "avr-dss1-lbox-yaani-fabric::nw_blf_cnx9_002.dsslab_site1::port-channel-id",
+                "range": {
+                    "start": 1,
+                    "end": 500
+                }
+            },
+            {
+                "name": "avr-dss1-lbox-yaani-fabric::nw_lf_cnx9_001.dsslab_site1_nw_lf_cnx9_002.dsslab_site1_VPC-1::port-channel-id",
+                "range": {
+                    "start": 1,
+                    "end": 500
+                }
+            },
+            {
+                "name": "avr-dss1-lbox-yaani-fabric::nw_lf_cnx9_003.dsslab_site1_nw_lf_cnx9_004.dsslab_site1_VPC-2::port-channel-id",
+                "range": {
+                    "start": 1,
+                    "end": 500
                 }
             }
         ]

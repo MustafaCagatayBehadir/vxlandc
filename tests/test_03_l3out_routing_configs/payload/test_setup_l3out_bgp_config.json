@@ -1,0 +1,157 @@
+{
+    "cisco-dc:dc-site": [
+        {
+            "fabric": "avr-dss1-lbox-yaani-fabric",
+            "tenant-service": [
+                {
+                    "name": "0001_TURKCELL",
+                    "bridge-domain": [
+                        {
+                            "name": "BD-SERVICE-1",
+                            "routing": {
+                                "bgp": [
+                                    {
+                                        "peer-address": "10.0.0.2",
+                                        "source-interface": {
+                                            "fabric-internal-connection": {
+                                                "node": [
+                                                    {
+                                                        "leaf-id": "nw_lf_cnx9_001.dsslab_site1",
+                                                        "loopback-id": 100,
+                                                        "address": "10.1.0.1/32"
+                                                    },
+                                                    {
+                                                        "leaf-id": "nw_lf_cnx9_002.dsslab_site1",
+                                                        "loopback-id": 100,
+                                                        "address": "10.1.0.2/32"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "remote-as": 65540
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "BD-SERVICE-2",
+                            "routing": {
+                                "bgp": [
+                                    {
+                                        "peer-address": "2001:db8:cafe::2",
+                                        "source-interface": {
+                                            "fabric-internal-connection": {
+                                                "node": [
+                                                    {
+                                                        "loopback-id": 100,
+                                                        "leaf-id": "nw_lf_cnx9_003.dsslab_site1",
+                                                        "address": "2001:db8:cafe:2::1/64"
+                                                    },
+                                                    {
+                                                        "loopback-id": 100,
+                                                        "leaf-id": "nw_lf_cnx9_004.dsslab_site1",
+                                                        "address": "2001:db8:cafe:3::1/64"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "remote-as": 65540
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ],
+            "vrf-config": [
+                {
+                    "name": "tcell-grt",
+                    "routing": {
+                        "bgp": [
+                            {
+                                "peer-address": "172.16.0.1",
+                                "source-interface": {
+                                    "fabric-external-connection": {
+                                        "node": "nw_blf_cnx9_001.dsslab_site1",
+                                        "connection": "uplink-to-dci-gw-01"
+                                    }
+                                },
+                                "remote-as": 34984
+                            },
+                            {
+                                "peer-address": "172.16.0.5",
+                                "source-interface": {
+                                    "fabric-external-connection": {
+                                        "node": "nw_blf_cnx9_001.dsslab_site1",
+                                        "connection": "uplink-to-dci-gw-02"
+                                    }
+                                },
+                                "remote-as": 34984
+                            },
+                            {
+                                "peer-address": "172.16.1.1",
+                                "source-interface": {
+                                    "fabric-external-connection": {
+                                        "node": "nw_blf_cnx9_002.dsslab_site1",
+                                        "connection": "uplink-to-dci-gw-01"
+                                    }
+                                },
+                                "remote-as": 34984
+                            },
+                            {
+                                "peer-address": "172.16.1.5",
+                                "source-interface": {
+                                    "fabric-external-connection": {
+                                        "node": "nw_blf_cnx9_002.dsslab_site1",
+                                        "connection": "uplink-to-dci-gw-02"
+                                    }
+                                },
+                                "remote-as": 34984
+                            },
+                            {
+                                "peer-address": "2001:db8:cafe:2::1",
+                                "source-interface": {
+                                    "fabric-external-connection": {
+                                        "node": "nw_blf_cnx9_001.dsslab_site1",
+                                        "connection": "uplink-to-dci-gw-01"
+                                    }
+                                },
+                                "remote-as": 34984
+                            },
+                            {
+                                "peer-address": "2001:db8:cafe:3::1",
+                                "source-interface": {
+                                    "fabric-external-connection": {
+                                        "node": "nw_blf_cnx9_001.dsslab_site1",
+                                        "connection": "uplink-to-dci-gw-02"
+                                    }
+                                },
+                                "remote-as": 34984
+                            },
+                            {
+                                "peer-address": "2001:db8:cafe:4::1",
+                                "source-interface": {
+                                    "fabric-external-connection": {
+                                        "node": "nw_blf_cnx9_002.dsslab_site1",
+                                        "connection": "uplink-to-dci-gw-01"
+                                    }
+                                },
+                                "remote-as": 34984
+                            },
+                            {
+                                "peer-address": "2001:db8:cafe:5::1",
+                                "source-interface": {
+                                    "fabric-external-connection": {
+                                        "node": "nw_blf_cnx9_002.dsslab_site1",
+                                        "connection": "uplink-to-dci-gw-02"
+                                    }
+                                },
+                                "remote-as": 34984
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,13 @@
+{
+    "cisco-dc:bridge-domain": [
+        {
+            "name": "BD-SERVICE-3",
+            "cisco-dc:bd-subnet": [
+                {
+                    "address": "10.0.2.1/24",
+                    "preferred": "yes"
+                }
+            ]
+        }
+    ]
+}

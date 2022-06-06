@@ -8,7 +8,7 @@
             "switchport": {
                 "mode": "trunk"
             },
-            "description": "VPC100002_TRUNK_10G_VPC",
+            "description": "VPC100002:trunk:20G",
             "mtu": 9216,
             "spanning-tree": {
                 "guard": "root",
@@ -30,7 +30,7 @@
                     "level": "2.0"
                 },
                 "action": {
-                    "trap": [
+                    "shutdown": [
                         null
                     ]
                 }

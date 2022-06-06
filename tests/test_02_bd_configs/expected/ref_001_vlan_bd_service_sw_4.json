@@ -1,0 +1,29 @@
+{
+    "tailf-ned-cisco-nx:vlan": {
+        "vlan-list": [
+            {
+                "id": 1
+            },
+            {
+                "id": 3,
+                "name": "0001_TURKCELL:BD-SERVICE-2:ne...",
+                "vn-segment": 60001
+            },
+            {
+                "id": 6,
+                "name": "0002_TURKCELL:BD-SERVICE-5:ne...",
+                "vn-segment": 60004
+            },
+            {
+                "id": 3101,
+                "name": "pdu-mgmt:vrf-vlan",
+                "vn-segment": 80000
+            },
+            {
+                "id": 3102,
+                "name": "tcell-grt:vrf-vlan",
+                "vn-segment": 80001
+            }
+        ]
+    }
+}

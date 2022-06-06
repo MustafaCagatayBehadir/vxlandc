@@ -1,0 +1,11 @@
+---
+
+- hosts: localhost
+  vars_files:
+    - cco_creds
+    - vars/nso
+
+  roles:
+    - { role: download-nso-packages }
+
+...

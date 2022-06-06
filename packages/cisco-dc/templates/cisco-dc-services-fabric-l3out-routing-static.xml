@@ -1,0 +1,34 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+    <?set VRF={vrf}?>
+    <devices xmlns="http://tail-f.com/ns/ncs" foreach="{routing/static-route/destination}">
+        <?set PREFIX={address}?>
+        <device>
+            <name>{source-node/device/leaf-id}</name>
+            <config>
+                <vrf xmlns="http://tail-f.com/ned/cisco-nx">
+                    <context>
+                        <id>{$VRF}</id>
+                        <ip when="{address-family='ipv4'}">
+                            <route>
+                                <ip-route-list>
+                                    <prefix-mask>{$PREFIX}</prefix-mask>
+                                    <next-hop>{ip-nexthop}</next-hop>
+                                    <name>{$STATIC_ROUTE_NAME}</name>
+                                </ip-route-list>
+                            </route>
+                        </ip>
+                        <ipv6 when="{address-family='ipv6'}">
+                            <route>
+                                <ipv6-route-list>
+                                    <prefix-mask>{$PREFIX}</prefix-mask>
+                                    <next-hop>{ip-nexthop}</next-hop>
+                                    <name>{$STATIC_ROUTE_NAME}</name>
+                                </ipv6-route-list>
+                            </route>
+                        </ipv6>
+                    </context>
+                </vrf>
+            </config>
+        </device>
+    </devices>
+</config-template>

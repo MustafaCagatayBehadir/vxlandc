@@ -10,3 +10,4 @@ def load_test_data(path):
 @fixture
 def expected(request):
     return load_test_data(request.param)
+

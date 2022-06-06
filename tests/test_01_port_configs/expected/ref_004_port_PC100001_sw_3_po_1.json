@@ -11,7 +11,7 @@
             "shutdown": [
                 null
             ],
-            "description": "PC100001_TRUNK_100G_PC",
+            "description": "PC100001:trunk:200G",
             "mtu": 9216,
             "spanning-tree": {
                 "bpduguard": "enable",
@@ -33,7 +33,7 @@
                     "level": "0.5"
                 },
                 "action": {
-                    "trap": [
+                    "shutdown": [
                         null
                     ]
                 }

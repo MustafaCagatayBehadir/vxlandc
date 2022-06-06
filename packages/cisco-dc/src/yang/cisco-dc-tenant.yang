@@ -9,9 +9,11 @@ submodule cisco-dc-tenant {
     import ietf-inet-types {
         prefix inet;
     }
+
     import tailf-common {
         prefix tailf;
     }
+
     import tailf-ncs {
         prefix ncs;
     }
@@ -39,26 +41,6 @@ submodule cisco-dc-tenant {
             type string;
             tailf:info "Tenant Description";
         }
-
-        leaf id {
-            tailf:hidden "dc";
-            type uint32;
-        }
-
-        list vrf {
-            tailf:info "Specify VRF's";
-            key name;
-
-            leaf name {
-                tailf:info "Define VRF name";
-                type dc-string;
-            }
-
-            leaf id {
-                tailf:hidden "dc";
-                type uint32;
-            }
-        }
     }
 
     grouping bridge-domain {
@@ -68,27 +50,12 @@ submodule cisco-dc-tenant {
             type dc-string;
         }
 
-        leaf id {
-            tailf:hidden "dc";
-            type uint32;
+        tailf:validate "bridge-domain-service-validation" {
+            tailf:dependency "bd-subnet";
         }
 
         container l2vni {
             tailf:info "Layer 2 VNI Configuration Parameters";
-
-            leaf vlan-id {
-                tailf:info "Vlan id is allocated by resource-manager, use this field to overwrite the default behavior.";
-                type vlan;
-            }
-
-            leaf vni-id {
-                tailf:info "Vni id is allocated by resource-manager, use this field to overwrite the default behavior.";
-                type vxlan-id;
-            }
-        }
-
-        container l3vni {
-            tailf:info "Layer 3 VNI Configuration Parameters";
 
             leaf vlan-id {
                 tailf:info "Vlan id is allocated by resource-manager, use this field to overwrite the default behavior.";
@@ -128,113 +95,36 @@ submodule cisco-dc-tenant {
                 mandatory true;
             }
 
-            list port {
-                tailf:info "Attach port defined in fabric";
-
-                key name;
-
-                leaf name {
-                    tailf:info "Port Name";
-                    type leafref {
-                        path "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../../../../fabric]/cisco-dc:port-configs[cisco-dc:name=current()/../../name]"
-                        + "/cisco-dc:port-config/cisco-dc:name";
-                    }
-                }
+            must "count(/cisco-dc:dc-site[cisco-dc:fabric=current()/../site]/cisco-dc:tenant-service/cisco-dc:bridge-domain/port-group[cisco-dc:name=current()/name]) = 1 or "
+            + "current()/mode = 'trunk'" {
+                error-message
+                  "Access port-group can not be added more than one bridge-domain.";
             }
         }
 
-        list port {
-            // tailf:hidden "Attach access port defined in infra";
-            key "leaf-id name";
+        list port-device {
+            tailf:hidden "Attach device defined in infra by port service";
+            key "kp leaf-id";
+
+            leaf kp {
+                tailf:info "Attach port keypath";
+                type string;
+            }
 
             leaf leaf-id {
                 tailf:info "Define Leaf Node ID";
                 type string;
-            }
-
-            leaf name {
-                tailf:info "Attach port name";
-                type string;
-            }
-
-            leaf-list interface-id {
-                tailf:info "Define Interface ID example: 1/19";
-                type node-port;
-            }
-
-            leaf mode {
-                tailf:info "Port Mode.It can be Access | Trunk";
-                type string;
-            }
-
-            leaf vlan {
-                tailf:info "Define vlan value";
-                type vlan;
-            }
-        }
-
-        list direct-pc {
-            // tailf:hidden "Attach direct port-channel defined in infra";
-            key "leaf-id name";
-
-            leaf leaf-id {
-                tailf:info "Define Leaf Node ID";
-                type string;
-            }
-
-            leaf name {
-                tailf:info "Attach direct-port-channel name";
-                type string;
-            }
-
-            leaf port-channel-id {
-                tailf:info "Port Channel Id";
-                type uint16;
-            }
-
-            leaf mode {
-                tailf:info "Port Mode.It can be Access | Trunk";
-                type string;
-            }
-
-            leaf vlan {
-                tailf:info "Define vlan value";
-                type vlan;
-            }
-        }
-
-        list virtual-pc {
-            // tailf:hidden "Attach virtual port-channel defined in infra";
-            key "leaf-id name";
-            leaf leaf-id {
-                tailf:info "Define Leaf Node ID";
-                type string;
-            }
-
-            leaf name {
-                tailf:info "Attach virtual-port-channel name";
-                type string;
-            }
-
-            leaf port-channel-id {
-                tailf:info "Port Channel Id";
-                type uint16;
-            }
-
-            leaf mode {
-                tailf:info "Port Mode.It can be Access | Trunk";
-                type string;
-            }
-
-            leaf vlan {
-                tailf:info "Define vlan value";
-                type vlan;
             }
         }
 
         list device {
-            tailf:hidden "Attach device defined in infra";
-            key "leaf-id";
+            tailf:hidden "Attach device defined in infra by bd service";
+            key "kp leaf-id";
+
+            leaf kp {
+                tailf:info "Attach port keypath";
+                type string;
+            }
 
             leaf leaf-id {
                 tailf:info "Define Leaf Node ID";
@@ -244,21 +134,13 @@ submodule cisco-dc-tenant {
             leaf network-vlan {
                 tailf:info "Define network vlan value";
                 type vlan;
-            }
-
-            leaf vrf-vlan {
-                tailf:info "Define vrf vlan value";
-                type vlan;
+                tailf:default-ref "../../cisco-dc:vlan-id";
             }
 
             leaf l2vni {
                 tailf:info "L2 Vni id is allocated by resource-manager";
                 type vxlan-id;
-            }
-
-            leaf l3vni {
-                tailf:info "L3 Vni id is allocated by resource-manager";
-                type vxlan-id;
+                tailf:default-ref "../../cisco-dc:vni-id";
             }
         }
 
@@ -272,12 +154,20 @@ submodule cisco-dc-tenant {
             }
 
             leaf preferred {
-                tailf:info "Specify preferred value [no]";
+                tailf:info "Specify preferred value [yes] for primary ip address.";
                 type enumeration {
                     enum yes;
                     enum no;
                 }
                 default no;
+            }
+
+            leaf address-family {
+                tailf:hidden "dc";
+                type enumeration {
+                    enum ipv4;
+                    enum ipv6;
+                }
             }
         }
 
@@ -285,21 +175,30 @@ submodule cisco-dc-tenant {
             when "../bd-subnet";
             tailf:info "Associate VRF on Bridge Domain";
             type leafref {
-                path "../../cisco-dc:vrf/cisco-dc:name";
+                path "../../../cisco-dc:vrf-config/cisco-dc:name";
             }
             mandatory true;
+
+            must "/cisco-dc:dc-site[cisco-dc:fabric=current()/../site]/cisco-dc:vrf-config[cisco-dc:name=current()]/cisco-dc:approved='true'" {
+                error-message
+                  "Vrf approved should be set to true before adding to bridge-domain";
+            }
+        }
+
+        leaf vlan-id {
+            tailf:hidden "Just for convenience";
+            type vlan;
+        }
+
+        leaf vni-id {
+            tailf:hidden "Just for convenience";
+            type vxlan-id;
         }
 
         leaf site {
             tailf:hidden "Just for convenience";
             type string;
             tailf:default-ref "../../../cisco-dc:fabric";
-        }
-
-        leaf as-number {
-            tailf:hidden "Just for convenience";
-            type inet:as-number;
-            tailf:default-ref "../../../cisco-dc:fabric-parameters/cisco-dc:as-number";
         }
 
         leaf mcast-group {

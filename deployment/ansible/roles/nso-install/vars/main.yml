@@ -1,0 +1,6 @@
+---
+
+nso_xml_namespace: http://tail-f.com/yang/tailf-ncs-config
+nso_config_file: "/etc/ncs/ncs.conf"
+
+...

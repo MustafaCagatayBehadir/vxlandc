@@ -1,15 +1,9 @@
 {
     "port-config": [
         {
-            "name": "PC100003",
-            "description": "CUSTOM_DESCRIPTION_PC100003",
-            "connection": "host",
-            "speed": "1G",
+            "name": "PC100001",
             "port-channel": {
-                "node": "AVR-DSS1-BIP-SW-03",
-                "node-port": [
-                    "1/10"
-                ]
+                "node": "nw_lf_cnx9_004.dsslab_site1"
             }
         }
     ]

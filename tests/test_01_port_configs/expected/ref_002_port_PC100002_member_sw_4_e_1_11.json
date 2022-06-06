@@ -2,11 +2,14 @@
     "tailf-ned-cisco-nx:Ethernet": [
         {
             "name": "1/11",
+            "enable": {
+                "switchport": true
+            },
             "channel-group": {
-                "id": 1,
+                "id": 2,
                 "mode": "active"
             },
-            "description": "PO1_MEMBER_ETH_1/11",
+            "description": "PC100002:MEMBER",
             "mtu": 9216
         }
     ]

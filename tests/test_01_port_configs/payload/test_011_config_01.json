@@ -1,0 +1,13 @@
+{
+    "port-config": [
+        {
+            "name": "ETH100001",
+            "ethernet": {
+                "node-port": [
+                    "1/1",
+                    "1/48"
+                ]
+            }
+        }
+    ]
+}

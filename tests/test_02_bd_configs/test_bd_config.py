@@ -128,7 +128,7 @@ class BDConfigsTests:
         assert resp.status_code == 200
         assert json.loads(resp.text) == expected
 
-    @mark.parametrize('expected, patch_payload, post_path', [
+    @mark.parametrize('expected, patch_payload, patch_path', [
         (expected_path / 'ref_007_bd_service_1_error.json',
          payload_path / 'test_007_config_01.json',
          'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-1'),
@@ -139,28 +139,28 @@ class BDConfigsTests:
          payload_path / 'test_007_config_03.json',
          'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-3')
     ], indirect=['expected'])
-    def test_007_bd_subnet_preferred(self, expected, patch_payload, post_path):
-        resp = self.nso.patch(payload=patch_payload, path=post_path, params='')
+    def test_007_bd_subnet_preferred(self, expected, patch_payload, patch_path):
+        resp = self.nso.patch(payload=patch_payload, path=patch_path, params='')
         assert resp.status_code == 400
         assert json.loads(resp.text) == expected
 
-    @mark.parametrize('expected, patch_payload, post_path', [
+    @mark.parametrize('expected, patch_payload, patch_path', [
         (expected_path / 'ref_008_bd_service_1_error.json',
          payload_path / 'test_008_config_01.json',
          'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-1')
     ], indirect=['expected'])
-    def test_008_bd_access_port_group(self, expected, patch_payload, post_path):
-        resp = self.nso.patch(payload=patch_payload, path=post_path, params='')
+    def test_008_bd_access_port_group(self, expected, patch_payload, patch_path):
+        resp = self.nso.patch(payload=patch_payload, path=patch_path, params='')
         assert resp.status_code == 400
         assert json.loads(resp.text) == expected
 
-    @mark.parametrize('expected, patch_payload, post_path', [
+    @mark.parametrize('expected, patch_payload, patch_path', [
         (expected_path / 'ref_009_bd_service_1_error.json',
          payload_path / 'test_009_config_01.json',
          'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-1/vrf')
     ], indirect=['expected'])
-    def test_009_bd_vrf(self, expected, patch_payload, post_path):
-        resp = self.nso.patch(payload=patch_payload, path=post_path, params='')
+    def test_009_bd_vrf(self, expected, patch_payload, patch_path):
+        resp = self.nso.patch(payload=patch_payload, path=patch_path, params='')
         assert resp.status_code == 400
         assert json.loads(resp.text) == expected
 
@@ -172,5 +172,15 @@ class BDConfigsTests:
     ], indirect=['expected'])
     def test_010_tenant_delete(self, expected, delete_path):
         resp = self.nso.delete(path=delete_path)
+        assert resp.status_code == 400
+        assert json.loads(resp.text) == expected
+
+    @mark.parametrize('expected, post_payload, post_path', [
+        (expected_path / 'ref_011_vrf_service_1_error.json',
+         payload_path / 'test_011_config_01.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/vrf-config=vrf-100002')
+    ], indirect=['expected'])
+    def test_011_vrf_external_vlan_is_used(self, expected, post_payload, post_path):
+        resp = self.nso.post(post_payload, post_path, params='', action=False)
         assert resp.status_code == 400
         assert json.loads(resp.text) == expected

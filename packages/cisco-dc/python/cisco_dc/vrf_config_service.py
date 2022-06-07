@@ -1,3 +1,4 @@
+from multiprocessing import connection
 import ncs
 from .resource_manager import id_allocator
 from . import utils
@@ -63,6 +64,7 @@ def _configure_vrf(root, vrf, tctx, log):
     """
     id_parameters = dict()
     _create_service_parameters(root, vrf, tctx, id_parameters, log)
+    _raise_service_exceptions(root, vrf, tctx, id_parameters, log)
     _set_hidden_leaves(root, vrf, id_parameters, log)
 
 
@@ -85,6 +87,32 @@ def _create_service_parameters(root, vrf, tctx, id_parameters, log):
         id_parameters[parameter] = id_allocator.id_read(
             tctx.username, root, pool_name, allocation_name)
     log.info('Id Parameters :', id_parameters)
+
+
+def _raise_service_exceptions(root, vrf, tctx, id_parameters, log):
+    """Function to raise exception based on service prechecks
+
+    Args:
+        root: Maagic object pointing to the root of the CDB
+        vrf: service node
+        tctx: transaction context (TransCtxRef)
+        id_parameters: dict object
+        log: log object(self.log)
+
+    """
+    site = root.cisco_dc__dc_site[vrf.site]
+    nodes = [
+        node.hostname for node in site.node if node.node_role == 'border-leaf']
+    connections = [site.connections.uplink_to_dci_gw_01,
+                   site.connections.uplink_to_dci_gw_02]
+    node_connections = [(node, connection)
+                        for node in nodes for connection in connections]
+    encap = id_parameters.get('fabric-external-vrf-vlan')
+    for node, connection in node_connections:
+        device = root.ncs__devices.device[node]
+        if f'{connection}.{encap}' in device.config.nx__interface.port_channel:
+            raise Exception(
+                f'Fabric external vrf vlan {encap} is already used in device {node} connection port-channel{connection}.{encap}')
 
 
 def _set_hidden_leaves(root, vrf, id_parameters, log):

@@ -6,8 +6,6 @@ import ncs.maagic as maagic
 
 from . import utils
 from .resource_manager import id_allocator
-from .diff_iterate import DiffIterator
-from collections import defaultdict
 
 
 class PortServiceCallback(ncs.application.Service):
@@ -236,7 +234,6 @@ def _create_service_parameters(root, port, tctx, id_parameters, log):
     elif port.port_type == 'vpc-port-channel':
         id_parameters['port-channel-id'] = id_allocator.id_read(
             tctx.username, root, utils.get_port_channel_id_pool_name(root, port), f'{port.site}:{port.port_group}:{port.name}')
-    log.info('Id Parameters: ', id_parameters)
 
 
 def _raise_service_exceptions(root, port, tctx, id_parameters, log):
@@ -250,7 +247,6 @@ def _raise_service_exceptions(root, port, tctx, id_parameters, log):
         log: log object(self.log)
 
     """
-    log.info('Id Parameters: ', id_parameters)
     if port.port_type == 'port-channel':
         pc = port.port_channel
         device = root.ncs__devices.device[pc.node]

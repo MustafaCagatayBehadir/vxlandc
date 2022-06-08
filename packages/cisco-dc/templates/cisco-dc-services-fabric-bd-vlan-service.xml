@@ -1,0 +1,78 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+    <?set VLAN={vlan-id}?>
+    <devices xmlns="http://tail-f.com/ns/ncs" foreach="{port-group}">
+        <?set-context-node {deref(name)/..}?>
+        <?foreach {port-config}?>
+            <?save-context service?>
+            <device when="{type='ethernet'}">
+                <name>{ethernet/node}</name>
+                <config>
+                    <interface xmlns="http://tail-f.com/ned/cisco-nx">
+                        <Ethernet>
+                            <name>{node-port}</name>
+                            <?switch-context service?>
+                            <switchport>
+                                <trunk when="{mode='trunk'}">
+                                    <allowed>
+                                        <vlan>
+                                            <ids>{$VLAN}</ids>
+                                        </vlan>
+                                    </allowed>
+                                </trunk>
+                                <access when="{mode='access'}">
+                                    <vlan>{$VLAN}</vlan>
+                                </access>
+                            </switchport>
+                        </Ethernet>
+                    </interface>
+                </config>
+            </device>
+            <device when="{type='port-channel'}">
+                <name>{port-channel/node}</name>
+                <config>
+                    <interface xmlns="http://tail-f.com/ned/cisco-nx">
+                        <port-channel>
+                            <name>{allocated-port-channel-id}</name>
+                            <?switch-context service?>
+                            <switchport>
+                                <trunk when="{mode='trunk'}">
+                                    <allowed>
+                                        <vlan>
+                                            <ids>{$VLAN}</ids>
+                                        </vlan>
+                                    </allowed>
+                                </trunk>
+                                <access when="{mode='access'}">
+                                    <vlan>{$VLAN}</vlan>
+                                </access>
+                            </switchport>
+                        </port-channel>
+                    </interface>
+                </config>
+            </device>
+            <device when="{type='vpc-port-channel'}">
+                <name>{vpc-port-channel/node/name}</name>
+                <config>
+                    <interface xmlns="http://tail-f.com/ned/cisco-nx">
+                        <port-channel>
+                            <name>{allocated-port-channel-id}</name>
+                            <?switch-context service?>
+                            <switchport>
+                                <trunk when="{mode='trunk'}">
+                                    <allowed>
+                                        <vlan>
+                                            <ids>{$VLAN}</ids>
+                                        </vlan>
+                                    </allowed>
+                                </trunk>
+                                <access when="{mode='access'}">
+                                    <vlan>{$VLAN}</vlan>
+                                </access>
+                            </switchport>
+                        </port-channel>
+                    </interface>
+                </config>
+            </device>
+        <?end?>
+    </devices>
+</config-template>

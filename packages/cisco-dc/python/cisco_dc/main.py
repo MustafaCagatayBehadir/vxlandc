@@ -29,6 +29,10 @@ class Main(ncs.application.Application):
         self.register_nano_service('port-config-servicepoint', 'ncs:self',
                                    'cisco-dc:port-configured', port_config_service.PortServiceSelfComponent)
 
+        # Bridge Domain Premod & Postmod
+        self.register_service('bridge-domain-config-servicepoint',
+                              bridge_domain_service.BridgeDomainServiceCallback)
+
         # Bridge Domain Registration
         self.register_nano_service('bridge-domain-config-servicepoint', 'ncs:self',
                                    'cisco-dc:id-allocated', bridge_domain_service.BridgeDomainServiceSelfComponent)

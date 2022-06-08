@@ -303,21 +303,6 @@ submodule cisco-dc-port-config {
             }
         }
 
-        list bd-vlan {
-            tailf:hidden "Attach bridge domain vlan id";
-            key "kp vlan";
-
-            leaf kp {
-                tailf:info "Specify keypath name";
-                type string;
-            }
-
-            leaf vlan {
-                tailf:info "Define vlan value";
-                type vlan;
-            }
-        }
-
         leaf shutdown {
             tailf:info "Port administratively down";
             type empty;

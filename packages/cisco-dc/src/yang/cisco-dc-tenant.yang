@@ -105,12 +105,10 @@ submodule cisco-dc-tenant {
         list port-device {
             tailf:hidden "Attach device defined in infra by port service";
             key "kp leaf-id";
-
             leaf kp {
                 tailf:info "Attach port keypath";
                 type string;
             }
-
             leaf leaf-id {
                 tailf:info "Define Leaf Node ID";
                 type string;

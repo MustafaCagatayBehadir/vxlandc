@@ -13,16 +13,6 @@
                         </enable>
                         <switchport>
                             <mode>{mode}</mode>
-                            <trunk when="{mode='trunk'}">
-                                <allowed>
-                                    <vlan>
-                                        <ids>{bd-vlan/vlan}</ids>
-                                    </vlan>
-                                </allowed>
-                            </trunk>
-                            <access when="{mode='access'}">
-                                <vlan>{bd-vlan/vlan}</vlan>
-                            </access>
                         </switchport>
                         <shutdown when="{shutdown}" />
                         <shutdown when="{not(shutdown)}" tags="delete" />
@@ -70,16 +60,6 @@
                         </enable>
                         <switchport>
                             <mode>{mode}</mode>
-                            <trunk when="{mode='trunk'}">
-                                <allowed>
-                                    <vlan>
-                                        <ids>{bd-vlan/vlan}</ids>
-                                    </vlan>
-                                </allowed>
-                            </trunk>
-                            <access when="{mode='access'}">
-                                <vlan>{bd-vlan/vlan}</vlan>
-                            </access>
                         </switchport>
                         <shutdown when="{shutdown}" />
                         <shutdown when="{not(shutdown)}" tags="delete" />
@@ -139,16 +119,6 @@
                         </enable>
                         <switchport>
                             <mode>{mode}</mode>
-                            <trunk when="{mode='trunk'}">
-                                <allowed>
-                                    <vlan>
-                                        <ids>{bd-vlan/vlan}</ids>
-                                    </vlan>
-                                </allowed>
-                            </trunk>
-                            <access when="{mode='access'}">
-                                <vlan>{bd-vlan/vlan}</vlan>
-                            </access>
                         </switchport>
                         <shutdown when="{shutdown}" />
                         <shutdown when="{not(shutdown)}" tags="delete" />

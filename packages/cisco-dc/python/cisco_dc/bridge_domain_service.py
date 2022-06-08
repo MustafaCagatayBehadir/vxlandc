@@ -2,10 +2,106 @@ import ncs
 import _ncs
 import ncs.maapi as maapi
 import ncs.maagic as maagic
+
 from .resource_manager import id_allocator
 from . import bridge_domain_l3out_routing
 from . import utils
-from ipaddress import ip_address, IPv4Address, IPv6Address
+from . import xrapi
+from ipaddress import ip_address, ip_network, IPv4Address, IPv6Address, IPv4Network
+
+
+class BridgeDomainServiceCallback(ncs.application.Service):
+    @ncs.application.Service.pre_modification
+    def cb_pre_modification(self, tctx, op, kp, root, proplist):
+
+        self.log.info(
+            "ENTRY_POINT for {} at pre_mod of BridgeDomainConfigService, operation: {}" .format(
+                utils.get_kp_service_id(kp),
+                utils.get_service_operation(op)))
+        try:
+            if op == _ncs.dp.NCS_SERVICE_CREATE:
+                m = maapi.Maapi()
+                th = m.attach(tctx)
+
+                bd = maagic.get_node(th, str(kp))
+                # raise Exception("invalid create operation")
+                self._is_prefix_used(bd, proplist)
+
+            elif op == _ncs.dp.NCS_SERVICE_UPDATE:
+                m = maapi.Maapi()
+                th = m.attach(tctx)
+
+                bd = maagic.get_node(th, str(kp))
+                # raise Exception("invalid update operation")
+                self._is_prefix_used(bd, proplist)
+
+        except Exception as e:
+            self.log.error(e)
+            raise
+        self.log.info('Proplist: ', proplist)
+
+        return []
+
+    @ncs.application.Service.pre_modification
+    def cb_post_modification(self, tctx, op, kp, root, proplist):
+
+        self.log.info(
+            "ENTRY_POINT for {} at post_mod of BridgeDomainConfigService, operation: {}" .format(
+                utils.get_kp_service_id(kp),
+                utils.get_service_operation(op)))
+
+        try:
+            m = maapi.Maapi()
+            th = m.attach(tctx)
+
+            bd = maagic.get_node(th, str(kp))
+            self._refill_proplist(bd, proplist)
+            self.log.info('Proplist: ', proplist)
+
+        except KeyError:
+            self.log.error(f'Bridge-domain {str(kp)} can not be found.')
+
+        return proplist
+
+    def _refill_proplist(self, bd, proplist):
+        """Function to create proplist at the post modification
+
+        Args:
+            bd: service node
+            proplist: properties (list(tuple(str, str)), structure to pass data between callbacks
+
+        """
+        index = 0
+        for bd_subnet in bd.bd_subnet:
+            if bd_subnet.address_family == 'ipv4':
+                index += 1
+                proplist.append((str(index), bd_subnet.address))
+
+        routing = bd.routing
+        if routing.static_route.exists():
+            static_route = routing.static_route
+            for destination in static_route.destination:
+                ip = destination.address
+                if type(ip_network(ip)) is IPv4Network:
+                    index += 1
+                    proplist.append((str(index), ip))
+
+    def _is_prefix_used(self, bd, proplist):
+        """Function to check if prefix is already used in the network
+
+        Args:
+            bd: service node
+            proplist: properties (list(tuple(str, str)), structure to pass data between callbacks
+
+        """
+        self.log.info('Route check is started...')
+        for bd_subnet in bd.bd_subnet:
+            ip = utils.getIpAddress(bd_subnet.address)
+            if type(ip_address(ip)) is IPv4Address and bd_subnet.address not in proplist:
+                self.log.info(f'Prefix {bd_subnet.address} is checking...')
+            else:
+                self.log.info(
+                    f'Skipping prefix {bd_subnet.address} because it is already checked.')
 
 
 class BridgeDomainServiceSelfComponent(ncs.application.NanoService):
@@ -27,8 +123,13 @@ class BridgeDomainServiceSelfComponent(ncs.application.NanoService):
             _apply_template(service)
 
         elif state == 'cisco-dc:bridge-domain-l3out-routing-configured':
-            bridge_domain_l3out_routing._configure_l3out_routing(root, service, tctx, self.log)
+            bridge_domain_l3out_routing._configure_l3out_routing(
+                root, service, tctx, self.log)
             bridge_domain_l3out_routing._apply_template(service)
+
+        self.log.info('Proplist: ', proplist)
+
+        return []
 
 
 def _id_requested(root, bd, tctx, log):
@@ -106,11 +207,8 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
         port_group = port_groups[attached_port_group.name]
         ports = port_group.port_config
         if (bd._path) not in port_group.bd_service:
-            port_group.bd_service.create(bd._path)        
+            port_group.bd_service.create(bd._path)
         for port in ports:
-            if (bd._path, bd.vlan_id) not in port.bd_vlan:
-                port.bd_vlan.create(bd._path, bd.vlan_id)
-
             if port.type == 'ethernet':
                 if utils.is_node_vpc(root, port):
                     node_1, node_2 = utils.get_vpc_nodes_from_port(root, port)
@@ -172,6 +270,7 @@ def _apply_template(bd):
     vars = ncs.template.Variables()
     vars.add('VLAN_NAME', utils.get_network_vlan_name(bd))
     vars.add('DESCRIPTION', utils.get_svi_description(bd))
+    template.apply('cisco-dc-services-fabric-bd-vlan-service', vars)
     template.apply('cisco-dc-services-fabric-bd-l2vni-service', vars)
 
 

@@ -22,18 +22,23 @@ class Main(ncs.application.Application):
         self.register_service('port-config-servicepoint',
                               port_config_service.PortServiceCallback)
 
-        # Port Config Registration
+        # Port Config Nano Service Registration
         self.register_nano_service('port-config-servicepoint', 'ncs:self',
                                    'cisco-dc:id-allocated', port_config_service.PortServiceSelfComponent)
 
         self.register_nano_service('port-config-servicepoint', 'ncs:self',
                                    'cisco-dc:port-configured', port_config_service.PortServiceSelfComponent)
 
+        # Port Group Service Registration
+        self.register_service('port-group-servicepoint',
+                              bridge_domain_service.BridgeDomainServiceCallback)       
+
+
         # Bridge Domain Premod & Postmod
         self.register_service('bridge-domain-config-servicepoint',
                               bridge_domain_service.BridgeDomainServiceCallback)
 
-        # Bridge Domain Registration
+        # Bridge Domain Nano Service Registration
         self.register_nano_service('bridge-domain-config-servicepoint', 'ncs:self',
                                    'cisco-dc:id-allocated', bridge_domain_service.BridgeDomainServiceSelfComponent)
 
@@ -47,7 +52,7 @@ class Main(ncs.application.Application):
         self.port_config_val = validate_callback.ValPointRegistrar(
             self.log, 'bridge-domain-val', 'bridge-domain-service-validation', bridge_domain_service.BridgeDomainServiceValidator(self.log))
 
-        # VRF Config Registration
+        # VRF Config Nano Service Registration
         self.register_nano_service('vrf-config-servicepoint', 'ncs:self',
                                    'cisco-dc:id-allocated', vrf_config_service.VrfServiceSelfComponent)
 

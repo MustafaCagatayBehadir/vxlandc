@@ -109,6 +109,18 @@ module cisco-dc {
             }
         }
 
+        list port-group {
+            tailf:info "Port Configs Reference Service";
+
+            uses ncs:service-data;
+            ncs:servicepoint port-group-servicepoint;
+
+            key name;
+
+            uses port-group;
+
+        }
+
         list port-configs {
             tailf:info "Deploy port groups configurations.";
             description
@@ -126,6 +138,7 @@ module cisco-dc {
                 uses ncs:nano-plan-data;
                 uses ncs:service-data;
                 ncs:servicepoint port-config-servicepoint;
+
                 key name;
 
                 uses port-config-service;

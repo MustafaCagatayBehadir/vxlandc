@@ -201,47 +201,41 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
 
     """
     bd.vlan_id, bd.vni_id = id_parameters.values()
-    port_groups = root.cisco_dc__dc_site[bd.site].port_configs
+    port_configs = root.cisco_dc__dc_site[bd.site].port_configs
     attached_port_groups = bd.port_group
     for attached_port_group in attached_port_groups:
-        port_group = port_groups[attached_port_group.name]
-        ports = port_group.port_config
-        if (bd._path) not in port_group.bd_service:
-            port_group.bd_service.create(bd._path)
-        for port in ports:
+        port_group = root.cisco_dc__dc_site[bd.site].port_group[attached_port_group.name]
+        bd_service = port_group.attached_bridge_domain.create(bd._path)
+        bd_service.tenant, bd_service.bridge_domain = bd.tenant, bd.name
+
+        port_configs = port_configs[attached_port_group.name]
+        port_config = port_configs.port_config
+
+        for port in port_config:
             if port.type == 'ethernet':
                 if utils.is_node_vpc(root, port):
                     node_1, node_2 = utils.get_vpc_nodes_from_port(root, port)
-                    if (port._path, node_1) not in bd.device:
-                        bd.device.create(port._path, node_1)
-                    if (port._path, node_2) not in bd.device:
-                        bd.device.create(port._path, node_2)
+                    bd.device.create(port._path, node_1)
+                    bd.device.create(port._path, node_2)
                 else:
                     eth = port.ethernet
                     node = eth.node
-                    if (port._path, node) not in bd.device:
-                        bd.device.create(port._path, node)
+                    bd.device.create(port._path, node)
 
             elif port.type == 'port-channel':
                 if utils.is_node_vpc(root, port):
                     node_1, node_2 = utils.get_vpc_nodes_from_port(root, port)
-                    if (port._path, node_1) not in bd.device:
-                        bd.device.create(port._path, node_1)
-                    if (port._path, node_2) not in bd.device:
-                        bd.device.create(port._path, node_2)
+                    bd.device.create(port._path, node_1)
+                    bd.device.create(port._path, node_2)
                 else:
                     pc = port.port_channel
                     node = pc.node
-                    if (port._path, node) not in bd.device:
-                        bd.device.create(port._path, node)
+                    bd.device.create(port._path, node)
 
             elif port.type == 'vpc-port-channel':
-                vpc = port.vpc_port_channel
                 node_1, node_2 = utils.get_vpc_nodes_from_port(root, port)
-                if (port._path, node_1) not in bd.device:
-                    bd.device.create(port._path, node_1)
-                if (port._path, node_2) not in bd.device:
-                    bd.device.create(port._path, node_2)
+                bd.device.create(port._path, node_1)
+                bd.device.create(port._path, node_2)
 
             log.info(
                 f'Port {port.name} bridge-bomain {bd.name} hidden configuration is applied.')
@@ -254,8 +248,7 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
     if bd.vrf:
         vrf = root.cisco_dc__dc_site[bd.site].vrf_config[bd.vrf]
         for device in bd.device:
-            if (bd._path, device.leaf_id) not in vrf.bd_device:
-                vrf.bd_device.create(bd._path, device.leaf_id)
+            vrf.bd_device.create(bd._path, device.leaf_id)
         log.info(f'Vrf {bd.vrf} is activated by bridge-domain {bd.name}')
 
 

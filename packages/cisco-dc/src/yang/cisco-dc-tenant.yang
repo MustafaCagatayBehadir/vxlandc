@@ -76,7 +76,7 @@ submodule cisco-dc-tenant {
             leaf name {
                 tailf:info "Port Group Name";
                 type leafref {
-                    path "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../../../fabric]/cisco-dc:port-configs/cisco-dc:name";
+                    path "/cisco-dc:dc-site[cisco-dc:fabric=current()/../../../../fabric]/cisco-dc:port-group/cisco-dc:name";
                 }
             }
 
@@ -102,17 +102,10 @@ submodule cisco-dc-tenant {
             }
         }
 
-        list port-device {
-            tailf:hidden "Attach device defined in infra by port service";
-            key "kp leaf-id";
-            leaf kp {
-                tailf:info "Attach port keypath";
-                type string;
-            }
-            leaf leaf-id {
-                tailf:info "Define Leaf Node ID";
-                type string;
-            }
+        leaf port-config-counter {
+            tailf:hidden "Hidden counter for port-config service";
+            type uint64;
+            default 0;
         }
 
         list device {

@@ -22,12 +22,68 @@ submodule cisco-dc-port-config {
           "Initial Revision.";
     }
 
+    grouping port-group {
+
+        leaf name {
+            tailf:info "Port Group reference name";
+            tailf:cli-allow-range;
+            type dc-string;
+        }
+
+        list port-config {
+            tailf:hidden "Attach port-config defined in infra by port-config service";
+
+            key kp;
+
+            leaf kp {
+                tailf:info "Attach port keypath";
+                type string;
+            }
+
+            leaf-list node-port {
+                tailf:info "Created when attached port type is ethernet";
+                type node-port;
+            }
+        }
+
+        list attached-bridge-domain {
+            tailf:info "Attach bridge-domain defined in infra by bridge-domain service";
+            config false;
+            tailf:cdb-oper {
+                tailf:persistent true;
+            }
+
+            key kp;
+
+            leaf kp {
+                tailf:hidden "dc";
+                tailf:info "Attach bridge-domain keypath";
+                type string;
+            }
+
+            leaf tenant {
+                tailf:info "Tenant name";
+                type leafref {
+                    path "../../../cisco-dc:tenant-service/cisco-dc:name";
+                }
+            }
+
+            leaf bridge-domain {
+                tailf:info "Bridge domain name";
+                type leafref {
+                    path "deref(../tenant)/../cisco-dc:bridge-domain/cisco-dc:name";
+                }
+            }
+        }
+    }
+
     grouping port-configs {
 
         leaf name {
             tailf:info "Port Group Name";
-            tailf:cli-allow-range;
-            type dc-string;
+            type leafref {
+                path "../../cisco-dc:port-group/cisco-dc:name";
+            }
         }
 
         leaf mode {

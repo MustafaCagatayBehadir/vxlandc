@@ -21,6 +21,7 @@ class PortServiceCallback(ncs.application.Service):
                 th = m.attach(tctx)
 
                 port = maagic.get_node(th, str(kp))
+
                 # raise Exception("invalid create operation")
                 self._is_port_used(root, port)
 
@@ -211,7 +212,6 @@ def _configure_port(root, port, tctx, log):
     id_parameters = dict()
     _create_service_parameters(
         root, port, tctx, id_parameters, log)
-    # _raise_service_exceptions(root, port, tctx, id_parameters, log)
     _set_hidden_leaves(root, port, tctx, id_parameters, log)
 
 
@@ -234,31 +234,37 @@ def _create_service_parameters(root, port, tctx, id_parameters, log):
             tctx.username, root, utils.get_port_channel_id_pool_name(root, port), f'{port.site}:{port.port_group}:{port.name}')
 
 
-def _raise_service_exceptions(root, port, tctx, id_parameters, log):
-    """Function to raise exception based on service prechecks
+# def _raise_service_exceptions(root, port, tctx, id_parameters, log):
+#     """Function to raise exception based on service prechecks
 
-    Args:
-        root: Maagic object pointing to the root of the CDB
-        port: service node
-        tctx: transaction context (TransCtxRef)
-        id_parameters: dict object
-        log: log object(self.log)
+#     Args:
+#         root: Maagic object pointing to the root of the CDB
+#         port: service node
+#         tctx: transaction context (TransCtxRef)
+#         id_parameters: dict object
+#         log: log object(self.log)
 
-    """
-    if port.port_type == 'port-channel':
-        pc = port.port_channel
-        device = root.ncs__devices.device[pc.node]
-        if id_parameters['port-channel-id'] in device.config.nx__interface.port_channel:
-            raise Exception(
-                f'Port-channel id {id_parameters["port-channel-id"]} is already used in device {pc.node}.')
+#     """
+#     if port.port_type == 'port-channel':
+#         pc = port.port_channel
+#         device = root.ncs__devices.device[pc.node]
+#         po_id, port_channel = id_parameters['port-channel-id'], device.config.nx__interface.port_channel
+#         log.info(f'Device {pc.node} port-channel id list: ', [id.name for id in port_channel])
+#         log.info(f'Device {pc.node} port-channel description: ', port_channel[str(po_id)].description)
+#         if po_id in port_channel and port_channel[po_id].description != utils.get_description(port):
+#             raise Exception(
+#                 f'Port-channel id {po_id} is already used in device {pc.node}.')
 
-    elif port.port_type == 'vpc-port-channel':
-        vpc_nodes = utils.get_vpc_nodes_from_port(root, port)
-        for node in vpc_nodes:
-            device = root.ncs__devices.device[node]
-            if id_parameters['port-channel-id'] in device.config.nx__interface.port_channel:
-                raise Exception(
-                    f'Port-channel id {id_parameters["port-channel-id"]} is already used in device {pc.node}.')
+#     elif port.port_type == 'vpc-port-channel':
+#         vpc_nodes = utils.get_vpc_nodes_from_port(root, port)
+#         for node in vpc_nodes:
+#             device = root.ncs__devices.device[node]
+#             po_id, port_channel = id_parameters['port-channel-id'], device.config.nx__interface.port_channel
+#             log.info(f'Device {node} port-channel id set: ', [id.name for id in port_channel])
+#             log.info('Device {pc.node} port-channel description: ', port_channel[po_id].description)
+#             if po_id in port_channel and port_channel[str(po_id)].description != utils.get_description(port):
+#                 raise Exception(
+#                     f'Port-channel id {id_parameters["port-channel-id"]} is already used in device {node}.')
 
 
 def _set_hidden_leaves(root, port, tctx, id_parameters, log):
@@ -272,15 +278,20 @@ def _set_hidden_leaves(root, port, tctx, id_parameters, log):
         log: log object(self.log)    
 
     """
+    port_group = root.cisco_dc__dc_site[port.site].port_group[port.port_group]
+
     if port.port_type == 'ethernet':
         port.type = 'ethernet'
         port.ethernet.node_copy = port.ethernet.node
+        port_config = port_group.port_config.create(port._path)
+        port_config.node_port = port.ethernet.node_port
 
     elif port.port_type == 'port-channel':
         port.type = 'port-channel'
         port.port_channel.node_copy = port.port_channel.node
         port.port_channel.allocated_port_channel_id = id_parameters.get(
             'port-channel-id')
+        port_config = port_group.port_config.create(port._path)
 
     elif port.port_type == 'vpc-port-channel':
         port.type = 'vpc-port-channel'
@@ -293,54 +304,9 @@ def _set_hidden_leaves(root, port, tctx, id_parameters, log):
         for node, node_port in vpc_nodes:
             vpc_node = port.vpc_port_channel.node.create(node)
             vpc_node.node_port = node_port
+        port_config = port_group.port_config.create(port._path)
 
     port.auto_bum = utils.get_bum(port.speed)
-
-    port_group = root.cisco_dc__dc_site[port.site].port_configs[port.port_group]
-    port.mode = port_group.mode
-
-    bd_services = port_group.bd_service
-    for bd_service in bd_services:
-        try:
-            bd = ncs.maagic.cd(root, bd_service.kp)
-            if port.port_type == 'ethernet':
-                if utils.is_node_vpc(root, port):
-                    node_1, node_2 = utils.get_vpc_nodes_from_port(root, port)
-                    if (port._path, node_1) not in bd.device:
-                        bd.port_device.create(port._path, node_1)
-                    if (port._path, node_2) not in bd.device:
-                        bd.port_device.create(port._path, node_2)
-                else:
-                    eth = port.ethernet
-                    node = eth.node
-                    if (port._path, node) not in bd.device:
-                        bd.port_device.create(port._path, node)
-
-            elif port.port_type == 'port-channel':
-                if utils.is_node_vpc(root, port):
-                    node_1, node_2 = utils.get_vpc_nodes_from_port(root, port)
-                    if (port._path, node_1) not in bd.device:
-                        bd.port_device.create(port._path, node_1)
-                    if (port._path, node_2) not in bd.device:
-                        bd.port_device.create(port._path, node_2)
-                else:
-                    pc = port.port_channel
-                    node = pc.node
-                    if (port._path, node) not in bd.device:
-                        bd.port_device.create(port._path, node)
-
-            elif port.port_type == 'vpc-port-channel':
-                node_1, node_2 = utils.get_vpc_nodes_from_port(root, port)
-                if (port._path, node_1) not in bd.device:
-                    bd.port_device.create(port._path, node_1)
-                if (port._path, node_2) not in bd.device:
-                    bd.port_device.create(port._path, node_2)
-
-            log.info(
-                f'Bridge-domain {bd.name} is activated by port {port.name}')
-
-        except KeyError:
-            log.error(f'Bridge-domain {bd_service.kp} can not be found.')
 
 
 def _apply_template(port):

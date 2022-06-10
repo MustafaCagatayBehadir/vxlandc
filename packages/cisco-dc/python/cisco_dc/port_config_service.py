@@ -308,6 +308,8 @@ def _set_hidden_leaves(root, port, tctx, id_parameters, log):
 
     port.auto_bum = utils.get_bum(port.speed)
 
+    port_group.attached_port.create(port.name)
+
 
 def _apply_template(port):
     """Function to create port configuration

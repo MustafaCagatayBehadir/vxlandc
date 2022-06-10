@@ -53,7 +53,7 @@
             <config>
                 <interface xmlns="http://tail-f.com/ned/cisco-nx">
                     <port-channel>
-                        <name tags="create">{allocated-port-channel-id}</name>
+                        <name>{allocated-port-channel-id}</name>
                         <?switch-context service?>
                         <enable>
                             <switchport>true</switchport>

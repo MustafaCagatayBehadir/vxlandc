@@ -202,15 +202,9 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
     """
     bd.vlan_id, bd.vni_id = id_parameters.values()
     port_configs = root.cisco_dc__dc_site[bd.site].port_configs
-    attached_port_groups = bd.port_group
-    for attached_port_group in attached_port_groups:
-        port_group = root.cisco_dc__dc_site[bd.site].port_group[attached_port_group.name]
-        bd_service = port_group.attached_bridge_domain.create(bd._path)
-        bd_service.tenant, bd_service.bridge_domain = bd.tenant, bd.name
-
-        port_configs = port_configs[attached_port_group.name]
-        port_config = port_configs.port_config
-
+    port_groups = root.cisco_dc__dc_site[bd.site].port_group
+    for port_group in bd.port_group:
+        port_config = port_configs[port_group.name].port_config
         for port in port_config:
             if port.type == 'ethernet':
                 if utils.is_node_vpc(root, port):
@@ -239,6 +233,12 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
 
             log.info(
                 f'Port {port.name} bridge-bomain {bd.name} hidden configuration is applied.')
+
+        _port_group = port_groups[port_group.name]
+        _port_group.attached_bridge_domain.create(bd.site, bd.tenant, bd.name)
+        _port_group.attached_bridge_domain_kp.create(bd._path)
+        log.info(
+            f'Port group {port_group.name} attached bridge domain list is updated by tenant {bd.tenant} bridge-domain {bd.name}.')
 
     for bd_subnet in bd.bd_subnet:
         ip = utils.getIpAddress(bd_subnet.address)

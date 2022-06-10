@@ -31,8 +31,7 @@ submodule cisco-dc-port-config {
         }
 
         list port-config {
-            tailf:hidden "Attach port-config defined in infra by port-config service";
-
+            // tailf:hidden "Attach port-config defined in infra by port-config service";
             key kp;
 
             leaf kp {
@@ -46,6 +45,17 @@ submodule cisco-dc-port-config {
             }
         }
 
+        leaf-list attached-port {
+            tailf:info "Attach port defined in infra by port-config service";
+            config false;
+            tailf:cdb-oper {
+                tailf:persistent true;
+            }
+            type leafref {
+                path "../../cisco-dc:port-configs[cisco-dc:name=current()/../name]/cisco-dc:port-config/cisco-dc:name";
+            }
+        }
+
         list attached-bridge-domain {
             tailf:info "Attach bridge-domain defined in infra by bridge-domain service";
             config false;
@@ -53,12 +63,13 @@ submodule cisco-dc-port-config {
                 tailf:persistent true;
             }
 
-            key kp;
+            key "site tenant bridge-domain";
 
-            leaf kp {
-                tailf:hidden "dc";
-                tailf:info "Attach bridge-domain keypath";
-                type string;
+            leaf site {
+                tailf:info "Site name";
+                type leafref {
+                    path "../../../cisco-dc:fabric";
+                }
             }
 
             leaf tenant {
@@ -74,6 +85,11 @@ submodule cisco-dc-port-config {
                     path "deref(../tenant)/../cisco-dc:bridge-domain/cisco-dc:name";
                 }
             }
+        }
+
+        leaf-list attached-bridge-domain-kp {
+            tailf:hidden "dc";
+            type string;
         }
     }
 
@@ -401,6 +417,7 @@ submodule cisco-dc-port-config {
         leaf mode {
             tailf:hidden "dc";
             type string;
+            tailf:default-ref "../../mode";
         }
 
         leaf port-group {

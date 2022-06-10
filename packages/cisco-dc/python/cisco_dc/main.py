@@ -3,6 +3,7 @@ import ncs
 
 from . import dc_actions
 from . import port_config_service
+from . import port_group_service
 from . import bridge_domain_service
 from . import vrf_config_service
 from . import dc_routepolicy
@@ -31,7 +32,7 @@ class Main(ncs.application.Application):
 
         # Port Group Service Registration
         self.register_service('port-group-servicepoint',
-                              bridge_domain_service.BridgeDomainServiceCallback)       
+                              port_group_service.PortGroupService)       
 
 
         # Bridge Domain Premod & Postmod

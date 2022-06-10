@@ -30,6 +30,7 @@ def _configure_port_group(root, port_group, proplist, new_proplist, tctx, log):
 
     """
     _create_new_proplist(root, port_group, new_proplist, tctx, log)
+    _create_operational_lists(root, port_group, log)
     _set_hidden_leaves(root, port_group, proplist, new_proplist, log)
 
 
@@ -50,6 +51,27 @@ def _create_new_proplist(root, port_group, new_proplist, tctx, log):
     new_proplist.append((port_group.name, json.dumps(port_config_ref)))
 
 
+def _create_operational_lists(root, port_group, log):
+    """Function to create operational lists
+
+    Args:
+        root: Maagic object pointing to the root of the CDB
+        port_group: service node
+        log: log object (self.log)
+
+    """
+    for kp in port_group.attached_bridge_domain_kp:
+        try:
+            bd = ncs.maagic.cd(root, kp)
+            port_group.attached_bridge_domain.create(
+                bd.site, bd.tenant, bd.name)
+        except KeyError:
+            log.error(f'Bridge-domain {kp} can not be found.')
+        else:
+            log.info(
+                f'Port group {port_group.name} attached bridge domain operational list is created for bridge-domain {bd.name}')
+
+
 def _set_hidden_leaves(root, port_group, proplist, new_proplist, log):
     """Function to create hidden leaves for template operations
 
@@ -68,7 +90,7 @@ def _set_hidden_leaves(root, port_group, proplist, new_proplist, log):
                 id = bd.port_config_counter
                 bd.port_config_counter = id + 1
             except KeyError:
-                raise Exception(
-                    f'Bridge-domain {kp} can not be found.')
+                log.error(f'Bridge-domain {kp} can not be found.')
             else:
-                log.info(f'Bridge domain {bd.name} is updated by the port group service {port_group.name}.')
+                log.info(
+                    f'Bridge domain {bd.name} is updated by the port group service {port_group.name}.')

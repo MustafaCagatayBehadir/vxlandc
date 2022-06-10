@@ -330,6 +330,18 @@ submodule cisco-dc-routepolicy {
                 }
             }
 
+            leaf-list attached-bridge-domain-kp {
+                when "current()/../../dc-route-policy-type = 'tenant'";
+                tailf:hidden "dc";
+                type string;
+            }
+
+            leaf-list attached-vrf-kp {
+                when "current()/../../dc-route-policy-type = 'vrf'";
+                tailf:hidden "dc";
+                type string;
+            }
+
             list device {
                 tailf:hidden "Attach device defined in infra";
                 key "kp leaf-id";

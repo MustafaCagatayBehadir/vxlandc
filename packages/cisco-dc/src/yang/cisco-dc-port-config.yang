@@ -31,7 +31,7 @@ submodule cisco-dc-port-config {
         }
 
         list port-config {
-            // tailf:hidden "Attach port-config defined in infra by port-config service";
+            tailf:hidden "Attach port-config defined in infra by port-config service";
             key kp;
 
             leaf kp {

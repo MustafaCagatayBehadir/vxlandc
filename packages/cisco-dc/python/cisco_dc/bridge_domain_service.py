@@ -235,10 +235,9 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
                 f'Port {port.name} bridge-bomain {bd.name} hidden configuration is applied.')
 
         _port_group = port_groups[port_group.name]
-        _port_group.attached_bridge_domain.create(bd.site, bd.tenant, bd.name)
         _port_group.attached_bridge_domain_kp.create(bd._path)
         log.info(
-            f'Port group {port_group.name} attached bridge domain list is updated by tenant {bd.tenant} bridge-domain {bd.name}.')
+            f'Port group {port_group.name} attached bridge domain keypath leaf-list is updated by tenant {bd.tenant} bridge-domain {bd.name}.')
 
     for bd_subnet in bd.bd_subnet:
         ip = utils.getIpAddress(bd_subnet.address)
@@ -247,9 +246,8 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
 
     if bd.vrf:
         vrf = root.cisco_dc__dc_site[bd.site].vrf_config[bd.vrf]
-        for device in bd.device:
-            vrf.bd_device.create(bd._path, device.leaf_id)
-        log.info(f'Vrf {bd.vrf} is activated by bridge-domain {bd.name}')
+        vrf.attached_bridge_domain_kp.create(bd._path)
+        log.info(f'Vrf {bd.vrf} attached bridge domain keypath leaf-list is updated by tenant {bd.tenant} bridge-domain {bd.name}.')
 
 
 def _apply_template(bd):

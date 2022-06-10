@@ -103,7 +103,7 @@ submodule cisco-dc-tenant {
         }
 
         leaf port-config-counter {
-            // tailf:hidden "Hidden counter for port-config service";
+            tailf:hidden "Hidden counter for port-config service";
             type uint64;
             default 0;
         }

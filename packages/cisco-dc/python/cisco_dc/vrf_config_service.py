@@ -115,6 +115,27 @@ def _raise_service_exceptions(root, vrf, tctx, id_parameters, log):
                 f'Fabric external vrf vlan {encap} is already used in device {node} connection port-channel{connection}.{encap}')
 
 
+def _create_operational_lists(root, vrf, log):
+    """Function to create operational lists
+
+    Args:
+        root: Maagic object pointing to the root of the CDB
+        vrf: service node
+        log: log object (self.log)
+
+    """
+    for kp in vrf.attached_bridge_domain_kp:
+        try:
+            bd = ncs.maagic.cd(root, kp)
+            vrf.attached_bridge_domain.create(
+                bd.site, bd.tenant, bd.name)
+        except KeyError:
+            log.error(f'Bridge-domain {kp} can not be found.')
+        else:
+            log.info(
+                f'Vrf {vrf.name} attached bridge domain operational list is created for tenant {bd.tenant} bridge-domain {bd.name}')
+
+
 def _set_hidden_leaves(root, vrf, id_parameters, log):
     """Function to create hidden leaves for template operations
 
@@ -132,13 +153,21 @@ def _set_hidden_leaves(root, vrf, id_parameters, log):
     border_leaves = [
         node.hostname for node in site.node if node.node_role == 'border-leaf']
 
-    for device in vrf.bd_device:
-        if (device.kp, device.leaf_id) not in vrf.device:
-            vrf.device.create(device.kp, device.leaf_id)
+    for kp in vrf.attached_bridge_domain_kp:
+        try:
+            bd = ncs.maagic.cd(root, kp)
+            [vrf.device.create(kp, device.leaf_id) for device in bd.device]
+        except KeyError:
+            raise Exception(
+                f'Bridge-domain {kp} can not be found.')
+        else:
+            log.info(
+                f'Vrf {vrf.name} device is updated with bridge-domain {bd.name} keypath.')
 
     for leaf_id in border_leaves:
-        if (vrf._path, leaf_id) not in vrf.device:
-            vrf.device.create(vrf._path, leaf_id)
+        vrf.device.create(vrf._path, leaf_id)
+        log.info(
+            f'Vrf {vrf.name} device is updated with border-leaf switches.')
 
     if vrf.direct.exists():
         if vrf.direct.address_family_ipv4_policy:
@@ -146,20 +175,18 @@ def _set_hidden_leaves(root, vrf, id_parameters, log):
             for dc_route_policy in dc_route_policies:
                 if vrf.direct.address_family_ipv4_policy in dc_route_policy.route_policy:
                     route_policy = dc_route_policy.route_policy[vrf.direct.address_family_ipv4_policy]
-                    for device in vrf.device:
-                        if (vrf._path, device.leaf_id) not in route_policy.device:
-                            route_policy.device.create(
-                                vrf._path, device.leaf_id)
+                    route_policy.attached_vrf_kp.create(vrf._path)
+                    log.info(
+                        f'Dc route policy {dc_route_policy.name} route policy {route_policy.profile} attached vrf keypath leaf-list is updated by vrf {vrf.name}.')
 
         if vrf.direct.address_family_ipv6_policy:
             dc_route_policies = root.cisco_dc__dc_site[vrf.site].dc_route_policy
             for dc_route_policy in dc_route_policies:
                 if vrf.direct.address_family_ipv6_policy in dc_route_policy.route_policy:
                     route_policy = dc_route_policy.route_policy[vrf.direct.address_family_ipv6_policy]
-                    for device in vrf.device:
-                        if (vrf.name, device.leaf_id) not in route_policy.device:
-                            route_policy.device.create(
-                                vrf._path, device.leaf_id)
+                    route_policy.attached_vrf_kp.create(vrf._path)
+                    log.info(
+                        f'Dc route policy {dc_route_policy.name} route policy {route_policy.profile} attached vrf keypath leaf-list is updated by vrf {vrf.name}.')
 
     if vrf.static.exists():
         if vrf.static.address_family_ipv4_policy:
@@ -167,20 +194,18 @@ def _set_hidden_leaves(root, vrf, id_parameters, log):
             for dc_route_policy in dc_route_policies:
                 if vrf.static.address_family_ipv4_policy in dc_route_policy.route_policy:
                     route_policy = dc_route_policy.route_policy[vrf.static.address_family_ipv4_policy]
-                    for device in vrf.device:
-                        if (vrf.name, device.leaf_id) not in route_policy.device:
-                            route_policy.device.create(
-                                vrf._path, device.leaf_id)
+                    route_policy.attached_vrf_kp.create(vrf._path)
+                    log.info(
+                        f'Dc route policy {dc_route_policy.name} route policy {route_policy.profile} attached vrf keypath leaf-list is updated by vrf {vrf.name}.')
 
         if vrf.static.address_family_ipv6_policy:
             dc_route_policies = root.cisco_dc__dc_site[vrf.site].dc_route_policy
             for dc_route_policy in dc_route_policies:
                 if vrf.static.address_family_ipv6_policy in dc_route_policy.route_policy:
                     route_policy = dc_route_policy.route_policy[vrf.static.address_family_ipv6_policy]
-                    for device in vrf.device:
-                        if (vrf.name, device.leaf_id) not in route_policy.device:
-                            route_policy.device.create(
-                                vrf._path, device.leaf_id)
+                    route_policy.attached_vrf_kp.create(vrf._path)
+                    log.info(
+                        f'Dc route policy {dc_route_policy.name} route policy {route_policy.profile} attached vrf keypath leaf-list is updated by vrf {vrf.name}.')
 
 
 def _apply_template(vrf):

@@ -120,18 +120,39 @@ submodule cisco-dc-vrf-config {
             }
         }
 
-        list bd-device {
-            tailf:hidden "Attach device defined in infra by bd service";
-            key "kp leaf-id";
+        leaf-list attached-bridge-domain-kp {
+            tailf:hidden "dc";
+            type string;
+        }
 
-            leaf kp {
-                tailf:info "Attach bridge-domain keypath";
-                type string;
+        list attached-bridge-domain {
+            tailf:info "Attach bridge-domain defined in infra";
+            config false;
+            tailf:cdb-oper {
+                tailf:persistent true;
             }
 
-            leaf leaf-id {
-                tailf:info "Define Leaf Node ID";
-                type string;
+            key "site tenant bridge-domain";
+
+            leaf site {
+                tailf:info "Site name";
+                type leafref {
+                    path "../../../cisco-dc:fabric";
+                }
+            }
+
+            leaf tenant {
+                tailf:info "Tenant name";
+                type leafref {
+                    path "../../../cisco-dc:tenant-service/cisco-dc:name";
+                }
+            }
+
+            leaf bridge-domain {
+                tailf:info "Bridge domain name";
+                type leafref {
+                    path "deref(../tenant)/../cisco-dc:bridge-domain/cisco-dc:name";
+                }
             }
         }
 

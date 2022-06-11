@@ -65,6 +65,7 @@ def _configure_vrf(root, vrf, tctx, log):
     id_parameters = dict()
     _create_service_parameters(root, vrf, tctx, id_parameters, log)
     _raise_service_exceptions(root, vrf, tctx, id_parameters, log)
+    _create_operational_lists(root, vrf, log)
     _set_hidden_leaves(root, vrf, id_parameters, log)
 
 

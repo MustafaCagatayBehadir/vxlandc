@@ -31,10 +31,8 @@ def _create_service_parameters(root, bd, address_family, log):
     """
     for subnet in bd.bd_subnet:
         ip = utils.getIpAddress(subnet.address)
-        if type(ip_address(ip)) is IPv4Address:
-            address_family.add('ipv4')
-        elif type(ip_address(ip)) is IPv6Address:
-            address_family.add('ipv6')
+        address_family.add('ipv4') if type(ip_address(
+            ip)) is IPv4Address else address_family.add('ipv6')
 
 
 def _raise_service_exceptions(root, bd, address_family, log):
@@ -59,6 +57,15 @@ def _raise_service_exceptions(root, bd, address_family, log):
             else:
                 raise Exception(
                     f'BGP neighbor address and bridge-domain subnet address-family should match.')
+
+            nodes = bgp.source_interface.fabric_internal_connection.node
+            for node in nodes:
+                for device in bd.device:
+                    if device.leaf_id == node.leaf_id:
+                        break
+                else:
+                    raise Exception(
+                        f'Node {node.leaf_id} is not attached to bd {bd.name}')
 
         if routing.static_route.exists():
             static_route = routing.static_route

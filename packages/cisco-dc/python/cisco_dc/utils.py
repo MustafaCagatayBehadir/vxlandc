@@ -309,6 +309,18 @@ def get_basic_authentication(root, device):
     return username, password
 
 
+def get_route_policy_leaf_id_from_bd(bd):
+    """Function to return device list for the route-policy is used in bd
+
+    Args:
+        bd: Service node
+
+    Return:
+        List: List of device names
+
+    """
+
+
 def truncate_vlan_name(vlan_name):
     """Function to truncate vlan name (vlan-name > 32 char is not allowed.)
 

@@ -11,8 +11,6 @@ class PortGroupService(ncs.application.Service):
         new_proplist = list()
         _configure_port_group(root, service, proplist,
                               new_proplist, tctx, self.log)
-        self.log.info('Proplist: ', proplist)
-        self.log.info('New Proplist: ', new_proplist)
 
         return proplist if proplist == new_proplist else new_proplist
 
@@ -29,12 +27,12 @@ def _configure_port_group(root, port_group, proplist, new_proplist, tctx, log):
         log: log object (self.log)
 
     """
-    _create_new_proplist(root, port_group, new_proplist, tctx, log)
+    _create_service_parameters(root, port_group, new_proplist, tctx, log)
     _create_operational_lists(root, port_group, log)
     _set_hidden_leaves(root, port_group, proplist, new_proplist, log)
 
 
-def _create_new_proplist(root, port_group, new_proplist, tctx, log):
+def _create_service_parameters(root, port_group, new_proplist, tctx, log):
     """Function to create new proplist
 
     Args:
@@ -84,6 +82,8 @@ def _set_hidden_leaves(root, port_group, proplist, new_proplist, log):
 
     """
     if proplist != new_proplist:
+        log.info(f'Old proplist: ', proplist)
+        log.info(f'New proplist: ', new_proplist)
         for kp in port_group.attached_bridge_domain_kp:
             try:
                 bd = ncs.maagic.cd(root, kp)

@@ -291,7 +291,7 @@ def _set_hidden_leaves(root, port, tctx, id_parameters, log):
         port.port_channel.node_copy = port.port_channel.node
         port.port_channel.allocated_port_channel_id = id_parameters.get(
             'port-channel-id')
-        port_config = port_group.port_config.create(port._path)
+        port_group.port_config.create(port._path)
 
     elif port.port_type == 'vpc-port-channel':
         port.type = 'vpc-port-channel'
@@ -304,7 +304,7 @@ def _set_hidden_leaves(root, port, tctx, id_parameters, log):
         for node, node_port in vpc_nodes:
             vpc_node = port.vpc_port_channel.node.create(node)
             vpc_node.node_port = node_port
-        port_config = port_group.port_config.create(port._path)
+        port_group.port_config.create(port._path)
 
     port.auto_bum = utils.get_bum(port.speed)
 

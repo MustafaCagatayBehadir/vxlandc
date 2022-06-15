@@ -2,6 +2,7 @@ import ncs
 import _ncs
 from ncs.experimental import Query
 import json
+from collections import defaultdict
 
 from .nxapi import Nxapi
 
@@ -290,18 +291,17 @@ def get_node_connections(site):
     return node_connections
 
 
-def get_basic_authentication(root, device):
+def get_basic_authentication(root, auth_group):
     """Function to return basic authentication tuple
 
     Args:
         root: Maagic object pointing to the root of the CDB
-        device: Device ncs.maagic ListElement
+        auth_group: Authentication group name
 
     Return:
         Tuple: username, password
 
     """
-    auth_group = device.authgroup
     default_map = root.ncs__devices.authgroups.group[auth_group].default_map
     username = default_map.remote_name
     password = default_map.remote_password
@@ -366,7 +366,7 @@ def get_route_policy_leaf_id_from_vrf(vrf, route_policy):
     return []
 
 
-def get_cmd_list_from_bd(root, bd, proplist, new_proplist):
+def get_cmd_dict_from_bd(root, bd, proplist, new_proplist):
     """Function to create command list to run on the reference DCI router
 
     Args:
@@ -374,6 +374,9 @@ def get_cmd_list_from_bd(root, bd, proplist, new_proplist):
         bd: service node
         proplist: properties (list(tuple(str, str)), structure to pass data between callbacks
         new_proplist: new properties (list(tuple(str, str)) structure
+
+    Return:
+        Default Dict: Command default dict object
 
     """
     old_route_ref = json.loads(proplist[0][1]) if proplist else []
@@ -385,9 +388,16 @@ def get_cmd_list_from_bd(root, bd, proplist, new_proplist):
 
     internet_vrf = root.cisco_dc__dc_site[bd.site].fabric_parameters.internet_vrf
 
-    cmd_list = [(f'show route {prefix}', f'show route longer {prefix}') for prefix in diff_route_ref] if bd.vrf == internet_vrf else [
-        (f'show route vrf {bd.vrf} {prefix}', f'show route vrf {bd.vrf} longer {prefix}') for prefix in diff_route_ref]
-    return cmd_list if bd.vrf == internet_vrf else cmd_list.insert(0, 'show vrf all')
+    cmd_list = defaultdict(list)
+
+    if bd.vrf == internet_vrf:
+        cmd_list = {prefix: [f'show route {prefix}',
+                             f'show route longer {prefix}'] for prefix in diff_route_ref}
+    else:
+        cmd_list = {prefix: [f'show route vrf {bd.vrf} {prefix}',
+                             f'show route vrf {bd.vrf} longer {prefix}'] for prefix in diff_route_ref}
+        cmd_list['vrf'] = ['show vrf all'] if cmd_list else []
+    return cmd_list
 
 
 def truncate_vlan_name(vlan_name):

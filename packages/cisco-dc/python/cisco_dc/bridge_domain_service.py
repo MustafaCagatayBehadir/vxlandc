@@ -6,9 +6,9 @@ import ncs.maagic as maagic
 import json
 
 from .resource_manager import id_allocator
+from .xrapi import Xrapi
 from . import bridge_domain_l3out_routing
 from . import utils
-from . import xrapi
 from ipaddress import ip_address, ip_network, IPv4Address, IPv6Address, IPv4Network
 
 
@@ -45,8 +45,6 @@ class BridgeDomainServiceCallback(ncs.application.Service):
         except Exception as e:
             self.log.error(e)
             raise
-        self.log.info('Proplist: ', proplist)
-        self.log.info('New Proplist: ', new_proplist)
 
         return proplist if proplist == new_proplist else new_proplist
 
@@ -84,8 +82,14 @@ class BridgeDomainServiceCallback(ncs.application.Service):
 
         """
         self.log.info('Route check is started...')
-        self.log.info('Command List: ', utils.get_cmd_list_from_bd(
-            root, bd, proplist, new_proplist))
+        cmd_list = utils.get_cmd_dict_from_bd(root, bd, proplist, new_proplist)
+        
+        dci = root.cisco_dc__dc_site[bd.site].fabric_parameters.dci_reference
+        username, password = utils.get_basic_authentication(root, dci.authgroup)
+        
+        if cmd_list:
+            xrapi = Xrapi(dci.address, username, password, self.log)
+            xrapi.send_show_commands(cmd_list)
 
 
 class BridgeDomainServiceSelfComponent(ncs.application.NanoService):

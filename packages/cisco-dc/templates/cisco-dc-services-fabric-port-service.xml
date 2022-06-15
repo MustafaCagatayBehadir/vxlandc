@@ -65,7 +65,7 @@
                         <shutdown when="{not(shutdown)}" tags="delete" />
                         <description>{$DESCRIPTION}</description>
                         <mtu>9216</mtu>
-                        <spanning-tree>
+                        <spanning-tree tags="create">
                             <bpduguard when="{connection='host'}">enable</bpduguard>
                             <guard when="{connection='switch'}">root</guard>
                             <port>
@@ -112,7 +112,7 @@
             <config>
                 <interface xmlns="http://tail-f.com/ned/cisco-nx">
                     <port-channel>
-                        <name tags="create">{allocated-port-channel-id}</name>
+                        <name>{allocated-port-channel-id}</name>
                         <?switch-context service?>
                         <enable>
                             <switchport>true</switchport>

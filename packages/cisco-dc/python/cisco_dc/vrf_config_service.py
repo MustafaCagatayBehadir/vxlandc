@@ -1,4 +1,3 @@
-from multiprocessing import connection
 import ncs
 from .resource_manager import id_allocator
 from . import utils
@@ -18,6 +17,7 @@ class VrfServiceSelfComponent(ncs.application.NanoService):
         # State functions
         if state == 'cisco-dc:id-allocated':
             _id_requested(root, service, tctx, self.log)
+            _id_allocated(root, service, tctx, self.log)
 
         elif state == 'cisco-dc:vrf-configured':
             _configure_vrf(root, service, tctx, self.log)
@@ -50,6 +50,29 @@ def _id_requested(root, vrf, tctx, log):
             vrf, svc_xpath, tctx.username, pool_name, allocation_name, False, requested_id)
         log.info(
             f'Id is requested from pool {pool_name} for service {vrf.name}')
+
+
+def _id_allocated(root, vrf, tctx, log):
+    """Function to read vlan and vni ids from resource manager and set id_allocated leaf for the next state
+
+    Args:
+        root: Maagic object pointing to the root of the CDB
+        vrf: service node
+        tctx: transaction context (TransCtxRef)
+        log: log object(self.log)
+
+    """
+    resource_pools = root.cisco_dc__dc_site[vrf.site].resource_pools
+    id = [('vrf-vlan', resource_pools.l3_vrf_vlan),
+          ('l3vni', resource_pools.l3_vxlan_vni),
+          ('fabric-external-vrf-vlan', resource_pools.fabric_external_l3_vrf_vlan)]
+    for parameter, pool_name in id:
+        allocation_name = f'{vrf.site}:{vrf.name}'
+        if id_allocator.id_read(tctx.username, root, pool_name, allocation_name):
+            vrf.id_allocated = True
+        else:
+            vrf.id_allocated = False
+            break
 
 
 def _configure_vrf(root, vrf, tctx, log):
@@ -87,7 +110,7 @@ def _create_service_parameters(root, vrf, tctx, id_parameters, log):
         allocation_name = f'{vrf.site}:{vrf.name}'
         id_parameters[parameter] = id_allocator.id_read(
             tctx.username, root, pool_name, allocation_name)
-    log.info('Id Parameters :', id_parameters)
+    log.info('Vrf Config Id Parameters :', id_parameters)
 
 
 def _raise_service_exceptions(root, vrf, tctx, id_parameters, log):
@@ -157,10 +180,10 @@ def _set_hidden_leaves(root, vrf, id_parameters, log):
     for kp in vrf.attached_bridge_domain_kp:
         try:
             bd = ncs.maagic.cd(root, kp)
-            [vrf.device.create(kp, device.leaf_id) for device in bd.device]
+            for device in bd.device:
+                vrf.device.create(kp, device.leaf_id)
         except KeyError:
-            raise Exception(
-                f'Bridge-domain {kp} can not be found.')
+            log.error(f'Bridge-domain {kp} can not be found.')
         else:
             log.info(
                 f'Vrf {vrf.name} device is updated with bridge-domain {bd.name} keypath.')

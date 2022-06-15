@@ -1,10 +1,13 @@
 {
     "port-config": [
         {
-            "name": "ETH100001",
+            "name": "ETH100003",
+            "description": "CUSTOM_DESCRIPTION_ETH100001",
+            "connection": "host",
+            "speed": "1G",
             "ethernet": {
+                "node": "nw_lf_cnx9_001.dsslab_site1",
                 "node-port": [
-                    "1/1",
                     "1/48"
                 ]
             }

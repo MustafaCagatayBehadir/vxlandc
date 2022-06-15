@@ -309,16 +309,85 @@ def get_basic_authentication(root, device):
     return username, password
 
 
-def get_route_policy_leaf_id_from_bd(bd):
+def get_route_policy_leaf_id_from_bd(bd, route_policy):
     """Function to return device list for the route-policy is used in bd
 
     Args:
         bd: Service node
+        route_policy: Route policy ncs.maagic ListElement
 
     Return:
         List: List of device names
 
     """
+    routing = bd.routing
+    for bgp in routing.bgp:
+        profiles = {
+            peer_route_policy.profile for peer_route_policy in bgp.peer_route_policy}
+        if route_policy.profile in profiles:
+            nodes = bgp.source_interface.fabric_internal_connection.node
+            return [node.leaf_id for node in nodes]
+    return []
+
+
+def get_route_policy_leaf_id_from_vrf(vrf, route_policy):
+    """Function to return device list for the route-policy is used in vrf
+
+    Args:
+        vrf: Service node
+        route_policy: Route policy ncs.maagic ListElement
+
+    Return:
+        List: List of device names
+
+    """
+    if vrf.direct.exists():
+        direct = vrf.direct
+        profiles = {direct.address_family_ipv4_policy,
+                    direct.address_family_ipv6_policy}
+        if route_policy.profile in profiles:
+            nodes = vrf.device
+            return [node.leaf_id for node in nodes]
+
+    if vrf.static.exists():
+        static = vrf.static
+        profiles = {static.address_family_ipv4_policy,
+                    static.address_family_ipv6_policy}
+        if route_policy.profile in profiles:
+            nodes = vrf.device
+            return [node.leaf_id for node in nodes]
+
+    routing = vrf.routing
+    for bgp in routing.bgp:
+        profiles = {
+            peer_route_policy.profile for peer_route_policy in bgp.peer_route_policy}
+        if route_policy.profile in profiles:
+            return [bgp.source_interface.fabric_external_connection.node]
+    return []
+
+
+def get_cmd_list_from_bd(root, bd, proplist, new_proplist):
+    """Function to create command list to run on the reference DCI router
+
+    Args:
+        root: Maagic object pointing to the root of the CDB
+        bd: service node
+        proplist: properties (list(tuple(str, str)), structure to pass data between callbacks
+        new_proplist: new properties (list(tuple(str, str)) structure
+
+    """
+    old_route_ref = json.loads(proplist[0][1]) if proplist else []
+    new_route_ref = json.loads(new_proplist[0][1]) if new_proplist else []
+
+    # Create diff route set
+    diff_route_ref = [
+        route for route in new_route_ref if route not in old_route_ref]
+
+    internet_vrf = root.cisco_dc__dc_site[bd.site].fabric_parameters.internet_vrf
+
+    cmd_list = [(f'show route {prefix}', f'show route longer {prefix}') for prefix in diff_route_ref] if bd.vrf == internet_vrf else [
+        (f'show route vrf {bd.vrf} {prefix}', f'show route vrf {bd.vrf} longer {prefix}') for prefix in diff_route_ref]
+    return cmd_list if bd.vrf == internet_vrf else cmd_list.insert(0, 'show vrf all')
 
 
 def truncate_vlan_name(vlan_name):

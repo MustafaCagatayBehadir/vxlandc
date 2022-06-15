@@ -3,7 +3,6 @@ import ncs
 
 from . import dc_actions
 from . import port_config_service
-from . import port_group_service
 from . import bridge_domain_service
 from . import vrf_config_service
 from . import dc_routepolicy
@@ -28,11 +27,7 @@ class Main(ncs.application.Application):
                                    'cisco-dc:id-allocated', port_config_service.PortServiceSelfComponent)
 
         self.register_nano_service('port-config-servicepoint', 'ncs:self',
-                                   'cisco-dc:port-configured', port_config_service.PortServiceSelfComponent)
-
-        # Port Group Service Registration
-        self.register_service('port-group-servicepoint',
-                              port_group_service.PortGroupService)       
+                                   'cisco-dc:port-configured', port_config_service.PortServiceSelfComponent)    
 
 
         # Bridge Domain Premod & Postmod
@@ -70,11 +65,18 @@ class Main(ncs.application.Application):
         # Tenant Service Validation
         self.tenant_service_val = validate_callback.ValPointRegistrar(
             self.log, 'tenant-service-val', 'tenant-service-validation', tenant_service.TenantServiceValidator(self.log))
+
+        # Install Crypto Keys
+        with ncs.maapi.Maapi() as m:
+            m.install_crypto_keys()
         ############################################################################################
 
         # DC-ACTIONS
         self.register_action('create-site-resource-pools',
                              dc_actions.ResourcePoolsAction)
+
+        self.register_action('bridge-domain-redeploy',
+                             dc_actions.BridgeDomainRedeployAction)
 
     def teardown(self):
         self.log.info('Main FINISHED')

@@ -3,6 +3,8 @@ import _ncs
 import ncs.maapi as maapi
 import ncs.maagic as maagic
 
+import json
+
 from .resource_manager import id_allocator
 from . import bridge_domain_l3out_routing
 from . import utils
@@ -19,89 +21,71 @@ class BridgeDomainServiceCallback(ncs.application.Service):
                 utils.get_kp_service_id(kp),
                 utils.get_service_operation(op)))
         try:
+            new_proplist = list()
             if op == _ncs.dp.NCS_SERVICE_CREATE:
                 m = maapi.Maapi()
                 th = m.attach(tctx)
 
                 bd = maagic.get_node(th, str(kp))
+
+                self._create_new_proplist(bd, new_proplist)
                 # raise Exception("invalid create operation")
-                self._is_prefix_used(bd, proplist)
+                self._is_prefix_used(root, bd, proplist, new_proplist)
 
             elif op == _ncs.dp.NCS_SERVICE_UPDATE:
                 m = maapi.Maapi()
                 th = m.attach(tctx)
 
                 bd = maagic.get_node(th, str(kp))
+
+                self._create_new_proplist(bd, new_proplist)
                 # raise Exception("invalid update operation")
-                self._is_prefix_used(bd, proplist)
+                self._is_prefix_used(root, bd, proplist, new_proplist)
 
         except Exception as e:
             self.log.error(e)
             raise
         self.log.info('Proplist: ', proplist)
+        self.log.info('New Proplist: ', new_proplist)
 
-        return []
+        return proplist if proplist == new_proplist else new_proplist
 
-    @ncs.application.Service.pre_modification
-    def cb_post_modification(self, tctx, op, kp, root, proplist):
-
-        self.log.info(
-            "ENTRY_POINT for {} at post_mod of BridgeDomainConfigService, operation: {}" .format(
-                utils.get_kp_service_id(kp),
-                utils.get_service_operation(op)))
-
-        try:
-            m = maapi.Maapi()
-            th = m.attach(tctx)
-
-            bd = maagic.get_node(th, str(kp))
-            self._refill_proplist(bd, proplist)
-            self.log.info('Proplist: ', proplist)
-
-        except KeyError:
-            self.log.error(f'Bridge-domain {str(kp)} can not be found.')
-
-        return proplist
-
-    def _refill_proplist(self, bd, proplist):
-        """Function to create proplist at the post modification
+    def _create_new_proplist(self, bd, new_proplist):
+        """Function to create new proplist for bridge-domain
 
         Args:
             bd: service node
-            proplist: properties (list(tuple(str, str)), structure to pass data between callbacks
+            new_proplist: new properties (list(tuple(str, str)) structure
 
         """
-        index = 0
-        for bd_subnet in bd.bd_subnet:
-            if bd_subnet.address_family == 'ipv4':
-                index += 1
-                proplist.append((str(index), bd_subnet.address))
+        new_route_ref = [bd_subnet.address for bd_subnet in bd.bd_subnet if type(
+            ip_address(utils.getIpAddress(bd_subnet.address))) is IPv4Address]
 
-        routing = bd.routing
-        if routing.static_route.exists():
-            static_route = routing.static_route
-            for destination in static_route.destination:
-                ip = destination.address
-                if type(ip_network(ip)) is IPv4Network:
-                    index += 1
-                    proplist.append((str(index), ip))
+        if bd.routing:
+            routing = bd.routing
+            if routing.static_route.exists():
+                static_route = routing.static_route
+                for destination in static_route.destination:
+                    ip = destination.address
+                    if type(ip_network(ip)) is IPv4Network:
+                        new_route_ref.append(ip)
 
-    def _is_prefix_used(self, bd, proplist):
+        # Fill new proplist
+        new_proplist.append((bd.name, json.dumps(new_route_ref)))
+
+    def _is_prefix_used(self, root, bd, proplist, new_proplist):
         """Function to check if prefix is already used in the network
 
         Args:
+            root: Maagic object pointing to the root of the CDB
             bd: service node
             proplist: properties (list(tuple(str, str)), structure to pass data between callbacks
+            new_proplist: new properties (list(tuple(str, str)) structure
 
         """
         self.log.info('Route check is started...')
-        for bd_subnet in bd.bd_subnet:
-            ip = utils.getIpAddress(bd_subnet.address)
-            if type(ip_address(ip)) is IPv4Address and bd_subnet.address not in proplist:
-                self.log.info(f'Prefix {bd_subnet.address} is checking...')
-            else:
-                self.log.info(
-                    f'Skipping prefix {bd_subnet.address} because it is already checked.')
+        self.log.info('Command List: ', utils.get_cmd_list_from_bd(
+            root, bd, proplist, new_proplist))
 
 
 class BridgeDomainServiceSelfComponent(ncs.application.NanoService):
@@ -117,6 +101,7 @@ class BridgeDomainServiceSelfComponent(ncs.application.NanoService):
         # State functions
         if state == 'cisco-dc:id-allocated':
             _id_requested(root, service, tctx, self.log)
+            _id_allocated(root, service, tctx, self.log)
 
         elif state == 'cisco-dc:bridge-domain-configured':
             _configure_bridge_domain(root, service, tctx, self.log)
@@ -129,7 +114,7 @@ class BridgeDomainServiceSelfComponent(ncs.application.NanoService):
 
         self.log.info('Proplist: ', proplist)
 
-        return []
+        return proplist
 
 
 def _id_requested(root, bd, tctx, log):
@@ -152,6 +137,28 @@ def _id_requested(root, bd, tctx, log):
             bd, svc_xpath, tctx.username, pool_name, allocation_name, False, requested_id)
         log.info(
             f'Id is requested from pool {pool_name} for service {bd.name}')
+
+
+def _id_allocated(root, bd, tctx, log):
+    """Function to read vlan and vni ids from resource manager and set id_allocated leaf for the next state
+
+    Args:
+        root: Maagic object pointing to the root of the CDB
+        bd: service node
+        tctx: transaction context (TransCtxRef)
+        log: log object(self.log)
+
+    """
+    resource_pools = root.cisco_dc__dc_site[bd.site].resource_pools
+    id = [('network-vlan', resource_pools.l2_network_vlan),
+          ('l2vni', resource_pools.l2_vxlan_vni)]
+    for parameter, pool_name in id:
+        allocation_name = f'{bd.site}:{bd.tenant}:{bd.name}'
+        if id_allocator.id_read(tctx.username, root, pool_name, allocation_name):
+            bd.id_allocated = True
+        else:
+            bd.id_allocated = False
+            break
 
 
 def _configure_bridge_domain(root, bd, tctx, log):
@@ -187,7 +194,7 @@ def _create_service_parameters(root, bd, tctx, id_parameters, log):
         allocation_name = f'{bd.site}:{bd.tenant}:{bd.name}'
         id_parameters[parameter] = id_allocator.id_read(
             tctx.username, root, pool_name, allocation_name)
-    log.info('Id Parameters :', id_parameters)
+    log.info('Bridge Domain Config Id Parameters :', id_parameters)
 
 
 def _set_hidden_leaves(root, bd, id_parameters, log):
@@ -202,7 +209,6 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
     """
     bd.vlan_id, bd.vni_id = id_parameters.values()
     port_configs = root.cisco_dc__dc_site[bd.site].port_configs
-    port_groups = root.cisco_dc__dc_site[bd.site].port_group
     for port_group in bd.port_group:
         port_config = port_configs[port_group.name].port_config
         for port in port_config:
@@ -234,10 +240,10 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
             log.info(
                 f'Port {port.name} bridge-bomain {bd.name} hidden configuration is applied.')
 
-        _port_group = port_groups[port_group.name]
-        _port_group.attached_bridge_domain_kp.create(bd._path)
+        port_configs[port_group.name].attached_bridge_domain.create(bd.site, bd.tenant, bd.name)
+        port_configs[port_group.name].attached_bridge_domain_kp.create(bd._path)
         log.info(
-            f'Port group {port_group.name} attached bridge domain keypath leaf-list is updated by tenant {bd.tenant} bridge-domain {bd.name}.')
+            f'Port configs {port_group.name} attached bridge domain operational list is updated by tenant {bd.tenant} bridge-domain {bd.name}.')
 
     for bd_subnet in bd.bd_subnet:
         ip = utils.getIpAddress(bd_subnet.address)
@@ -247,7 +253,8 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
     if bd.vrf:
         vrf = root.cisco_dc__dc_site[bd.site].vrf_config[bd.vrf]
         vrf.attached_bridge_domain_kp.create(bd._path)
-        log.info(f'Vrf {bd.vrf} attached bridge domain keypath leaf-list is updated by tenant {bd.tenant} bridge-domain {bd.name}.')
+        log.info(
+            f'Vrf {bd.vrf} attached bridge domain keypath leaf-list is updated by tenant {bd.tenant} bridge-domain {bd.name}.')
 
 
 def _apply_template(bd):

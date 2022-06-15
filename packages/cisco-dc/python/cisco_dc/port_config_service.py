@@ -21,7 +21,6 @@ class PortServiceCallback(ncs.application.Service):
                 th = m.attach(tctx)
 
                 port = maagic.get_node(th, str(kp))
-
                 # raise Exception("invalid create operation")
                 self._is_port_used(root, port)
 
@@ -166,6 +165,7 @@ class PortServiceSelfComponent(ncs.application.NanoService):
         # State functions
         if state == 'cisco-dc:id-allocated':
             _id_requested(root, service, tctx, self.log)
+            _id_allocated(root, service, tctx, self.log)
 
         elif state == 'cisco-dc:port-configured':
             _configure_port(root, service, tctx, self.log)
@@ -197,6 +197,28 @@ def _id_requested(root, port, tctx, log):
         id_allocator.id_request(port, svc_xpath, tctx.username, utils.get_port_channel_id_pool_name(
             root, port), f'{port.site}:{port.port_group}:{port.name}', False, requested_id)
         log.info(f'Port-Channel id is requested for port {port.name}')
+
+
+def _id_allocated(root, port, tctx, log):
+    """Function to read port-channel id from resource manager and set id_allocated leaf for the next state
+
+    Args:
+        root: Maagic object pointing to the root of the CDB
+        port: service node
+        tctx: transaction context (TransCtxRef)
+        log: log object(self.log)
+
+    """
+    if port.port_type == 'port-channel':
+        if id_allocator.id_read(
+                tctx.username, root, utils.get_port_channel_id_pool_name(root, port), f'{port.site}:{port.port_group}:{port.name}'):
+            port.id_allocated = True
+    elif port.port_type == 'vpc-port-channel':
+        if id_allocator.id_read(
+                tctx.username, root, utils.get_port_channel_id_pool_name(root, port), f'{port.site}:{port.port_group}:{port.name}'):
+            port.id_allocated = True
+    else:
+        port.id_allocated = True
 
 
 def _configure_port(root, port, tctx, log):
@@ -232,6 +254,7 @@ def _create_service_parameters(root, port, tctx, id_parameters, log):
     elif port.port_type == 'vpc-port-channel':
         id_parameters['port-channel-id'] = id_allocator.id_read(
             tctx.username, root, utils.get_port_channel_id_pool_name(root, port), f'{port.site}:{port.port_group}:{port.name}')
+    log.info('Port Config Id Parameters: ', id_parameters)
 
 
 # def _raise_service_exceptions(root, port, tctx, id_parameters, log):
@@ -278,20 +301,18 @@ def _set_hidden_leaves(root, port, tctx, id_parameters, log):
         log: log object(self.log)    
 
     """
-    port_group = root.cisco_dc__dc_site[port.site].port_group[port.port_group]
 
     if port.port_type == 'ethernet':
         port.type = 'ethernet'
         port.ethernet.node_copy = port.ethernet.node
-        port_config = port_group.port_config.create(port._path)
-        port_config.node_port = port.ethernet.node_port
+        [port.ethernet.node_port_copy.create(
+            node_port) for node_port in port.ethernet.node_port]
 
     elif port.port_type == 'port-channel':
         port.type = 'port-channel'
         port.port_channel.node_copy = port.port_channel.node
         port.port_channel.allocated_port_channel_id = id_parameters.get(
             'port-channel-id')
-        port_group.port_config.create(port._path)
 
     elif port.port_type == 'vpc-port-channel':
         port.type = 'vpc-port-channel'
@@ -304,11 +325,12 @@ def _set_hidden_leaves(root, port, tctx, id_parameters, log):
         for node, node_port in vpc_nodes:
             vpc_node = port.vpc_port_channel.node.create(node)
             vpc_node.node_port = node_port
-        port_group.port_config.create(port._path)
 
     port.auto_bum = utils.get_bum(port.speed)
 
-    port_group.attached_port.create(port.name)
+    # Update attached-ports for kicker
+    port_configs = root.cisco_dc__dc_site[port.site].port_configs[port.port_group]
+    port_configs.attached_ports.create(port.name)
 
 
 def _apply_template(port):

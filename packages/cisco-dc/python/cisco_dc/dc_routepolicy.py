@@ -1,5 +1,5 @@
 import ncs
-from ipaddress import ip_address, IPv4Address, IPv6Address
+from ipaddress import ip_address, IPv4Address
 
 from . import utils
 
@@ -86,13 +86,25 @@ def _set_hidden_leaves(root, dc_rpl, log):
         for kp in route_policy.attached_bridge_domain_kp:
             try:
                 bd = ncs.maagic.cd(root, kp)
-                [route_policy.device.create(kp, leaf_id) for leaf_id in utils.get_route_policy_leaf_id_from_bd(bd)]
+                for leaf_id in utils.get_route_policy_leaf_id_from_bd(bd, route_policy):
+                    route_policy.device.create(kp, leaf_id)
             except KeyError:
-                raise Exception(
-                    f'Bridge-domain {kp} can not be found.')
+                log.error(f'Bridge-domain {kp} can not be found.')
             else:
                 log.info(
                     f'Route policy {route_policy.profile} device is updated with bridge-domain {bd.name} keypath.')
+
+        for kp in route_policy.attached_vrf_kp:
+            try:
+                vrf = ncs.maagic.cd(root, kp)
+                for leaf_id in utils.get_route_policy_leaf_id_from_vrf(vrf, route_policy):
+                    route_policy.device.create(kp, leaf_id)
+            except KeyError:
+                log.error(
+                    f'Vrf {kp} can not be found.')
+            else:
+                log.info(
+                    f'Route policy {route_policy.profile} device is updated with vrf {vrf.name} keypath.')
 
     # In the _raise_service_exceptions function we guaranteed that each prefix-list has only one address-family
     for match_rule in dc_rpl.rules_set.match_rules:
@@ -114,19 +126,21 @@ def _set_hidden_leaves(root, dc_rpl, log):
         for match_and_set_group in route_policy.match_and_set_group:
             for rpl_match_rule in match_and_set_group.match_rules:
                 match_rule = dc_rpl.rules_set.match_rules[rpl_match_rule.name]
-                if hasattr(match_rule, 'address_family') and match_rule.address_family.string == 'ipv4':
+                if match_rule.address_family == 'ipv4':
                     route_policy.address_family = 'ipv4'
-                elif hasattr(match_rule, 'address_family') and match_rule.address_family.string == 'ipv6':
+
+                elif match_rule.address_family == 'ipv6':
                     route_policy.address_family = 'ipv6'
-        
+
         # In the iteration above we try to set route-policy address-family if we can not continue with the next iteration
         if not route_policy.address_family:
             for match_and_set_group in route_policy.match_and_set_group:
                 for rpl_set_rule in match_and_set_group.set_rules:
                     set_rule = dc_rpl.rules_set.set_rules[rpl_set_rule.name]
-                    if hasattr(set_rule, 'address_family') and set_rule.address_family.string == 'ipv4':
+                    if set_rule.address_family == 'ipv4':
                         route_policy.address_family = 'ipv4'
-                    elif hasattr(set_rule, 'address_family') and set_rule.address_family.string == 'ipv6':
+
+                    elif set_rule.address_family == 'ipv6':
                         route_policy.address_family = 'ipv6'
 
     dc_rpl.dc_route_policy_type_copy = dc_rpl.dc_route_policy_type

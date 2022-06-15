@@ -169,6 +169,36 @@ submodule cisco-dc-site {
                 type inet:ipv4-address;
                 mandatory true;
             }
+
+            leaf internet-vrf {
+                tailf:info "Fabric Internet VRF Name";
+                type string;
+                mandatory true;
+            }
+
+            container dci-reference {
+                tailf:info "DCI reference device information for fabric route check.";
+
+                leaf name {
+                    tailf:info "Router hostname";
+                    type string;
+                    mandatory true;
+                }
+
+                leaf address {
+                    tailf:info "Router ip address infromation";
+                    type inet:ipv4-address;
+                    mandatory true;
+                }
+
+                leaf authgroup {
+                    tailf:info "Authentication credentials for the device";
+                    type leafref {
+                        path "/ncs:devices/ncs:authgroups/ncs:group/ncs:name";
+                    }
+                    mandatory true;
+                }
+            }
         }
 
         container resource-pools {

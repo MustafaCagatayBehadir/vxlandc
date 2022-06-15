@@ -198,6 +198,12 @@ submodule cisco-dc-vrf-config {
             tailf:default-ref "../../cisco-dc:fabric-parameters/cisco-dc:as-number";
         }
 
+        leaf id-allocated {
+            tailf:hidden "dc";
+            type boolean;
+            default false;
+        }
+
         leaf approved {
             tailf:info "Approved will set to true if id is allocated";
             type boolean;

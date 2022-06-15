@@ -64,7 +64,13 @@
             },
             "fabric-parameters": {
                 "as-number": 65001,
-                "mcast-group": "239.255.0.0"
+                "mcast-group": "239.255.0.0",
+                "internet-vrf": "internet",
+                "dci-reference": {
+                    "name": "DN-LAB-DRC-RT-01",
+                    "address": "10.211.48.52",
+                    "authgroup": "ASR9K"
+                }
             }
         }
     ]

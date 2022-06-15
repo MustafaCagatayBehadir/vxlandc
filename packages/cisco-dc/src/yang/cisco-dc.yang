@@ -13,6 +13,9 @@ module cisco-dc {
     import tailf-ncs {
         prefix ncs;
     }
+    import tailf-kicker {
+        prefix kicker;
+    }
 
     include cisco-dc-common {
         revision-date "2022-01-17";
@@ -107,18 +110,6 @@ module cisco-dc {
                     }
                 }
             }
-        }
-
-        list port-group {
-            tailf:info "Port Configs Reference Service";
-
-            uses ncs:service-data;
-            ncs:servicepoint port-group-servicepoint;
-
-            key name;
-
-            uses port-group;
-
         }
 
         list port-configs {
@@ -254,6 +245,19 @@ module cisco-dc {
                     leaf success {
                         type boolean;
                     }
+                }
+            }
+        }
+
+        container port-configs {
+            tailf:action bridge-domain-redeploy {
+                description
+                  "Action to redeploy attached bridge-domains after a port is created or deleted";
+                tailf:actionpoint bridge-domain-redeploy;
+                input {
+                    uses kicker:action-input-params;
+                }
+                output {
                 }
             }
         }

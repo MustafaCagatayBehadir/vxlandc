@@ -2,20 +2,26 @@ from scrapli.driver.core import IOSXRDriver
 from scrapli.exceptions import ScrapliException
 
 
-r1 = {
-    "host": "10.211.48.52",
-    "auth_username": "dcnm_nso_test",
-    "auth_password": "dcnm_nso_test",
-    "auth_strict_key": False,
-    "timeout_socket": 5,  # timeout for establishing socket/initial connection
-    "timeout_transport": 10,  # timeout for ssh|telnet transport
-}
+class Xrapi:
 
+    def __init__(self, host, username, password, log):
+        self.log = log
+        r1 = {
+            "host": host,
+            "auth_username": username,
+            "auth_password": password,
+            "auth_strict_key": False,
+            "timeout_socket": 5,  # timeout for establishing socket/initial connection
+            "timeout_transport": 10,  # timeout for ssh|telnet transport
+        }
 
-def send_show(show_command):
-    try:
-        with IOSXRDriver(**r1) as ssh:
-            reply = ssh.send_command(show_command)
-            return reply.textfsm_parse_output() if reply.textfsm_parse_output() else reply.result
-    except ScrapliException as error:
-        print(error, r1["host"])
+    def send_show_commands(self, cmd_list, log):
+        try:
+            with IOSXRDriver(**self.r1) as ssh:
+                reply = ssh.send_commands(cmd_list)
+
+                for r in reply:
+                    log.info(r.result)
+
+        except ScrapliException as error:
+            print(error, self.r1["host"])

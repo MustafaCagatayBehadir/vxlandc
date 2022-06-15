@@ -204,6 +204,12 @@ submodule cisco-dc-tenant {
             tailf:default-ref "../../cisco-dc:name";
         }
 
+        leaf id-allocated {
+            tailf:hidden "dc";
+            type boolean;
+            default false;
+        }
+
         leaf approved {
             tailf:info "Approved will set to true if id is allocated";
             type boolean;

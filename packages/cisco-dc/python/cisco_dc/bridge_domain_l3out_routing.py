@@ -117,6 +117,8 @@ def _set_hidden_leaves(root, bd, log):
         for bgp in routing.bgp:
             ip = bgp.peer_address
 
+            nodes = bgp.source_interface.fabric_internal_connection.node
+
             bgp.address_family = 'ipv4' if type(
                 ip_address(ip)) is IPv4Address else 'ipv6'
             bgp.as_number = root.cisco_dc__dc_site[bd.site].fabric_parameters.as_number
@@ -129,8 +131,9 @@ def _set_hidden_leaves(root, bd, log):
                     if hasattr(dc_route_policy, 'tenant') and dc_route_policy.tenant == bd.tenant:
                         for route_policy in dc_route_policy.route_policy:
                             if route_policy.profile in profiles:
-                                route_policy.attached_bridge_domain_kp.create(
-                                    bd._path)
+                                bd_device = route_policy.bd_device.create(bd._path)
+                                for device in nodes:
+                                    bd_device.leaf_id.create(device.leaf_id)
                                 log.info(
                                     f'Dc route policy {dc_route_policy.name} route policy {route_policy.profile} attached bridge domain keypath leaf-list is updated by tenant {bd.tenant} bridge-domain {bd.name}.')
 

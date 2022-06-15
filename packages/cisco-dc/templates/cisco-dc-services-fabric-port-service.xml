@@ -65,7 +65,7 @@
                         <shutdown when="{not(shutdown)}" tags="delete" />
                         <description>{$DESCRIPTION}</description>
                         <mtu>9216</mtu>
-                        <spanning-tree tags="create">
+                        <spanning-tree>
                             <bpduguard when="{connection='host'}">enable</bpduguard>
                             <guard when="{connection='switch'}">root</guard>
                             <port>

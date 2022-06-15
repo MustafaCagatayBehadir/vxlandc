@@ -131,6 +131,7 @@ class BridgeDomainRedeployAction(ncs.dp.Action):
         kp_list = list()
         create_action_parameters(input, trans, kp_list, self.log)
         redeploy_bridge_domains(kp_list, name, self.log)
+        self.log.info(f'Action is finished via kicker action {name}')
 
 
 def create_action_parameters(input, trans, kp_list, log):

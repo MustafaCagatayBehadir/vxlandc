@@ -120,9 +120,22 @@ submodule cisco-dc-vrf-config {
             }
         }
 
-        leaf-list attached-bridge-domain-kp {
+        list bd-device {
             tailf:hidden "dc";
-            type string;
+
+            key kp;
+
+            leaf kp {
+                tailf:info "Bridge-domain keypath";
+                type string;
+            }
+
+            leaf-list leaf_id {
+                tailf:info "Bridge-domain device";
+                type leafref {
+                    path "/ncs:devices/ncs:device/ncs:name";
+                }
+            }
         }
 
         list attached-bridge-domain {

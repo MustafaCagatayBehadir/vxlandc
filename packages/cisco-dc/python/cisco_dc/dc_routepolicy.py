@@ -83,28 +83,18 @@ def _set_hidden_leaves(root, dc_rpl, log):
 
     """
     for route_policy in dc_rpl.route_policy:
-        for kp in route_policy.attached_bridge_domain_kp:
-            try:
-                bd = ncs.maagic.cd(root, kp)
-                for leaf_id in utils.get_route_policy_leaf_id_from_bd(bd, route_policy):
-                    route_policy.device.create(kp, leaf_id)
-            except KeyError:
-                log.error(f'Bridge-domain {kp} can not be found.')
-            else:
-                log.info(
-                    f'Route policy {route_policy.profile} device is updated with bridge-domain {bd.name} keypath.')
+        
+        for bd in route_policy.bd_device:
+            for leaf_id in bd.leaf_id: 
+                route_policy.device.create(bd.kp, leaf_id)
+            log.info(
+                f'Route policy {route_policy.profile} device is updated with bridge-domain keypath {bd.kp}.')
 
-        for kp in route_policy.attached_vrf_kp:
-            try:
-                vrf = ncs.maagic.cd(root, kp)
-                for leaf_id in utils.get_route_policy_leaf_id_from_vrf(vrf, route_policy):
-                    route_policy.device.create(kp, leaf_id)
-            except KeyError:
-                log.error(
-                    f'Vrf {kp} can not be found.')
-            else:
-                log.info(
-                    f'Route policy {route_policy.profile} device is updated with vrf {vrf.name} keypath.')
+        for vrf in route_policy.vrf_device:
+            for leaf_id in vrf.leaf_id: 
+                route_policy.device.create(vrf.kp, leaf_id)
+            log.info(
+                f'Route policy {route_policy.profile} device is updated with bridge-domain keypath {vrf.kp}.')
 
     # In the _raise_service_exceptions function we guaranteed that each prefix-list has only one address-family
     for match_rule in dc_rpl.rules_set.match_rules:

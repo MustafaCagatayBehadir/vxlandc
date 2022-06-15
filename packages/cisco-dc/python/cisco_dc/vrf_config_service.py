@@ -148,13 +148,13 @@ def _create_operational_lists(root, vrf, log):
         log: log object (self.log)
 
     """
-    for kp in vrf.attached_bridge_domain_kp:
+    for bd_device in vrf.bd_device:
         try:
-            bd = ncs.maagic.cd(root, kp)
+            bd = ncs.maagic.cd(root, bd_device.kp)
             vrf.attached_bridge_domain.create(
                 bd.site, bd.tenant, bd.name)
         except KeyError:
-            log.error(f'Bridge-domain {kp} can not be found.')
+            log.error(f'Bridge-domain {bd_device.kp} can not be found.')
         else:
             log.info(
                 f'Vrf {vrf.name} attached bridge domain operational list is created for tenant {bd.tenant} bridge-domain {bd.name}')
@@ -177,16 +177,11 @@ def _set_hidden_leaves(root, vrf, id_parameters, log):
     border_leaves = [
         node.hostname for node in site.node if node.node_role == 'border-leaf']
 
-    for kp in vrf.attached_bridge_domain_kp:
-        try:
-            bd = ncs.maagic.cd(root, kp)
-            for device in bd.device:
-                vrf.device.create(kp, device.leaf_id)
-        except KeyError:
-            log.error(f'Bridge-domain {kp} can not be found.')
-        else:
-            log.info(
-                f'Vrf {vrf.name} device is updated with bridge-domain {bd.name} keypath.')
+    for bd in vrf.bd_device:
+        for leaf_id in bd.leaf_id:
+            vrf.device.create(bd.kp, leaf_id)
+        log.info(
+            f'Vrf {vrf.name} device is updated with bridge-domain keypath {bd.kp}.')
 
     for leaf_id in border_leaves:
         vrf.device.create(vrf._path, leaf_id)
@@ -199,7 +194,10 @@ def _set_hidden_leaves(root, vrf, id_parameters, log):
             for dc_route_policy in dc_route_policies:
                 if vrf.direct.address_family_ipv4_policy in dc_route_policy.route_policy:
                     route_policy = dc_route_policy.route_policy[vrf.direct.address_family_ipv4_policy]
-                    route_policy.attached_vrf_kp.create(vrf._path)
+                    vrf_device = route_policy.vrf_device.create(
+                        vrf._path)
+                    for device in vrf.device:
+                        vrf_device.leaf_id.create(device.leaf_id)
                     log.info(
                         f'Dc route policy {dc_route_policy.name} route policy {route_policy.profile} attached vrf keypath leaf-list is updated by vrf {vrf.name}.')
 
@@ -208,7 +206,10 @@ def _set_hidden_leaves(root, vrf, id_parameters, log):
             for dc_route_policy in dc_route_policies:
                 if vrf.direct.address_family_ipv6_policy in dc_route_policy.route_policy:
                     route_policy = dc_route_policy.route_policy[vrf.direct.address_family_ipv6_policy]
-                    route_policy.attached_vrf_kp.create(vrf._path)
+                    vrf_device = route_policy.vrf_device.create(
+                        vrf._path)
+                    for device in vrf.device:
+                        vrf_device.leaf_id.create(device.leaf_id)
                     log.info(
                         f'Dc route policy {dc_route_policy.name} route policy {route_policy.profile} attached vrf keypath leaf-list is updated by vrf {vrf.name}.')
 
@@ -218,7 +219,10 @@ def _set_hidden_leaves(root, vrf, id_parameters, log):
             for dc_route_policy in dc_route_policies:
                 if vrf.static.address_family_ipv4_policy in dc_route_policy.route_policy:
                     route_policy = dc_route_policy.route_policy[vrf.static.address_family_ipv4_policy]
-                    route_policy.attached_vrf_kp.create(vrf._path)
+                    vrf_device = route_policy.vrf_device.create(
+                        vrf._path)
+                    for device in vrf.device:
+                        vrf_device.leaf_id.create(device.leaf_id)
                     log.info(
                         f'Dc route policy {dc_route_policy.name} route policy {route_policy.profile} attached vrf keypath leaf-list is updated by vrf {vrf.name}.')
 
@@ -227,7 +231,10 @@ def _set_hidden_leaves(root, vrf, id_parameters, log):
             for dc_route_policy in dc_route_policies:
                 if vrf.static.address_family_ipv6_policy in dc_route_policy.route_policy:
                     route_policy = dc_route_policy.route_policy[vrf.static.address_family_ipv6_policy]
-                    route_policy.attached_vrf_kp.create(vrf._path)
+                    vrf_device = route_policy.vrf_device.create(
+                        vrf._path)
+                    for device in vrf.device:
+                        vrf_device.leaf_id.create(device.leaf_id)
                     log.info(
                         f'Dc route policy {dc_route_policy.name} route policy {route_policy.profile} attached vrf keypath leaf-list is updated by vrf {vrf.name}.')
 

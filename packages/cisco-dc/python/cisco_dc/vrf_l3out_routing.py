@@ -57,8 +57,9 @@ def _set_hidden_leaves(root, vrf, log):
                     if hasattr(dc_route_policy, 'vrf') and dc_route_policy.vrf == vrf.name:
                         for route_policy in dc_route_policy.route_policy:
                             if route_policy.profile in profiles:
-                                route_policy.attached_vrf_kp.create(
+                                vrf_device = route_policy.vrf_device.create(
                                     vrf._path)
+                                vrf_device.leaf_id.create(l3out.node)
                                 log.info(
                                     f'Dc route policy {dc_route_policy.name} route policy {route_policy.profile} attached vrf keypath leaf-list is updated by vrf {vrf.name}.')
 

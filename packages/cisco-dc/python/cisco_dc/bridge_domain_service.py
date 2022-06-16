@@ -89,7 +89,7 @@ class BridgeDomainServiceCallback(ncs.application.Service):
         
         if cmd_list:
             xrapi = Xrapi(dci.address, username, password, self.log)
-            xrapi.send_show_commands(cmd_list)
+            xrapi.send_show_commands(bd, cmd_list)
 
 
 class BridgeDomainServiceSelfComponent(ncs.application.NanoService):

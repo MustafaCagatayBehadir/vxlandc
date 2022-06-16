@@ -5,6 +5,7 @@ import json
 from collections import defaultdict
 
 from .nxapi import Nxapi
+from .ttp_templates import vrf_config_template, route_table_template, route_table_longer_template
 
 
 def get_port_channel_id_pool_name(root, port):
@@ -392,12 +393,35 @@ def get_cmd_dict_from_bd(root, bd, proplist, new_proplist):
 
     if bd.vrf == internet_vrf:
         cmd_list = {prefix: [f'show route {prefix}',
-                             f'show route longer {prefix}'] for prefix in diff_route_ref}
+                             f'show route longer-prefixes {prefix}'] for prefix in diff_route_ref}
     else:
         cmd_list = {prefix: [f'show route vrf {bd.vrf} {prefix}',
-                             f'show route vrf {bd.vrf} longer {prefix}'] for prefix in diff_route_ref}
-        cmd_list['vrf'] = ['show vrf all'] if cmd_list else []
+                             f'show route vrf {bd.vrf} longer-prefixes {prefix}'] for prefix in diff_route_ref}
+        if cmd_list:
+            cmd_list['vrf'] = ['show run vrf']
     return cmd_list
+
+
+def get_vrf_from_dci_router(bd, r):
+    """Function to get vrf from dci router otherwise raise exception
+
+    Args:
+        bd: service node
+        r: scrapli response object
+
+    Returns:
+        String: Vrf name defined in dci router
+
+    """
+    data = r.ttp_parse_output(template=vrf_config_template)
+    for results in data:
+        for result in results['results']:
+            if result.get('vrf').lower() == bd.vrf.lower():
+                vrf = result.get('vrf')
+                break
+        else:
+            raise Exception(f'Vrf {bd.vrf} can not be found on DCI.')
+    return vrf
 
 
 def truncate_vlan_name(vlan_name):
@@ -421,11 +445,49 @@ def truncate_static_route_name(static_route_name):
         static_route_name: Static route name more than 50 char
 
 
-    Return:
+    Returns:
         String: Truncated static route name
 
     """
     return f'{static_route_name[:47]}...'
+
+
+def update_command_dict(bd, vrf, cmd_dict):
+    """Function to update command dictionary with dci vrf
+
+    Args:
+        bd: Service node
+        vrf: DCI router vrf name
+        cmd_dict: Default dict object
+
+    Returns:
+        Default dict: Command dictionary
+
+    """
+    cmd_dict.pop('vrf')
+    for prefix, cmd_list in cmd_dict.items():
+        cmd_dict[prefix] = [cmd.replace(bd.vrf, vrf) for cmd in cmd_list]
+    return cmd_dict
+
+
+def is_prefix_used(prefix, r, log):
+    """Function to check if prefix is used in the current network and raise exception
+
+    Args:
+        prefix: prefix information ex. 10.1.1.0/24
+        r: scrapli response object
+        log: log object (self.log)
+
+    """
+    data = r.ttp_parse_output(template=route_table_template)
+    for results in data:
+        log.info('Route Table Results: ', results)
+        # for result in results['results']:
+        #     if int(result['mask']) > 22:
+        #         raise Exception(f'Prefix {prefix} is already used in the network.')
+    data = r.ttp_parse_output(template=route_table_longer_template)
+    for results in data:
+        log.info('Route Table Longer Results: ', results)
 
 
 def is_node_vpc(root, port):

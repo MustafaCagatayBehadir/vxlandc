@@ -20,31 +20,37 @@ class BridgeDomainServiceCallback(ncs.application.Service):
             "ENTRY_POINT for {} at pre_mod of BridgeDomainConfigService, operation: {}" .format(
                 utils.get_kp_service_id(kp),
                 utils.get_service_operation(op)))
-        try:
-            new_proplist = list()
-            if op == _ncs.dp.NCS_SERVICE_CREATE:
+        
+        new_proplist = list()
+        if op == _ncs.dp.NCS_SERVICE_CREATE:
+            try:
                 m = maapi.Maapi()
                 th = m.attach(tctx)
-
                 bd = maagic.get_node(th, str(kp))
-
                 self._create_new_proplist(bd, new_proplist)
-                # raise Exception("invalid create operation")
-                self._is_prefix_used(root, bd, proplist, new_proplist)
+                disable_validation = root.cisco_dc__dc_site[bd.site].validations.disable_bridge_domain_validation
+                if not disable_validation.exists():
+                    # raise Exception("invalid create operation")
+                    self._is_prefix_used(root, bd, proplist, new_proplist)
+            
+            except Exception as e:
+                self.log.error(e)
+                raise                
 
-            elif op == _ncs.dp.NCS_SERVICE_UPDATE:
+        elif op == _ncs.dp.NCS_SERVICE_UPDATE:
+            try:
                 m = maapi.Maapi()
                 th = m.attach(tctx)
-
                 bd = maagic.get_node(th, str(kp))
-
                 self._create_new_proplist(bd, new_proplist)
-                # raise Exception("invalid update operation")
-                self._is_prefix_used(root, bd, proplist, new_proplist)
+                disable_validation = root.cisco_dc__dc_site[bd.site].validations.disable_bridge_domain_validation
+                if not disable_validation.exists():
+                    # raise Exception("invalid update operation")
+                    self._is_prefix_used(root, bd, proplist, new_proplist)
 
-        except Exception as e:
-            self.log.error(e)
-            raise
+            except Exception as e:
+                self.log.error(e)
+                raise
 
         return proplist if proplist == new_proplist else new_proplist
 

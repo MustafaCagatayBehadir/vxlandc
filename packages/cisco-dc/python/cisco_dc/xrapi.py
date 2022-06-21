@@ -15,7 +15,7 @@ class Xrapi:
             "timeout_socket": 5,  # timeout for establishing socket/initial connection
             "timeout_transport": 10,  # timeout for ssh|telnet transport
         }
-        logging.getLogger('scrapy').propagate = False
+        logging.getLogger('scrapli').propagate = False
 
     def send_show_commands(self, bd, cmd_dict):
         """Function to run precheck commands on DCI and raise exception if necessary

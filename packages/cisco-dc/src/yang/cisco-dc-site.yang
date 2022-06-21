@@ -239,5 +239,21 @@ submodule cisco-dc-site {
                 }
             }
         }
+
+        container validations {
+            tailf:info "Fabric validations";
+            presence
+              true;
+
+            leaf disable-port-config-validation {
+                tailf:info "Turns off validation of port configs.";
+                type empty;
+            }
+
+            leaf disable-bridge-domain-validation {
+                tailf:info "Turns off validation for bridge-domains.";
+                type empty;
+            }
+        }
     }
 }

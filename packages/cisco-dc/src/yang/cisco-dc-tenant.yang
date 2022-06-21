@@ -162,6 +162,12 @@ submodule cisco-dc-tenant {
             }
         }
 
+        leaf mtu {
+            when "../bd-subnet";
+            tailf:info "Set the interface Maximum Transmission Unit (MTU)";
+            type mtu;
+        }
+
         leaf vrf {
             when "../bd-subnet";
             tailf:info "Associate VRF on Bridge Domain";

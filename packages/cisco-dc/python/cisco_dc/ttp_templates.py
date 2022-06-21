@@ -1,10 +1,3 @@
-"""
-<vars>
-# Definition of protocol field regular expression
-PROTO = "[A-Z]" 
-</vars>
-"""
-
 vrf_config_template = """
 <group name="results">
 vrf {{ vrf }}
@@ -13,13 +6,12 @@ vrf {{ vrf }}
 
 route_table_template = """
 <group name="results" method="table">
-Routing entry for {{ network }}/{{ mask }}
-Known via {{ protocol }} {{ignore}}
+Routing entry for {{ network | re("IP") }}/{{ mask }}
 </group>
 """
 
 route_table_longer_template = """
 <group name="results" method="table">
-{{ protocol | re("PROTO") }} {{ network }}/{{ mask }}
+{{ protocol }} {{ network | re("IP") }}/{{ mask }} {{ ignore(".*") }}
 </group>
 """

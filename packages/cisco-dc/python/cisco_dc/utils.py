@@ -7,7 +7,6 @@ from collections import defaultdict
 from .nxapi import Nxapi
 from .ttp_templates import vrf_config_template, route_table_template, route_table_longer_template
 
-
 def get_port_channel_id_pool_name(root, port):
     """Function to return port-channel id pool name for a given node
 
@@ -480,14 +479,17 @@ def is_prefix_used(prefix, r, log):
 
     """
     data = r.ttp_parse_output(template=route_table_template)
+    log.info('Route Table Structured Results: ', data)
     for results in data:
-        log.info('Route Table Results: ', results)
-        # for result in results['results']:
-        #     if int(result['mask']) > 22:
-        #         raise Exception(f'Prefix {prefix} is already used in the network.')
+        for result in results['results']:
+            if int(result['mask']) > 22:
+                raise Exception(f'Prefix {prefix} is already used in the network.')
     data = r.ttp_parse_output(template=route_table_longer_template)
+    log.info('Route Table Longer Structured Results: ', data)
     for results in data:
-        log.info('Route Table Longer Results: ', results)
+        for result in results['results']:
+            if int(result['mask']) > 22:
+                raise Exception(f'Prefix {prefix} is already used in the network.')
 
 
 def is_node_vpc(root, port):

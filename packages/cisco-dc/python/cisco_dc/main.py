@@ -27,8 +27,11 @@ class Main(ncs.application.Application):
                                    'cisco-dc:id-allocated', port_config_service.PortServiceSelfComponent)
 
         self.register_nano_service('port-config-servicepoint', 'ncs:self',
-                                   'cisco-dc:port-configured', port_config_service.PortServiceSelfComponent)    
+                                   'cisco-dc:port-configured', port_config_service.PortServiceSelfComponent)
 
+        # Port Config Service Validation
+        self.port_config_val = validate_callback.ValPointRegistrar(
+            self.log, 'port-config-val', 'port-config-service-validation', port_config_service.PortConfigServiceValidator(self.log))
 
         # Bridge Domain Premod & Postmod
         self.register_service('bridge-domain-config-servicepoint',

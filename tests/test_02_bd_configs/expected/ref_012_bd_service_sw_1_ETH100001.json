@@ -1,0 +1,7 @@
+{
+    "tailf-ned-cisco-nx:switchport": {
+        "access": {
+            "vlan": 2
+        }
+    }
+}

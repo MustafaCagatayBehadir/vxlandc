@@ -2,6 +2,8 @@ import ncs
 import _ncs
 import ncs.maapi as maapi
 import ncs.maagic as maagic
+from collections import defaultdict
+
 
 from . import utils
 from .resource_manager import id_allocator
@@ -15,32 +17,51 @@ class PortServiceCallback(ncs.application.Service):
             "ENTRY_POINT for {} at pre_mod of PortConfigService, operation: {}" .format(
                 utils.get_kp_service_id(kp),
                 utils.get_service_operation(op)))
-        try:
-            if op == _ncs.dp.NCS_SERVICE_CREATE:
+        
+        if op == _ncs.dp.NCS_SERVICE_CREATE:
+            try:
                 m = maapi.Maapi()
                 th = m.attach(tctx)
-
                 port = maagic.get_node(th, str(kp))
-                # raise Exception("invalid create operation")
-                self._is_port_used(root, port)
+                disable_validation = root.cisco_dc__dc_site[port.site].validations.disable_port_config_validation
+                if not disable_validation.exists():
+                    # raise Exception("invalid create operation")
+                    self._is_port_used(root, port)
+            
+            except Exception as e:
+                self.log.error(e)
+                raise
 
-            elif op == _ncs.dp.NCS_SERVICE_UPDATE:
+        elif op == _ncs.dp.NCS_SERVICE_UPDATE:
+            try:
                 m = maapi.Maapi()
                 th = m.attach(tctx)
-
                 port = maagic.get_node(th, str(kp))
-                # raise Exception("invalid update operation")
-                self._is_port_used(root, port)
+                disable_validation = root.cisco_dc__dc_site[port.site].validations.disable_port_config_validation
+                if not disable_validation.exists():
+                    # raise Exception("invalid update operation")
+                    self._is_port_used(root, port)
+            
+            except Exception as e:
+                self.log.error(e)
+                raise
 
-            elif op == _ncs.dp.NCS_SERVICE_DELETE:
+        elif op == _ncs.dp.NCS_SERVICE_DELETE:
+            try:
                 with ncs.maapi.single_write_trans('admin', 'python') as th:
                     port = maagic.get_node(th, str(kp))
-                    # raise Exception("invalid delete operation")
-                    self._is_port_down(root, port)
+                    disable_validation = root.cisco_dc__dc_site[
+                        port.site].validations.disable_port_config_validation
+                    if not disable_validation.exists():
+                        # raise Exception("invalid update operation")
+                        self._is_port_down(root, port)
 
-        except Exception as e:
-            self.log.error(e)
-            raise
+            except KeyError as e:
+                self.log.error(e)
+            
+            except Exception as e:
+                self.log.error(e)
+                raise
 
     def _is_port_down(self, root, port):
         """Function to check port physical state
@@ -347,3 +368,101 @@ def _apply_template(port):
     vars.add('BUM', float(port.bum) if port.bum else float(port.auto_bum))
     template = ncs.template.Template(port)
     template.apply('cisco-dc-services-fabric-port-service', vars)
+
+
+class PortConfigServiceValidator(object):
+    def __init__(self, log):
+        self.log = log
+
+    def cb_validate(self, tctx, kp, newval):
+        '''
+        Validating node port values are not overlapping for port-configs services
+        '''
+
+        try:
+            self.log.debug("Validating port-config service")
+            m = maapi.Maapi()
+            th = m.attach(tctx)
+
+            service = maagic.get_node(th, str(kp))
+            dc_site = maagic.cd(service, '../..')
+            fabric = dc_site.fabric
+
+            self.log.info('Port config service validation keypath: ', kp)
+            # raise Exception("Invalid port config")
+            self._no_interface_id_overlap_validation(th, service, fabric)
+
+        except Exception as e:
+            self.log.error(e)
+            raise
+        return _ncs.OK
+
+    def _no_interface_id_overlap_validation(self, th, port, fabric):
+        '''
+        :th: ncs.maapi.Transaction
+        :port: ncs.maagic.ListElement
+        :fabric: fabric name string
+        '''
+        current_interface_id = self._get_interface_id(th, port)
+        self._check_no_interface_id_overlap(
+            th, current_interface_id, port, fabric)
+
+    def _get_interface_id(self, th, port):
+        '''
+        :th: ncs.maapi.Transaction
+        :port: ncs.maagic.ListElement
+        '''
+        interface_id = defaultdict(set)
+        if port.port_type == 'ethernet':
+            node = port.ethernet.node
+            interface_id[node] = {id for id in port.ethernet.node_port}
+        elif port.port_type == 'port-channel':
+            node = port.port_channel.node
+            interface_id[node] = {id for id in port.port_channel.node_port}
+        elif port.port_type == 'vpc-port-channel':
+            node_1, node_2 = utils.get_vpc_nodes_from_port(
+                ncs.maagic.get_root(th), port)
+            interface_id[node_1], interface_id[node_2] = {id for id in port.vpc_port_channel.node_1_port}, {
+                id for id in port.vpc_port_channel.node_2_port}
+        return interface_id
+
+    def _check_no_interface_id_overlap(self, th, current_interface_id, current_port, fabric):
+        '''
+        :th: ncs.maapi.Transaction
+        :current_interface_id: default dict object
+        :current_port: ncs.maagic.ListElement
+        :fabric: fabric name string
+        '''
+        root = ncs.maagic.get_root(th)
+        port_configs = root.cisco_dc__dc_site[fabric].port_configs
+        for port_group in port_configs:
+            for port in port_group.port_config:
+                if port.name != current_port.name:
+                    if port.port_type == 'ethernet':
+                        node = port.ethernet.node
+                        node_port = {id for id in port.ethernet.node_port}
+                        if current_interface_id.get(node):
+                            if current_interface_id[node].intersection(node_port):
+                                raise Exception(
+                                    f'Interface id is already used for port {port.name}')
+                    elif port.port_type == 'port-channel':
+                        node = port.port_channel.node
+                        node_port = {
+                            id for id in port.port_channel.node_port}
+                        if current_interface_id.get(node):
+                            if current_interface_id[node].intersection(node_port):
+                                raise Exception(
+                                    f'Interface id is already used for port {port.name}')
+                    elif port.port_type == 'vpc-port-channel':
+                        node_1, node_2 = utils.get_vpc_nodes_from_port(
+                            ncs.maagic.get_root(th), port)
+                        node_1_port, node_2_port = {id for id in port.vpc_port_channel.node_1_port}, {
+                            id for id in port.vpc_port_channel.node_2_port}
+                        if current_interface_id.get(node_1):
+                            if current_interface_id[node_1].intersection(node_1_port):
+                                raise Exception(
+                                    f'Interface id is already used for port {port.name}')
+                        if current_interface_id.get(node_2):
+                            if current_interface_id[node_2].intersection(node_2_port):
+                                raise Exception(
+                                    f'Interface id is already used for port {port.name}')

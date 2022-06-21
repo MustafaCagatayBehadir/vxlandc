@@ -95,6 +95,10 @@ module cisco-dc {
                         default fabric-internal;
                     }
 
+                    refine routing/bgp/ttl {
+                        default 5;
+                    }
+
                     refine routing/bgp/peer-route-policy/profile {
                         must "deref(current())/../../dc-route-policy-type = 'tenant'" {
                             tailf:dependency ".";
@@ -250,6 +254,7 @@ module cisco-dc {
         }
 
         container port-configs {
+            tailf:hidden "dc";
             tailf:action bridge-domain-redeploy {
                 description
                   "Action to redeploy attached bridge-domains after a port is created or deleted";

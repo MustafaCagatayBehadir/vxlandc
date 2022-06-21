@@ -71,6 +71,11 @@
                     "address": "10.211.48.52",
                     "authgroup": "ASR9K"
                 }
+            },
+            "validations": {
+                "disable-bridge-domain-validation": [
+                    null
+                ]
             }
         }
     ]

@@ -17,7 +17,7 @@ class PortServiceCallback(ncs.application.Service):
             "ENTRY_POINT for {} at pre_mod of PortConfigService, operation: {}" .format(
                 utils.get_kp_service_id(kp),
                 utils.get_service_operation(op)))
-        
+
         if op == _ncs.dp.NCS_SERVICE_CREATE:
             try:
                 m = maapi.Maapi()
@@ -27,7 +27,7 @@ class PortServiceCallback(ncs.application.Service):
                 if not disable_validation.exists():
                     # raise Exception("invalid create operation")
                     self._is_port_used(root, port)
-            
+
             except Exception as e:
                 self.log.error(e)
                 raise
@@ -41,7 +41,7 @@ class PortServiceCallback(ncs.application.Service):
                 if not disable_validation.exists():
                     # raise Exception("invalid update operation")
                     self._is_port_used(root, port)
-            
+
             except Exception as e:
                 self.log.error(e)
                 raise
@@ -58,7 +58,7 @@ class PortServiceCallback(ncs.application.Service):
 
             except KeyError as e:
                 self.log.error(e)
-            
+
             except Exception as e:
                 self.log.error(e)
                 raise
@@ -255,6 +255,7 @@ def _configure_port(root, port, tctx, log):
     id_parameters = dict()
     _create_service_parameters(
         root, port, tctx, id_parameters, log)
+    _raise_service_exceptions(root, port, tctx, id_parameters, log)
     _set_hidden_leaves(root, port, tctx, id_parameters, log)
 
 
@@ -278,37 +279,35 @@ def _create_service_parameters(root, port, tctx, id_parameters, log):
     log.info('Port Config Id Parameters: ', id_parameters)
 
 
-# def _raise_service_exceptions(root, port, tctx, id_parameters, log):
-#     """Function to raise exception based on service prechecks
+def _raise_service_exceptions(root, port, tctx, id_parameters, log):
+    """Function to raise exception based on service prechecks
 
-#     Args:
-#         root: Maagic object pointing to the root of the CDB
-#         port: service node
-#         tctx: transaction context (TransCtxRef)
-#         id_parameters: dict object
-#         log: log object(self.log)
+    Args:
+        root: Maagic object pointing to the root of the CDB
+        port: service node
+        tctx: transaction context (TransCtxRef)
+        id_parameters: dict object
+        log: log object(self.log)
 
-#     """
-#     if port.port_type == 'port-channel':
-#         pc = port.port_channel
-#         device = root.ncs__devices.device[pc.node]
-#         po_id, port_channel = id_parameters['port-channel-id'], device.config.nx__interface.port_channel
-#         log.info(f'Device {pc.node} port-channel id list: ', [id.name for id in port_channel])
-#         log.info(f'Device {pc.node} port-channel description: ', port_channel[str(po_id)].description)
-#         if po_id in port_channel and port_channel[po_id].description != utils.get_description(port):
-#             raise Exception(
-#                 f'Port-channel id {po_id} is already used in device {pc.node}.')
+    """
+    disable_validation = root.cisco_dc__dc_site[port.site].validations.disable_port_config_validation
+    if not disable_validation.exists():
+        if port.port_type == 'port-channel':
+            pc = port.port_channel
+            device = root.ncs__devices.device[pc.node]
+            po_id, port_channel = id_parameters['port-channel-id'], device.config.nx__interface.port_channel
+            if po_id in port_channel and port_channel[po_id].description != utils.get_description(port):
+                raise Exception(
+                    f'Port-channel id {po_id} is already used in device {pc.node}.')
 
-#     elif port.port_type == 'vpc-port-channel':
-#         vpc_nodes = utils.get_vpc_nodes_from_port(root, port)
-#         for node in vpc_nodes:
-#             device = root.ncs__devices.device[node]
-#             po_id, port_channel = id_parameters['port-channel-id'], device.config.nx__interface.port_channel
-#             log.info(f'Device {node} port-channel id set: ', [id.name for id in port_channel])
-#             log.info('Device {pc.node} port-channel description: ', port_channel[po_id].description)
-#             if po_id in port_channel and port_channel[str(po_id)].description != utils.get_description(port):
-#                 raise Exception(
-#                     f'Port-channel id {id_parameters["port-channel-id"]} is already used in device {node}.')
+        elif port.port_type == 'vpc-port-channel':
+            vpc_nodes = utils.get_vpc_nodes_from_port(root, port)
+            for node in vpc_nodes:
+                device = root.ncs__devices.device[node]
+                po_id, port_channel = id_parameters['port-channel-id'], device.config.nx__interface.port_channel
+                if po_id in port_channel and port_channel[str(po_id)].description != utils.get_description(port):
+                    raise Exception(
+                        f'Port-channel id {id_parameters["port-channel-id"]} is already used in device {node}.')
 
 
 def _set_hidden_leaves(root, port, tctx, id_parameters, log):
@@ -347,11 +346,23 @@ def _set_hidden_leaves(root, port, tctx, id_parameters, log):
             vpc_node = port.vpc_port_channel.node.create(node)
             vpc_node.node_port = node_port
 
-    port.auto_bum = utils.get_bum(port.speed)
-
     # Update attached-ports for kicker
     port_configs = root.cisco_dc__dc_site[port.site].port_configs[port.port_group]
     port_configs.attached_ports.create(port.name)
+
+    port.auto_bum = utils.get_bum(port.speed)
+    port.mode = port_configs.mode
+
+    # Create vlan id list from bridge-domain keypath
+    for kp in port.attached_bridge_domain_kp:
+        try:
+            bd = ncs.maagic.cd(root, kp)
+            port.vlan.create(bd.vlan_id)
+        except KeyError:
+            log.error(f'Bridge-domain {kp} can not be found.')
+        else:
+            log.info(
+                f'Port {port.name} vlan id list is created for tenant {bd.tenant} bridge-domain {bd.name}')
 
 
 def _apply_template(port):

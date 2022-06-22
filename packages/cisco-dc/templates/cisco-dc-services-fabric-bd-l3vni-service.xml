@@ -105,6 +105,7 @@
                             <redirects>false</redirects>
                         </ip>
                         <ipv6>
+                            <forward/>
                             <redirects>false</redirects>
                         </ipv6>
                     </Vlan>

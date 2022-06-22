@@ -20,7 +20,7 @@ class BridgeDomainServiceCallback(ncs.application.Service):
             "ENTRY_POINT for {} at pre_mod of BridgeDomainConfigService, operation: {}" .format(
                 utils.get_kp_service_id(kp),
                 utils.get_service_operation(op)))
-        
+
         new_proplist = list()
         if op == _ncs.dp.NCS_SERVICE_CREATE:
             try:
@@ -32,10 +32,10 @@ class BridgeDomainServiceCallback(ncs.application.Service):
                 if not disable_validation.exists():
                     # raise Exception("invalid create operation")
                     self._is_prefix_used(root, bd, proplist, new_proplist)
-            
+
             except Exception as e:
                 self.log.error(e)
-                raise                
+                raise
 
         elif op == _ncs.dp.NCS_SERVICE_UPDATE:
             try:
@@ -89,10 +89,11 @@ class BridgeDomainServiceCallback(ncs.application.Service):
         """
         self.log.info('Route check is started...')
         cmd_list = utils.get_cmd_dict_from_bd(root, bd, proplist, new_proplist)
-        
+
         dci = root.cisco_dc__dc_site[bd.site].fabric_parameters.dci_reference
-        username, password = utils.get_basic_authentication(root, dci.authgroup)
-        
+        username, password = utils.get_basic_authentication(
+            root, dci.authgroup)
+
         if cmd_list:
             xrapi = Xrapi(dci.address, username, password, self.log)
             xrapi.send_show_commands(bd, cmd_list)
@@ -250,6 +251,10 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
             log.info(
                 f'Port {port.name} bridge-bomain {bd.name} hidden configuration is applied.')
 
+            port.attached_bridge_domain_kp.create(bd._path)
+            log.info(
+                f'Port {port.name} attached bridge domain keypath list is updated by tenant {bd.tenant} bridge-domain {bd.name}.')
+
         port_configs[port_group.name].attached_bridge_domain.create(
             bd.site, bd.tenant, bd.name)
         port_configs[port_group.name].attached_bridge_domain_kp.create(
@@ -282,7 +287,6 @@ def _apply_template(bd):
     vars = ncs.template.Variables()
     vars.add('VLAN_NAME', utils.get_network_vlan_name(bd))
     vars.add('DESCRIPTION', utils.get_svi_description(bd))
-    template.apply('cisco-dc-services-fabric-bd-vlan-service', vars)
     template.apply('cisco-dc-services-fabric-bd-l2vni-service', vars)
 
 

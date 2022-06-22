@@ -131,6 +131,9 @@
                 "redirects": false
             },
             "ipv6": {
+                "forward": [
+                    null
+                ],
                 "redirects": false
             }
         },
@@ -146,6 +149,9 @@
                 "redirects": false
             },
             "ipv6": {
+                "forward": [
+                    null
+                ],
                 "redirects": false
             }
         }

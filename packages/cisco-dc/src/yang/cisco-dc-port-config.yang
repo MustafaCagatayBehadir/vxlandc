@@ -354,13 +354,28 @@ submodule cisco-dc-port-config {
         leaf mode {
             tailf:hidden "dc";
             type string;
-            tailf:default-ref "../../mode";
+            
+            must "not(current()) or current() = ../../mode" {
+                error-message
+                  "Port group mode can't be changed if it has ports under it.";
+            }
+        }
+
+        leaf-list vlan {
+            tailf:info "Vlan id list for port.";
+            type vlan;
+            tailf:hidden "dc";
         }
 
         leaf port-group {
             tailf:hidden "Just for convenience";
             type string;
             tailf:default-ref "../../name";
+        }
+
+        leaf-list attached-bridge-domain-kp {
+            tailf:hidden "dc";
+            type string;
         }
 
         leaf type {

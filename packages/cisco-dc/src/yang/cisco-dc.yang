@@ -112,6 +112,26 @@ module cisco-dc {
                               "Route policy tenant should be match with bridge-domain tenant.";
                         }
                     }
+
+                    refine routing/bgp/source-interface/fabric-internal-connection/node/loopback-id {
+                        must "count(current()/../../../../../../routing/bgp[peer-address != current()/../../../../peer-address]"
+                                +   "/source-interface/fabric-internal-connection/node[leaf-id = current()/../leaf-id]/loopback-id = current()) = 0" {
+                            error-message
+                              "Loopback-id is already used in the device for another bgp peer under the same tenant and same bridge-domain.";
+                        }                    
+
+                        must "count(current()/../../../../../../../bridge-domain[name != current()/../../../../../../name]/routing/bgp[peer-address != current()/../../../../peer-address]"
+                                +   "/source-interface/fabric-internal-connection/node[leaf-id = current()/../leaf-id]/loopback-id = current()) = 0" {
+                            error-message
+                              "Loopback-id is already used in the device for another bgp peer under the same tenant but different bridge-domain.";
+                        }
+
+                        must "count(current()/../../../../../../../../tenant-service[name != current()/../../../../../../../name]/bridge-domain/routing/bgp"
+                                +   "/source-interface/fabric-internal-connection/node[leaf-id = current()/../leaf-id]/loopback-id = current()) = 0" {
+                            error-message
+                              "Loopback-id is already used in the device for another bgp peer under a different tenant.";
+                        }
+                    }
                 }
             }
         }

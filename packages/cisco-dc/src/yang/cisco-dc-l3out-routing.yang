@@ -102,11 +102,6 @@ submodule cisco-dc-l3out-routing {
                         tailf:info "attach internal connection";
                         tailf:cli-drop-node-name;
 
-                        tailf:unique-selector "node" {
-                            tailf:unique-leaf "leaf-id";
-                            tailf:unique-leaf "loopback-id";
-                        }
-
                         list node {
                             tailf:info "Associate bgp routing on loopback";
                             key "leaf-id";

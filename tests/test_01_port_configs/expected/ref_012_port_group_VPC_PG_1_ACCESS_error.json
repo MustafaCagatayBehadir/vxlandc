@@ -1,0 +1,12 @@
+{
+    "ietf-restconf:errors": {
+        "error": [
+            {
+                "error-type": "application",
+                "error-tag": "invalid-value",
+                "error-path": "/cisco-dc:dc-site[fabric='avr-dss1-lbox-yaani-fabric']/port-configs[name='VPC_PG_1_ACCESS']",
+                "error-message": "/dc-site{avr-dss1-lbox-yaani-fabric}/port-configs{VPC_PG_1_ACCESS}/mode (value \"trunk\"): Port group mode can't be changed if it has ports under it."
+            }
+        ]
+    }
+}

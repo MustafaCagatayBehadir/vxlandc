@@ -32,6 +32,18 @@ class PortServiceCallback(ncs.application.Service):
                 self.log.error(e)
                 raise
 
+            else:
+                port_configs = root.cisco_dc__dc_site[port.site].port_configs[port.port_group]
+                for kp in port_configs.attached_bridge_domain_kp:
+                    try:
+                        bd = ncs.maagic.cd(root, kp)
+                        bd.touch()
+                    except KeyError:
+                        self.log.error(f'Bridge-domain {kp} can not be found.')
+                    else:
+                        self.log.info(
+                            f'Tenant {bd.tenant} bridge-domain {bd.name} is touched by port {port.name}')
+
         elif op == _ncs.dp.NCS_SERVICE_UPDATE:
             try:
                 m = maapi.Maapi()
@@ -354,7 +366,7 @@ def _set_hidden_leaves(root, port, tctx, id_parameters, log):
     port.mode = port_configs.mode
 
     # Create vlan id list from bridge-domain keypath
-    for kp in port.attached_bridge_domain_kp:
+    for kp in port_configs.attached_bridge_domain_kp:
         try:
             bd = ncs.maagic.cd(root, kp)
             port.vlan.create(bd.vlan_id)

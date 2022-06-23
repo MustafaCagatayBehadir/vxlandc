@@ -31,20 +31,16 @@ submodule cisco-dc-port-config {
 
         leaf mode {
             tailf:info "Port Group Mode can be Access or Trunk";
-            tailf:display-when "not(../mode-oper)";
             type enumeration {
                 enum access;
                 enum trunk;
             }
             mandatory true;
-        }
-
-        leaf mode-oper {
-            tailf:info "Port Group Mode operational value";
-            tailf:cli-show-config;
-            config false;
-            type string;
-            tailf:default-ref "../mode";
+        
+            must "not(../port-config/mode) or current() = ../port-config/mode" {
+                error-message
+                  "Port group mode can't be changed if it has ports under it.";
+            }
         }
 
         list attached-bridge-domain {
@@ -354,11 +350,6 @@ submodule cisco-dc-port-config {
         leaf mode {
             tailf:hidden "dc";
             type string;
-            
-            must "not(current()) or current() = ../../mode" {
-                error-message
-                  "Port group mode can't be changed if it has ports under it.";
-            }
         }
 
         leaf-list vlan {

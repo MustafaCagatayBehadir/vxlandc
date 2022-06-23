@@ -225,3 +225,20 @@ class PortConfigsTests:
                               path=patch_path, params='')
         assert resp.status_code == 400
         assert json.loads(resp.text) == expected
+
+    @mark.parametrize('expected, patch_payload, patch_path', [
+        (expected_path / 'ref_012_port_group_ETH_PG_1_ACCESS_error.json',
+         payload_path / 'test_012_config_01.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs=ETH_PG_1_ACCESS'),
+        (expected_path / 'ref_012_port_group_PC_PG_1_TRUNK_error.json',
+         payload_path / 'test_012_config_02.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs=PC_PG_1_TRUNK'),
+        (expected_path / 'ref_012_port_group_VPC_PG_1_ACCESS_error.json',
+         payload_path / 'test_012_config_03.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs=VPC_PG_1_ACCESS')
+    ], indirect=['expected'])
+    def test_012_port_group_mode_change(self, expected, patch_payload, patch_path):
+        resp = self.nso.patch(payload=patch_payload,
+                              path=patch_path, params='')
+        assert resp.status_code == 400
+        assert json.loads(resp.text) == expected

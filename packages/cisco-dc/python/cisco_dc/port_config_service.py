@@ -3,6 +3,7 @@ import _ncs
 import ncs.maapi as maapi
 import ncs.maagic as maagic
 from collections import defaultdict
+import re
 
 
 from . import utils
@@ -33,16 +34,7 @@ class PortServiceCallback(ncs.application.Service):
                 raise
 
             else:
-                port_configs = root.cisco_dc__dc_site[port.site].port_configs[port.port_group]
-                for kp in port_configs.attached_bridge_domain_kp:
-                    try:
-                        bd = ncs.maagic.cd(root, kp)
-                        bd.touch()
-                    except KeyError:
-                        self.log.error(f'Bridge-domain {kp} can not be found.')
-                    else:
-                        self.log.info(
-                            f'Tenant {bd.tenant} bridge-domain {bd.name} is touched by port {port.name}')
+                self._redeploy_bridge_domains(root, port, kp, th, self.log)
 
         elif op == _ncs.dp.NCS_SERVICE_UPDATE:
             try:
@@ -75,12 +67,17 @@ class PortServiceCallback(ncs.application.Service):
                 self.log.error(e)
                 raise
 
+            else:
+                m = maapi.Maapi()
+                th = m.attach(tctx)
+                self._redeploy_bridge_domains(root, port, kp, th, self.log)
+
     def _is_port_down(self, root, port):
         """Function to check port physical state
 
         Args:
             root: Maagic object pointing to the root of the CDB
-            port: service node
+            port: Service node
 
         """
         if port.port_type == 'ethernet':
@@ -129,7 +126,7 @@ class PortServiceCallback(ncs.application.Service):
 
         Args:
             root: Maagic object pointing to the root of the CDB
-            port: service node
+            port: Service node
 
         """
         if port.port_type == 'ethernet':
@@ -183,6 +180,29 @@ class PortServiceCallback(ncs.application.Service):
                         if ethernet[_port].description != utils.get_po_member_description(port):
                             raise Exception(
                                 f'Switch {node} port {_port} has a different description.')
+
+    def _redeploy_bridge_domains(self, root, port, kp, th, log):
+        """Function to redeploy bridge domains attached to the port-configs
+
+        Args:
+            root: Maagic object pointing to the root of the CDB
+            port: Service node
+            kp: Service node keypath object
+            th: Transaction backend
+            log: Log object (self.log)
+
+        """
+        pg_kp = re.match(r'(\.*\/.*)\/(.*)', str(kp)).groups()[0]
+        port_configs = ncs.maagic.get_node(th, pg_kp)
+        for kp in port_configs.attached_bridge_domain_kp:
+            try:
+                bd = ncs.maagic.cd(root, kp)
+                bd.touch()
+            except KeyError:
+                log.error(f'Bridge-domain {kp} can not be found.')
+            else:
+                log.info(
+                    f'Tenant {bd.tenant} bridge-domain {bd.name} is touched by port {port.name}')
 
 
 class PortServiceSelfComponent(ncs.application.NanoService):

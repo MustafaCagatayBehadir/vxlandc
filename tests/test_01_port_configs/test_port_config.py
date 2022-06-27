@@ -3,6 +3,7 @@ from pathlib import Path
 from nsoapi import NsoRestconfCall
 from pytest import mark
 import json
+from pprint import pprint
 
 
 class PortConfigsTests:
@@ -16,11 +17,6 @@ class PortConfigsTests:
 
     @classmethod
     def setup_class(cls):
-        cls.nso.patch(
-            payload=cls.payload_path / "test_setup_port_groups_config.json",
-            path="",
-            params="",
-        )
         cls.nso.patch(
             payload=cls.payload_path / "test_setup_ports_config.json",
             path="",
@@ -44,6 +40,7 @@ class PortConfigsTests:
         resp = self.nso.get(path=path)
         assert resp.status_code == 200
         assert json.loads(resp.text) == expected
+        pprint(resp.json())
 
     @mark.parametrize('expected, path', [
         (expected_path / 'ref_002_port_PC100001_sw_3_po_1.json',
@@ -63,6 +60,7 @@ class PortConfigsTests:
         resp = self.nso.get(path=path)
         assert resp.status_code == 200
         assert json.loads(resp.text) == expected
+        pprint(resp.json())
 
     @mark.parametrize('expected, path', [
         (expected_path / 'ref_003_port_VPC100001_sw_1_2_po_10.json',
@@ -94,6 +92,7 @@ class PortConfigsTests:
         resp = self.nso.get(path=path)
         assert resp.status_code == 200
         assert json.loads(resp.text) == expected
+        pprint(resp.json())
 
     @mark.parametrize('expected, post_path, get_path', [
         (expected_path / 'ref_004_port_ETH100001_sw_1_e_1_1.json',
@@ -113,6 +112,7 @@ class PortConfigsTests:
         assert post_resp.status_code == 201
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, post_path, get_path', [
         (expected_path / 'ref_005_port_ETH100001_sw_1_e_1_1.json',
@@ -129,6 +129,7 @@ class PortConfigsTests:
         assert post_resp.status_code == 201
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, post_payload, post_path', [
         (expected_path / 'ref_006_port_ETH100003_error.json',
@@ -146,6 +147,7 @@ class PortConfigsTests:
                              path=post_path, params='', action=False)
         assert resp.status_code == 400
         assert json.loads(resp.text) == expected
+        pprint(resp.json())
 
     @mark.parametrize('expected, patch_payload, patch_path', [
         (expected_path / 'ref_007_port_ETH100001_error.json',
@@ -163,6 +165,7 @@ class PortConfigsTests:
                               path=patch_path, params='')
         assert resp.status_code == 400
         assert json.loads(resp.text) == expected
+        pprint(resp.json())
 
     @mark.parametrize('expected, post_path, get_path', [
         (expected_path / 'ref_008_port_ETH100001_sw_1_e_1_1.json',
@@ -182,6 +185,7 @@ class PortConfigsTests:
         assert post_resp.status_code == 201
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, delete_path', [
         (expected_path / 'ref_009_port_ETH100002_error.json',
@@ -191,6 +195,7 @@ class PortConfigsTests:
         resp = self.nso.delete(path=delete_path)
         assert resp.status_code == 400
         assert json.loads(resp.text) == expected
+        pprint(resp.json())
 
     @mark.parametrize('expected, patch_payload, patch_path', [
         (expected_path / 'ref_010_port_ETH100003_error.json',
@@ -208,6 +213,7 @@ class PortConfigsTests:
                               path=patch_path, params='')
         assert resp.status_code == 400
         assert json.loads(resp.text) == expected
+        pprint(resp.json())
 
     @mark.parametrize('expected, patch_payload, patch_path', [
         (expected_path / 'ref_011_port_ETH100003_error.json',
@@ -225,6 +231,7 @@ class PortConfigsTests:
                               path=patch_path, params='')
         assert resp.status_code == 400
         assert json.loads(resp.text) == expected
+        pprint(resp.json())
 
     @mark.parametrize('expected, patch_payload, patch_path', [
         (expected_path / 'ref_012_port_group_ETH_PG_1_ACCESS_error.json',
@@ -242,3 +249,4 @@ class PortConfigsTests:
                               path=patch_path, params='')
         assert resp.status_code == 400
         assert json.loads(resp.text) == expected
+        pprint(resp.json())

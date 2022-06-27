@@ -193,16 +193,20 @@ class PortServiceCallback(ncs.application.Service):
 
         """
         pg_kp = re.match(r'(\.*\/.*)\/(.*)', str(kp)).groups()[0]
-        port_configs = ncs.maagic.get_node(th, pg_kp)
-        for kp in port_configs.attached_bridge_domain_kp:
-            try:
-                bd = ncs.maagic.cd(root, kp)
-                bd.touch()
-            except KeyError:
-                log.error(f'Bridge-domain {kp} can not be found.')
-            else:
-                log.info(
-                    f'Tenant {bd.tenant} bridge-domain {bd.name} is touched by port {port.name}')
+        try:
+            port_configs = ncs.maagic.get_node(th, pg_kp)
+        except KeyError:
+            log.error(f'Port group {pg_kp} can not be found.')
+        else:
+            for kp in port_configs.attached_bridge_domain_kp:
+                try:
+                    bd = ncs.maagic.cd(root, kp)
+                    bd.touch()
+                except KeyError:
+                    log.error(f'Bridge-domain {kp} can not be found.')
+                else:
+                    log.info(
+                        f'Tenant {bd.tenant} bridge-domain {bd.name} is touched by port {port.name}')
 
 
 class PortServiceSelfComponent(ncs.application.NanoService):

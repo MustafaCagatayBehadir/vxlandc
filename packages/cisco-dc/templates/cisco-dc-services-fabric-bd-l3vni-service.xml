@@ -108,6 +108,7 @@
                             <forward/>
                             <redirects>false</redirects>
                         </ipv6>
+                        <mtu>9216</mtu>
                     </Vlan>
                 </interface>
                 <interface xmlns="http://tail-f.com/ned/cisco-nx">

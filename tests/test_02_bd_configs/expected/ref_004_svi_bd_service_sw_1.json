@@ -135,7 +135,8 @@
                     null
                 ],
                 "redirects": false
-            }
+            },
+            "mtu": 9216
         },
         {
             "name": 3102,
@@ -153,7 +154,8 @@
                     null
                 ],
                 "redirects": false
-            }
+            },
+            "mtu": 9216
         }
     ]
 }

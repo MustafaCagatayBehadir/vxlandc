@@ -3,6 +3,7 @@ from pathlib import Path
 from nsoapi import NsoRestconfCall
 from pytest import mark
 import json
+from pprint import pprint
 
 
 class DCRoutePolicyConfigsTests:
@@ -50,6 +51,7 @@ class DCRoutePolicyConfigsTests:
         resp = self.nso.get(path=path)
         assert resp.status_code == 200
         assert json.loads(resp.text) == expected
+        pprint(resp.json())
 
     @mark.parametrize('expected, path', [
         (expected_path / 'ref_002_vrf_dc_route_policy_sw_1.json',
@@ -69,6 +71,7 @@ class DCRoutePolicyConfigsTests:
         resp = self.nso.get(path=path)
         assert resp.status_code == 200
         assert json.loads(resp.text) == expected
+        pprint(resp.json())
 
     @mark.parametrize('expected, path', [
         (expected_path / 'ref_003_bgp_dc_route_policy_sw_1.json',
@@ -88,6 +91,7 @@ class DCRoutePolicyConfigsTests:
         resp = self.nso.get(path=path)
         assert resp.status_code == 200
         assert json.loads(resp.text) == expected
+        pprint(resp.json())
 
     @mark.parametrize('expected, path', [
         (expected_path / 'ref_004_bgp_dc_route_policy_prefix_list_sw_1.json',
@@ -107,6 +111,7 @@ class DCRoutePolicyConfigsTests:
         resp = self.nso.get(path=path)
         assert resp.status_code == 200
         assert json.loads(resp.text) == expected
+        pprint(resp.json())
 
     @mark.parametrize('expected, patch_payload, patch_path', [
         (expected_path / 'ref_005_dc_route_policy_DC_RP_0001_error.json',
@@ -118,6 +123,7 @@ class DCRoutePolicyConfigsTests:
                               path=patch_path, params='')
         assert resp.status_code == 400
         assert json.loads(resp.text) == expected
+        pprint(resp.json())
 
     @mark.parametrize('expected, patch_payload, patch_path', [
         (expected_path / 'ref_006_dc_route_policy_DC_RP_0002_error.json',
@@ -129,6 +135,7 @@ class DCRoutePolicyConfigsTests:
                               path=patch_path, params='')
         assert resp.status_code == 400
         assert json.loads(resp.text) == expected
+        pprint(resp.json())
 
     @mark.parametrize('expected, patch_payload, patch_path', [
         (expected_path / 'ref_007_dc_route_policy_DC_RP_0001_error.json',
@@ -143,6 +150,7 @@ class DCRoutePolicyConfigsTests:
                               path=patch_path, params='')
         assert resp.status_code == 400
         assert json.loads(resp.text) == expected
+        pprint(resp.json())
 
     # @classmethod
     # def teardown_class(cls):

@@ -255,5 +255,15 @@ submodule cisco-dc-site {
                 type empty;
             }
         }
+
+        container migrations {
+            tailf:info "This container will be deleted after the migrations.";
+            presence true;
+
+            leaf disable-overwrite {
+                tailf:info "Turns off service overwrites.";
+                type empty;
+            }
+        }
     }
 }

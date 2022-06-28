@@ -41,7 +41,7 @@
                 </interface>
                 <router xmlns="http://tail-f.com/ned/cisco-nx">
                     <?switch-context bgp?>
-                    <bgp>
+                    <bgp tags="nocreate">
                         <id>{as-number}</id>
                         <vrf>
                             <name>{$VRF}</name>

@@ -116,7 +116,7 @@ class BridgeDomainServiceSelfComponent(ncs.application.NanoService):
 
         elif state == 'cisco-dc:bridge-domain-configured':
             _configure_bridge_domain(root, service, tctx, self.log)
-            _apply_template(service)
+            _apply_template(root, service)
 
         elif state == 'cisco-dc:bridge-domain-l3out-routing-configured':
             bridge_domain_l3out_routing._configure_l3out_routing(
@@ -276,16 +276,18 @@ def _set_hidden_leaves(root, bd, id_parameters, log):
             f'Vrf {bd.vrf} attached bridge domain device list is updated by tenant {bd.tenant} bridge-domain {bd.name}.')
 
 
-def _apply_template(bd):
+def _apply_template(root, bd):
     """Function to apply configurations to devices
 
     Args:
+        root: Maagic object pointing to the root of the CDB
         bd: service node
 
     """
+    disable_overwrite = root.cisco_dc__dc_site[bd.site].migrations.disable_overwrite.exists()
     template = ncs.template.Template(bd)
     vars = ncs.template.Variables()
-    vars.add('VLAN_NAME', utils.get_network_vlan_name(bd))
+    vars.add('VLAN_NAME', utils.get_network_vlan_name(bd) if not disable_overwrite else '')
     vars.add('DESCRIPTION', utils.get_svi_description(bd))
     template.apply('cisco-dc-services-fabric-bd-l2vni-service', vars)
 

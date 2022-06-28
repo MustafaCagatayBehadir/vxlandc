@@ -6,7 +6,7 @@
             <config>
                 <interface xmlns="http://tail-f.com/ned/cisco-nx">
                     <Ethernet>
-                        <name>{node-port}</name>
+                        <name tags="nocreate">{node-port}</name>
                         <?switch-context service?>
                         <enable>
                             <switchport>true</switchport>
@@ -113,7 +113,7 @@
                         </vpc>
                     </port-channel>
                     <Ethernet>
-                        <name>{node-port}</name>
+                        <name tags="nocreate">{node-port}</name>
                         <?switch-context service?>
                         <channel-group>
                             <id>{port-channel/allocated-port-channel-id}</id>
@@ -182,7 +182,7 @@
                         </vpc>
                     </port-channel>
                     <Ethernet>
-                        <name>{node-port}</name>
+                        <name tags="nocreate">{node-port}</name>
                         <?switch-context service?>
                         <channel-group>
                             <id>{vpc-port-channel/allocated-port-channel-id}</id>

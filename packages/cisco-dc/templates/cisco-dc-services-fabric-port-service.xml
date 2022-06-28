@@ -5,13 +5,13 @@
             <name>{ethernet/node}</name>
             <config>
                 <interface xmlns="http://tail-f.com/ned/cisco-nx">
-                    <Ethernet>
-                        <name tags="nocreate">{node-port}</name>
+                    <Ethernet tags="nocreate">
+                        <name>{node-port}</name>
                         <?switch-context service?>
-                        <enable>
+                        <enable tags="merge">
                             <switchport>true</switchport>
                         </enable>
-                        <switchport>
+                        <switchport tags="merge">
                             <mode>{mode}</mode>
                             <trunk when="{mode='trunk'}">
                                 <allowed>
@@ -24,11 +24,11 @@
                                 <vlan>{vlan}</vlan>
                             </access>
                         </switchport>
-                        <shutdown when="{shutdown}" />
+                        <shutdown when="{shutdown}" tags="merge" />
                         <shutdown when="{not(shutdown)}" tags="delete" />
-                        <description>{$DESCRIPTION}</description>
-                        <mtu>9216</mtu>
-                        <spanning-tree>
+                        <description tags="merge">{$DESCRIPTION}</description>
+                        <mtu tags="merge">9216</mtu>
+                        <spanning-tree tags="merge">
                             <bpduguard when="{connection='host'}">enable</bpduguard>
                             <guard when="{connection='switch'}">root</guard>
                             <port>
@@ -36,7 +36,7 @@
                                 <trunk when="{mode='trunk'}" />
                             </port>
                         </spanning-tree>
-                        <storm-control>
+                        <storm-control tags="merge">
                             <broadcast>
                                 <level>{$BUM}</level>
                             </broadcast>
@@ -51,7 +51,7 @@
                                 <shutdown when="{storm-control-action='shutdown'}" />
                             </action>
                         </storm-control>
-                        <vpc when="{deref(ethernet/node)/../node-type='vpc'}">
+                        <vpc when="{deref(ethernet/node)/../node-type='vpc'}" tags="merge">
                             <orphan-port>suspend</orphan-port>
                         </vpc>
                     </Ethernet>
@@ -112,17 +112,17 @@
                             <orphan-port>suspend</orphan-port>
                         </vpc>
                     </port-channel>
-                    <Ethernet>
-                        <name tags="nocreate">{node-port}</name>
+                    <Ethernet tags="nocreate">
+                        <name>{node-port}</name>
                         <?switch-context service?>
-                        <channel-group>
+                        <channel-group tags="merge">
                             <id>{port-channel/allocated-port-channel-id}</id>
                             <mode>active</mode>
                         </channel-group>
-                        <shutdown when="{shutdown}" />
+                        <shutdown when="{shutdown}" tags="merge" />
                         <shutdown when="{not(shutdown)}" tags="delete" />
-                        <description>{$MEMBER_DESCRIPTION}</description>
-                        <mtu>9216</mtu>
+                        <description tags="merge">{$MEMBER_DESCRIPTION}</description>
+                        <mtu tags="merge">9216</mtu>
                     </Ethernet>
                 </interface>
             </config>
@@ -181,17 +181,17 @@
                             <port-channel-number>{vpc-port-channel/allocated-port-channel-id}</port-channel-number>
                         </vpc>
                     </port-channel>
-                    <Ethernet>
-                        <name tags="nocreate">{node-port}</name>
+                    <Ethernet tags="nocreate">
+                        <name>{node-port}</name>
                         <?switch-context service?>
-                        <channel-group>
+                        <channel-group tags="merge">
                             <id>{vpc-port-channel/allocated-port-channel-id}</id>
                             <mode>active</mode>
                         </channel-group>
-                        <shutdown when="{shutdown}" />
+                        <shutdown when="{shutdown}" tags="merge" />
                         <shutdown when="{not(shutdown)}" tags="delete" />
-                        <description>{$MEMBER_DESCRIPTION}</description>
-                        <mtu>9216</mtu>
+                        <description tags="merge">{$MEMBER_DESCRIPTION}</description>
+                        <mtu tags="merge">9216</mtu>
                     </Ethernet>
                 </interface>
             </config>

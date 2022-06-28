@@ -43,7 +43,7 @@
                     <?switch-context bgp?>
                     <bgp tags="nocreate">
                         <id>{as-number}</id>
-                        <vrf>
+                        <vrf tags="merge">
                             <name>{$VRF}</name>
                             <neighbor>
                                 <id>{peer-address}</id>

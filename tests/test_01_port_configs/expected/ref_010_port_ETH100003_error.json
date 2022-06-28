@@ -1,0 +1,12 @@
+{
+    "ietf-restconf:errors": {
+        "error": [
+            {
+                "error-type": "application",
+                "error-tag": "malformed-message",
+                "error-path": "/cisco-dc:dc-site[fabric='avr-dss1-lbox-yaani-fabric']/port-configs[name='ETH_PG_1_ACCESS']/port-config",
+                "error-message": "Python cb_pre_modification error. Switch nw_lf_cnx9_001.dsslab_site1 port 1/49 is not a switchport."
+            }
+        ]
+    }
+}

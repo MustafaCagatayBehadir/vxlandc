@@ -24,6 +24,7 @@
                                     "preferred": "yes"
                                 }
                             ],
+                            "mtu": 9000,
                             "vrf": "tcell-grt"
                         },
                         {

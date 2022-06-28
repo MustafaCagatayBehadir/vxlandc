@@ -41,7 +41,7 @@
                 </interface>
                 <router xmlns="http://tail-f.com/ned/cisco-nx">
                     <?switch-context bgp?>
-                    <bgp>
+                    <bgp tags="nocreate">
                         <id>{as-number}</id>
                         <vrf>
                             <name>{$VRF}</name>
@@ -55,7 +55,7 @@
                                     <encryption>0</encryption>
                                     <passwd>{password}</passwd>
                                 </password>
-                                <ebgp-multihop>{ttl}</ebgp-multihop>
+                                <ebgp-multihop when="{ttl}">{ttl}</ebgp-multihop>
                                 <update-source>{$UPDATE_SOURCE}</update-source>
                                 <disable-connected-check when="{peer-control='dis-conn-check'}"/>
                                 <bfd when="{peer-control='bfd'}"/>
@@ -63,6 +63,7 @@
                                     <keepalive>{timers/keepalive}</keepalive>
                                     <holdtime>{timers/holdtime}</holdtime>
                                 </timers>
+                                <log-neighbor-changes/>
                                 <address-family when="{address-family='ipv4'}">
                                     <proto>ipv4</proto>
                                     <type>unicast</type>

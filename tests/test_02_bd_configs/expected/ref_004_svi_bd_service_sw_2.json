@@ -28,6 +28,7 @@
             "ipv6": {
                 "redirects": false
             },
+            "mtu": 9000,
             "fabric": {
                 "forwarding": {
                     "mode": "anycast-gateway"
@@ -130,8 +131,12 @@
                 "redirects": false
             },
             "ipv6": {
+                "forward": [
+                    null
+                ],
                 "redirects": false
-            }
+            },
+            "mtu": 9216
         },
         {
             "name": 3102,
@@ -145,8 +150,12 @@
                 "redirects": false
             },
             "ipv6": {
+                "forward": [
+                    null
+                ],
                 "redirects": false
-            }
+            },
+            "mtu": 9216
         }
     ]
 }

@@ -13,6 +13,9 @@ module cisco-dc {
     import tailf-ncs {
         prefix ncs;
     }
+    import tailf-kicker {
+        prefix kicker;
+    }
 
     include cisco-dc-common {
         revision-date "2022-01-17";
@@ -92,6 +95,10 @@ module cisco-dc {
                         default fabric-internal;
                     }
 
+                    refine routing/bgp/ttl {
+                        default 5;
+                    }
+
                     refine routing/bgp/peer-route-policy/profile {
                         must "deref(current())/../../dc-route-policy-type = 'tenant'" {
                             tailf:dependency ".";
@@ -103,6 +110,26 @@ module cisco-dc {
                             tailf:dependency ".";
                             error-message
                               "Route policy tenant should be match with bridge-domain tenant.";
+                        }
+                    }
+
+                    refine routing/bgp/source-interface/fabric-internal-connection/node/loopback-id {
+                        must "count(current()/../../../../../../routing/bgp[peer-address != current()/../../../../peer-address]"
+                                +   "/source-interface/fabric-internal-connection/node[leaf-id = current()/../leaf-id]/loopback-id = current()) = 0" {
+                            error-message
+                              "Loopback-id is already used in the device for another bgp peer under the same tenant and same bridge-domain.";
+                        }                    
+
+                        must "count(current()/../../../../../../../bridge-domain[name != current()/../../../../../../name]/routing/bgp[peer-address != current()/../../../../peer-address]"
+                                +   "/source-interface/fabric-internal-connection/node[leaf-id = current()/../leaf-id]/loopback-id = current()) = 0" {
+                            error-message
+                              "Loopback-id is already used in the device for another bgp peer under the same tenant but different bridge-domain.";
+                        }
+
+                        must "count(current()/../../../../../../../../tenant-service[name != current()/../../../../../../../name]/bridge-domain/routing/bgp"
+                                +   "/source-interface/fabric-internal-connection/node[leaf-id = current()/../leaf-id]/loopback-id = current()) = 0" {
+                            error-message
+                              "Loopback-id is already used in the device for another bgp peer under a different tenant.";
                         }
                     }
                 }
@@ -126,6 +153,7 @@ module cisco-dc {
                 uses ncs:nano-plan-data;
                 uses ncs:service-data;
                 ncs:servicepoint port-config-servicepoint;
+
                 key name;
 
                 uses port-config-service;
@@ -241,6 +269,20 @@ module cisco-dc {
                     leaf success {
                         type boolean;
                     }
+                }
+            }
+        }
+
+        container port-configs {
+            tailf:hidden "dc";
+            tailf:action bridge-domain-redeploy {
+                description
+                  "Action to redeploy attached bridge-domains after a port is created or deleted";
+                tailf:actionpoint bridge-domain-redeploy;
+                input {
+                    uses kicker:action-input-params;
+                }
+                output {
                 }
             }
         }

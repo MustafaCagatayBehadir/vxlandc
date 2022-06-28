@@ -3,6 +3,7 @@ from pathlib import Path
 from nsoapi import NsoRestconfCall
 from pytest import mark
 import json
+from pprint import pprint
 
 
 class L3OutRoutingConfigsTests:
@@ -41,6 +42,7 @@ class L3OutRoutingConfigsTests:
         resp = self.nso.get(path=path)
         assert resp.status_code == 200
         assert json.loads(resp.text) == expected
+        pprint(resp.json())
 
     @mark.parametrize('expected, patch_path, get_path', [
         (expected_path / 'ref_002_l3out_bgp_config_sw_1.json',
@@ -57,6 +59,7 @@ class L3OutRoutingConfigsTests:
         assert patch_resp.status_code == 204
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, patch_path, get_path', [
         (expected_path / 'ref_003_l3out_bgp_config_sw_1.json',
@@ -73,6 +76,7 @@ class L3OutRoutingConfigsTests:
         assert patch_resp.status_code == 204
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, patch_path, get_path', [
         (expected_path / 'ref_004_l3out_bgp_config_sw_1.json',
@@ -89,6 +93,7 @@ class L3OutRoutingConfigsTests:
         assert patch_resp.status_code == 204
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, patch_path, get_path', [
         (expected_path / 'ref_005_l3out_bgp_config_sw_1.json',
@@ -105,6 +110,7 @@ class L3OutRoutingConfigsTests:
         assert patch_resp.status_code == 204
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, patch_path, get_path', [
         (expected_path / 'ref_006_l3out_bgp_config_sw_1.json',
@@ -118,10 +124,10 @@ class L3OutRoutingConfigsTests:
         patch_resp = self.nso.patch(
             payload=self.payload_path / 'test_006_config.json', path=patch_path, params='')
         get_resp = self.nso.get(path=get_path)
-        data = json.loads(get_resp.text)
         assert patch_resp.status_code == 204
         assert get_resp.status_code == 200
-        assert data == expected
+        assert json.loads(get_resp.text) == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, patch_path, get_path', [
         (expected_path / 'ref_007_l3out_bgp_config_sw_1.json',
@@ -135,10 +141,10 @@ class L3OutRoutingConfigsTests:
         patch_resp = self.nso.patch(
             payload=self.payload_path / 'test_007_config.json', path=patch_path, params='')
         get_resp = self.nso.get(path=get_path)
-        data = json.loads(get_resp.text)
         assert patch_resp.status_code == 204
         assert get_resp.status_code == 200
-        assert data == expected
+        assert json.loads(get_resp.text) == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, patch_path, get_path', [
         (expected_path / 'ref_008_l3out_bgp_config_sw_1.json',
@@ -157,6 +163,7 @@ class L3OutRoutingConfigsTests:
         assert patch_resp.status_code == 204
         assert get_resp.status_code == 200
         assert data == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, path', [
         (expected_path / 'ref_009_l3out_bgpv6_config_sw_3.json',
@@ -172,6 +179,7 @@ class L3OutRoutingConfigsTests:
         resp = self.nso.get(path=path)
         assert resp.status_code == 200
         assert json.loads(resp.text) == expected
+        pprint(resp.json())
 
     @mark.parametrize('expected, patch_path, get_path', [
         (expected_path / 'ref_010_l3out_bgpv6_config_sw_3.json',
@@ -188,6 +196,7 @@ class L3OutRoutingConfigsTests:
         assert patch_resp.status_code == 204
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, patch_path, get_path', [
         (expected_path / 'ref_011_l3out_bgpv6_config_sw_3.json',
@@ -204,6 +213,7 @@ class L3OutRoutingConfigsTests:
         assert patch_resp.status_code == 204
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, patch_path, get_path', [
         (expected_path / 'ref_012_l3out_bgpv6_config_sw_3.json',
@@ -220,6 +230,7 @@ class L3OutRoutingConfigsTests:
         assert patch_resp.status_code == 204
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, patch_path, get_path', [
         (expected_path / 'ref_013_l3out_bgpv6_config_sw_3.json',
@@ -236,6 +247,7 @@ class L3OutRoutingConfigsTests:
         assert patch_resp.status_code == 204
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, patch_path, get_path', [
         (expected_path / 'ref_014_l3out_bgpv6_config_sw_3.json',
@@ -252,6 +264,7 @@ class L3OutRoutingConfigsTests:
         assert patch_resp.status_code == 204
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, patch_path, get_path', [
         (expected_path / 'ref_015_l3out_bgpv6_config_sw_3.json',
@@ -268,6 +281,7 @@ class L3OutRoutingConfigsTests:
         assert patch_resp.status_code == 204
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, patch_path, get_path', [
         (expected_path / 'ref_016_l3out_bgpv6_config_sw_3.json',
@@ -286,6 +300,7 @@ class L3OutRoutingConfigsTests:
         assert patch_resp.status_code == 204
         assert get_resp.status_code == 200
         assert data == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, path', [
         (expected_path / 'ref_017_l3out_bgp_config_to_dcpe_1_border_sw_1.json',
@@ -301,6 +316,7 @@ class L3OutRoutingConfigsTests:
         resp = self.nso.get(path=path)
         assert resp.status_code == 200
         assert json.loads(resp.text) == expected
+        pprint(resp.json())
 
     @mark.parametrize('expected, post_path, get_path', [
         (expected_path / 'ref_018_l3out_bgp_config_to_dcpe_1_border_sw_1.json',
@@ -317,6 +333,7 @@ class L3OutRoutingConfigsTests:
         assert post_resp.status_code == 201
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, post_path, get_path', [
         (expected_path / 'ref_019_l3out_bgp_config_to_dcpe_1_border_sw_1.json',
@@ -333,6 +350,7 @@ class L3OutRoutingConfigsTests:
         assert post_resp.status_code == 201
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, post_path, get_path', [
         (expected_path / 'ref_020_l3out_bgp_config_to_dcpe_1_border_sw_1.json',
@@ -349,6 +367,7 @@ class L3OutRoutingConfigsTests:
         assert post_resp.status_code == 201
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, post_path, get_path', [
         (expected_path / 'ref_021_l3out_bgp_config_to_dcpe_1_border_sw_1.json',
@@ -362,6 +381,7 @@ class L3OutRoutingConfigsTests:
         assert patch_resp.status_code == 204
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, post_path, get_path', [
         (expected_path / 'ref_022_l3out_bgp_config_to_dcpe_1_border_sw_1.json',
@@ -378,6 +398,7 @@ class L3OutRoutingConfigsTests:
         assert post_resp.status_code == 201
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, post_path, get_path', [
         (expected_path / 'ref_023_l3out_bgp_config_to_dcpe_1_border_sw_1.json',
@@ -394,6 +415,7 @@ class L3OutRoutingConfigsTests:
         assert post_resp.status_code == 201
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, post_path, get_path', [
         (expected_path / 'ref_024_l3out_bgp_config_to_dcpe_1_border_sw_1.json',
@@ -412,6 +434,7 @@ class L3OutRoutingConfigsTests:
         assert post_resp.status_code == 201
         assert get_resp.status_code == 200
         assert data == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, path', [
         (expected_path / 'ref_025_l3out_bgpv6_config_to_dcpe_1_border_sw_2.json',
@@ -427,6 +450,7 @@ class L3OutRoutingConfigsTests:
         resp = self.nso.get(path=path)
         assert resp.status_code == 200
         assert json.loads(resp.text) == expected
+        pprint(resp.json())
 
     @mark.parametrize('expected, post_path, get_path', [
         (expected_path / 'ref_026_l3out_bgpv6_config_to_dcpe_1_border_sw_2.json',
@@ -443,6 +467,7 @@ class L3OutRoutingConfigsTests:
         assert post_resp.status_code == 201
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, post_path, get_path', [
         (expected_path / 'ref_027_l3out_bgpv6_config_to_dcpe_1_border_sw_2.json',
@@ -459,6 +484,7 @@ class L3OutRoutingConfigsTests:
         assert post_resp.status_code == 201
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, post_path, get_path', [
         (expected_path / 'ref_028_l3out_bgpv6_config_to_dcpe_1_border_sw_2.json',
@@ -475,6 +501,7 @@ class L3OutRoutingConfigsTests:
         assert post_resp.status_code == 201
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, patch_path, get_path', [
         (expected_path / 'ref_029_l3out_bgpv6_config_to_dcpe_1_border_sw_2.json',
@@ -488,6 +515,7 @@ class L3OutRoutingConfigsTests:
         assert post_resp.status_code == 204
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, post_path, get_path', [
         (expected_path / 'ref_030_l3out_bgpv6_config_to_dcpe_1_border_sw_2.json',
@@ -504,6 +532,7 @@ class L3OutRoutingConfigsTests:
         assert post_resp.status_code == 201
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, post_path, get_path', [
         (expected_path / 'ref_031_l3out_bgpv6_config_to_dcpe_1_border_sw_2.json',
@@ -520,6 +549,7 @@ class L3OutRoutingConfigsTests:
         assert post_resp.status_code == 201
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, post_path, get_path', [
         (expected_path / 'ref_032_l3out_bgpv6_config_to_dcpe_1_border_sw_2.json',
@@ -538,6 +568,7 @@ class L3OutRoutingConfigsTests:
         assert post_resp.status_code == 201
         assert get_resp.status_code == 200
         assert data == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, get_path', [
         (expected_path / 'ref_033_l3out_static_route_ipv4_sw_1.json',
@@ -550,6 +581,7 @@ class L3OutRoutingConfigsTests:
         data = json.loads(get_resp.text)
         assert get_resp.status_code == 200
         assert data == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, get_path', [
         (expected_path / 'ref_034_l3out_static_route_ipv6_sw_3.json',
@@ -562,6 +594,7 @@ class L3OutRoutingConfigsTests:
         data = json.loads(get_resp.text)
         assert get_resp.status_code == 200
         assert data == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, patch_path', [
         (expected_path / 'ref_035_bd_service_4_error.json',
@@ -572,6 +605,7 @@ class L3OutRoutingConfigsTests:
             payload=self.payload_path / 'test_035_config.json', path=patch_path, params='')
         assert resp.status_code == 400
         assert json.loads(resp.text) == expected
+        pprint(resp.json())
 
     @mark.parametrize('expected, patch_path', [
         (expected_path / 'ref_036_bd_service_5_error.json',
@@ -582,6 +616,7 @@ class L3OutRoutingConfigsTests:
             payload=self.payload_path / 'test_036_config.json', path=patch_path, params='')
         assert resp.status_code == 400
         assert json.loads(resp.text) == expected
+        pprint(resp.json())
 
     @mark.parametrize('expected, patch_path', [
         (expected_path / 'ref_037_bd_service_4_error.json',
@@ -592,6 +627,7 @@ class L3OutRoutingConfigsTests:
             payload=self.payload_path / 'test_037_config.json', path=patch_path, params='')
         assert resp.status_code == 400
         assert json.loads(resp.text) == expected
+        pprint(resp.json())
 
     @mark.parametrize('expected, patch_path', [
         (expected_path / 'ref_038_bd_service_5_error.json',
@@ -602,3 +638,19 @@ class L3OutRoutingConfigsTests:
             payload=self.payload_path / 'test_038_config.json', path=patch_path, params='')
         assert resp.status_code == 400
         assert json.loads(resp.text) == expected
+        pprint(resp.json())
+
+    @mark.parametrize('expected, patch_path', [
+        (expected_path / 'ref_039_bd_service_1_error.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-1/routing'),
+        (expected_path / 'ref_039_bd_service_3_error.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0001_TURKCELL/bridge-domain=BD-SERVICE-3/routing'),
+        (expected_path / 'ref_039_bd_service_6_error.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/tenant-service=0002_TURKCELL/bridge-domain=BD-SERVICE-6/routing')
+    ], indirect=['expected'])
+    def test_039_l3out_bgp_loopback_id_error(self, expected, patch_path):
+        resp = self.nso.patch(
+            payload=self.payload_path / 'test_039_config.json', path=patch_path, params='')
+        assert resp.status_code == 400
+        assert json.loads(resp.text) == expected
+        pprint(resp.json())

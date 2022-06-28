@@ -1,0 +1,8 @@
+{
+    "port-configs": [
+        {
+            "name": "VPC_PG_1_ACCESS",
+            "mode": "trunk"
+        }
+    ]
+}

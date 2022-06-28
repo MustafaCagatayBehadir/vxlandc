@@ -102,21 +102,6 @@ submodule cisco-dc-tenant {
             }
         }
 
-        list port-device {
-            tailf:hidden "Attach device defined in infra by port service";
-            key "kp leaf-id";
-
-            leaf kp {
-                tailf:info "Attach port keypath";
-                type string;
-            }
-
-            leaf leaf-id {
-                tailf:info "Define Leaf Node ID";
-                type string;
-            }
-        }
-
         list device {
             tailf:hidden "Attach device defined in infra by bd service";
             key "kp leaf-id";
@@ -171,6 +156,12 @@ submodule cisco-dc-tenant {
             }
         }
 
+        leaf mtu {
+            when "../bd-subnet";
+            tailf:info "Set the interface Maximum Transmission Unit (MTU)";
+            type mtu;
+        }
+
         leaf vrf {
             when "../bd-subnet";
             tailf:info "Associate VRF on Bridge Domain";
@@ -211,6 +202,12 @@ submodule cisco-dc-tenant {
             tailf:hidden "Just for convenience";
             type string;
             tailf:default-ref "../../cisco-dc:name";
+        }
+
+        leaf id-allocated {
+            tailf:hidden "dc";
+            type boolean;
+            default false;
         }
 
         leaf approved {

@@ -1,0 +1,8 @@
+{
+    "port-configs": [
+        {
+            "name": "PC_PG_1_TRUNK",
+            "mode": "access"
+        }
+    ]
+}

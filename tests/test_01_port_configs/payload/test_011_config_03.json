@@ -1,16 +1,16 @@
 {
     "port-config": [
         {
-            "name": "VPC100001",
+            "name": "VPC100003",
+            "connection": "host",
+            "speed": "1G",
             "vpc-port-channel": {
+                "port-channel-id": 10,
+                "node-group": 1,
                 "node-1-port": [
-                    "1/10",
-                    "1/11",
                     "1/48"
                 ],
                 "node-2-port": [
-                    "1/10",
-                    "1/11",
                     "1/48"
                 ]
             }

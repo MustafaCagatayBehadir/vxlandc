@@ -22,14 +22,22 @@ class Main(ncs.application.Application):
         self.register_service('port-config-servicepoint',
                               port_config_service.PortServiceCallback)
 
-        # Port Config Registration
+        # Port Config Nano Service Registration
         self.register_nano_service('port-config-servicepoint', 'ncs:self',
                                    'cisco-dc:id-allocated', port_config_service.PortServiceSelfComponent)
 
         self.register_nano_service('port-config-servicepoint', 'ncs:self',
                                    'cisco-dc:port-configured', port_config_service.PortServiceSelfComponent)
 
-        # Bridge Domain Registration
+        # Port Config Service Validation
+        self.port_config_val = validate_callback.ValPointRegistrar(
+            self.log, 'port-config-val', 'port-config-service-validation', port_config_service.PortConfigServiceValidator(self.log))
+
+        # Bridge Domain Premod & Postmod
+        self.register_service('bridge-domain-config-servicepoint',
+                              bridge_domain_service.BridgeDomainServiceCallback)
+
+        # Bridge Domain Nano Service Registration
         self.register_nano_service('bridge-domain-config-servicepoint', 'ncs:self',
                                    'cisco-dc:id-allocated', bridge_domain_service.BridgeDomainServiceSelfComponent)
 
@@ -43,7 +51,7 @@ class Main(ncs.application.Application):
         self.port_config_val = validate_callback.ValPointRegistrar(
             self.log, 'bridge-domain-val', 'bridge-domain-service-validation', bridge_domain_service.BridgeDomainServiceValidator(self.log))
 
-        # VRF Config Registration
+        # VRF Config Nano Service Registration
         self.register_nano_service('vrf-config-servicepoint', 'ncs:self',
                                    'cisco-dc:id-allocated', vrf_config_service.VrfServiceSelfComponent)
 
@@ -60,11 +68,18 @@ class Main(ncs.application.Application):
         # Tenant Service Validation
         self.tenant_service_val = validate_callback.ValPointRegistrar(
             self.log, 'tenant-service-val', 'tenant-service-validation', tenant_service.TenantServiceValidator(self.log))
+
+        # Install Crypto Keys
+        with ncs.maapi.Maapi() as m:
+            m.install_crypto_keys()
         ############################################################################################
 
         # DC-ACTIONS
         self.register_action('create-site-resource-pools',
                              dc_actions.ResourcePoolsAction)
+
+        self.register_action('bridge-domain-redeploy',
+                             dc_actions.BridgeDomainRedeployAction)
 
     def teardown(self):
         self.log.info('Main FINISHED')

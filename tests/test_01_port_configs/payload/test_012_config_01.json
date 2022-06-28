@@ -1,0 +1,8 @@
+{
+    "port-configs": [
+        {
+            "name": "ETH_PG_1_ACCESS",
+            "mode": "trunk"
+        }
+    ]
+}

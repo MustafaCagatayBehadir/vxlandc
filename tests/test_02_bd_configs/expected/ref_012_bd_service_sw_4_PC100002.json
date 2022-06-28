@@ -1,0 +1,15 @@
+{
+    "tailf-ned-cisco-nx:switchport": {
+        "mode": "trunk",
+        "trunk": {
+            "allowed": {
+                "vlan": {
+                    "ids": [
+                        3,
+                        6
+                    ]
+                }
+            }
+        }
+    }
+}

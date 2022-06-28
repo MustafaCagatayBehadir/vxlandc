@@ -3,6 +3,7 @@ from pathlib import Path
 from nsoapi import NsoRestconfCall
 from pytest import mark
 import json
+from pprint import pprint
 
 
 class PortConfigsTests:
@@ -39,6 +40,7 @@ class PortConfigsTests:
         resp = self.nso.get(path=path)
         assert resp.status_code == 200
         assert json.loads(resp.text) == expected
+        pprint(resp.json())
 
     @mark.parametrize('expected, path', [
         (expected_path / 'ref_002_port_PC100001_sw_3_po_1.json',
@@ -58,6 +60,7 @@ class PortConfigsTests:
         resp = self.nso.get(path=path)
         assert resp.status_code == 200
         assert json.loads(resp.text) == expected
+        pprint(resp.json())
 
     @mark.parametrize('expected, path', [
         (expected_path / 'ref_003_port_VPC100001_sw_1_2_po_10.json',
@@ -89,6 +92,7 @@ class PortConfigsTests:
         resp = self.nso.get(path=path)
         assert resp.status_code == 200
         assert json.loads(resp.text) == expected
+        pprint(resp.json())
 
     @mark.parametrize('expected, post_path, get_path', [
         (expected_path / 'ref_004_port_ETH100001_sw_1_e_1_1.json',
@@ -108,6 +112,7 @@ class PortConfigsTests:
         assert post_resp.status_code == 201
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, post_path, get_path', [
         (expected_path / 'ref_005_port_ETH100001_sw_1_e_1_1.json',
@@ -124,6 +129,7 @@ class PortConfigsTests:
         assert post_resp.status_code == 201
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, post_payload, post_path', [
         (expected_path / 'ref_006_port_ETH100003_error.json',
@@ -141,6 +147,7 @@ class PortConfigsTests:
                              path=post_path, params='', action=False)
         assert resp.status_code == 400
         assert json.loads(resp.text) == expected
+        pprint(resp.json())
 
     @mark.parametrize('expected, patch_payload, patch_path', [
         (expected_path / 'ref_007_port_ETH100001_error.json',
@@ -158,6 +165,7 @@ class PortConfigsTests:
                               path=patch_path, params='')
         assert resp.status_code == 400
         assert json.loads(resp.text) == expected
+        pprint(resp.json())
 
     @mark.parametrize('expected, post_path, get_path', [
         (expected_path / 'ref_008_port_ETH100001_sw_1_e_1_1.json',
@@ -177,6 +185,7 @@ class PortConfigsTests:
         assert post_resp.status_code == 201
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
+        pprint(get_resp.json())
 
     @mark.parametrize('expected, delete_path', [
         (expected_path / 'ref_009_port_ETH100002_error.json',
@@ -186,37 +195,58 @@ class PortConfigsTests:
         resp = self.nso.delete(path=delete_path)
         assert resp.status_code == 400
         assert json.loads(resp.text) == expected
+        pprint(resp.json())
 
     @mark.parametrize('expected, patch_payload, patch_path', [
-        (expected_path / 'ref_010_port_ETH100001_error.json',
+        (expected_path / 'ref_010_port_ETH100003_error.json',
          payload_path / 'test_010_config_01.json',
-         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs=ETH_PG_1_ACCESS/port-config=ETH100001'),
-        (expected_path / 'ref_010_port_PC100001_error.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs=ETH_PG_1_ACCESS/port-config'),
+        (expected_path / 'ref_010_port_PC100003_error.json',
          payload_path / 'test_010_config_02.json',
-         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs=PC_PG_1_TRUNK/port-config=PC100001'),
-        (expected_path / 'ref_010_port_VPC100001_error.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs=PC_PG_1_TRUNK/port-config'),
+        (expected_path / 'ref_010_port_VPC100003_error.json',
          payload_path / 'test_010_config_03.json',
-         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs=VPC_PG_1_ACCESS/port-config=VPC100001')
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs=VPC_PG_1_ACCESS/port-config')
     ], indirect=['expected'])
     def test_010_routed_interface(self, expected, patch_payload, patch_path):
         resp = self.nso.patch(payload=patch_payload,
                               path=patch_path, params='')
         assert resp.status_code == 400
         assert json.loads(resp.text) == expected
+        pprint(resp.json())
 
     @mark.parametrize('expected, patch_payload, patch_path', [
-        (expected_path / 'ref_011_port_ETH100001_error.json',
+        (expected_path / 'ref_011_port_ETH100003_error.json',
          payload_path / 'test_011_config_01.json',
-         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs=ETH_PG_1_ACCESS/port-config=ETH100001'),
-        (expected_path / 'ref_011_port_PC100001_error.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs=ETH_PG_1_ACCESS/port-config'),
+        (expected_path / 'ref_011_port_PC100003_error.json',
          payload_path / 'test_011_config_02.json',
-         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs=PC_PG_1_TRUNK/port-config=PC100001'),
-        (expected_path / 'ref_011_port_VPC100001_error.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs=PC_PG_1_TRUNK/port-config'),
+        (expected_path / 'ref_011_port_VPC100003_error.json',
          payload_path / 'test_011_config_03.json',
-         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs=VPC_PG_1_ACCESS/port-config=VPC100001')
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs=VPC_PG_1_ACCESS/port-config')
     ], indirect=['expected'])
     def test_011_used_interface(self, expected, patch_payload, patch_path):
         resp = self.nso.patch(payload=patch_payload,
                               path=patch_path, params='')
         assert resp.status_code == 400
         assert json.loads(resp.text) == expected
+        pprint(resp.json())
+
+    @mark.parametrize('expected, patch_payload, patch_path', [
+        (expected_path / 'ref_012_port_group_ETH_PG_1_ACCESS_error.json',
+         payload_path / 'test_012_config_01.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs=ETH_PG_1_ACCESS'),
+        (expected_path / 'ref_012_port_group_PC_PG_1_TRUNK_error.json',
+         payload_path / 'test_012_config_02.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs=PC_PG_1_TRUNK'),
+        (expected_path / 'ref_012_port_group_VPC_PG_1_ACCESS_error.json',
+         payload_path / 'test_012_config_03.json',
+         'cisco-dc:dc-site=avr-dss1-lbox-yaani-fabric/port-configs=VPC_PG_1_ACCESS')
+    ], indirect=['expected'])
+    def test_012_port_group_mode_change(self, expected, patch_payload, patch_path):
+        resp = self.nso.patch(payload=patch_payload,
+                              path=patch_path, params='')
+        assert resp.status_code == 400
+        assert json.loads(resp.text) == expected
+        pprint(resp.json())

@@ -1,4 +1,3 @@
-from multiprocessing import connection
 import ncs
 from .resource_manager import id_allocator
 from . import utils
@@ -18,6 +17,7 @@ class VrfServiceSelfComponent(ncs.application.NanoService):
         # State functions
         if state == 'cisco-dc:id-allocated':
             _id_requested(root, service, tctx, self.log)
+            _id_allocated(root, service, tctx, self.log)
 
         elif state == 'cisco-dc:vrf-configured':
             _configure_vrf(root, service, tctx, self.log)
@@ -52,6 +52,29 @@ def _id_requested(root, vrf, tctx, log):
             f'Id is requested from pool {pool_name} for service {vrf.name}')
 
 
+def _id_allocated(root, vrf, tctx, log):
+    """Function to read vlan and vni ids from resource manager and set id_allocated leaf for the next state
+
+    Args:
+        root: Maagic object pointing to the root of the CDB
+        vrf: service node
+        tctx: transaction context (TransCtxRef)
+        log: log object(self.log)
+
+    """
+    resource_pools = root.cisco_dc__dc_site[vrf.site].resource_pools
+    id = [('vrf-vlan', resource_pools.l3_vrf_vlan),
+          ('l3vni', resource_pools.l3_vxlan_vni),
+          ('fabric-external-vrf-vlan', resource_pools.fabric_external_l3_vrf_vlan)]
+    for parameter, pool_name in id:
+        allocation_name = f'{vrf.site}:{vrf.name}'
+        if id_allocator.id_read(tctx.username, root, pool_name, allocation_name):
+            vrf.id_allocated = True
+        else:
+            vrf.id_allocated = False
+            break
+
+
 def _configure_vrf(root, vrf, tctx, log):
     """Function to configure vrf service
 
@@ -65,6 +88,7 @@ def _configure_vrf(root, vrf, tctx, log):
     id_parameters = dict()
     _create_service_parameters(root, vrf, tctx, id_parameters, log)
     _raise_service_exceptions(root, vrf, tctx, id_parameters, log)
+    _create_operational_lists(root, vrf, log)
     _set_hidden_leaves(root, vrf, id_parameters, log)
 
 
@@ -86,7 +110,7 @@ def _create_service_parameters(root, vrf, tctx, id_parameters, log):
         allocation_name = f'{vrf.site}:{vrf.name}'
         id_parameters[parameter] = id_allocator.id_read(
             tctx.username, root, pool_name, allocation_name)
-    log.info('Id Parameters :', id_parameters)
+    log.info('Vrf Config Id Parameters :', id_parameters)
 
 
 def _raise_service_exceptions(root, vrf, tctx, id_parameters, log):
@@ -115,6 +139,27 @@ def _raise_service_exceptions(root, vrf, tctx, id_parameters, log):
                 f'Fabric external vrf vlan {encap} is already used in device {node} connection port-channel{connection}.{encap}')
 
 
+def _create_operational_lists(root, vrf, log):
+    """Function to create operational lists
+
+    Args:
+        root: Maagic object pointing to the root of the CDB
+        vrf: service node
+        log: log object (self.log)
+
+    """
+    for bd_device in vrf.bd_device:
+        try:
+            bd = ncs.maagic.cd(root, bd_device.kp)
+            vrf.attached_bridge_domain.create(
+                bd.site, bd.tenant, bd.name)
+        except KeyError:
+            log.error(f'Bridge-domain {bd_device.kp} can not be found.')
+        else:
+            log.info(
+                f'Vrf {vrf.name} attached bridge domain operational list is created for tenant {bd.tenant} bridge-domain {bd.name}')
+
+
 def _set_hidden_leaves(root, vrf, id_parameters, log):
     """Function to create hidden leaves for template operations
 
@@ -132,13 +177,16 @@ def _set_hidden_leaves(root, vrf, id_parameters, log):
     border_leaves = [
         node.hostname for node in site.node if node.node_role == 'border-leaf']
 
-    for device in vrf.bd_device:
-        if (device.kp, device.leaf_id) not in vrf.device:
-            vrf.device.create(device.kp, device.leaf_id)
+    for bd in vrf.bd_device:
+        for leaf_id in bd.leaf_id:
+            vrf.device.create(bd.kp, leaf_id)
+        log.info(
+            f'Vrf {vrf.name} device is updated with bridge-domain keypath {bd.kp}.')
 
     for leaf_id in border_leaves:
-        if (vrf._path, leaf_id) not in vrf.device:
-            vrf.device.create(vrf._path, leaf_id)
+        vrf.device.create(vrf._path, leaf_id)
+        log.info(
+            f'Vrf {vrf.name} device is updated with border-leaf switches.')
 
     if vrf.direct.exists():
         if vrf.direct.address_family_ipv4_policy:
@@ -146,20 +194,24 @@ def _set_hidden_leaves(root, vrf, id_parameters, log):
             for dc_route_policy in dc_route_policies:
                 if vrf.direct.address_family_ipv4_policy in dc_route_policy.route_policy:
                     route_policy = dc_route_policy.route_policy[vrf.direct.address_family_ipv4_policy]
+                    vrf_device = route_policy.vrf_device.create(
+                        vrf._path)
                     for device in vrf.device:
-                        if (vrf._path, device.leaf_id) not in route_policy.device:
-                            route_policy.device.create(
-                                vrf._path, device.leaf_id)
+                        vrf_device.leaf_id.create(device.leaf_id)
+                    log.info(
+                        f'Dc route policy {dc_route_policy.name} route policy {route_policy.profile} attached vrf keypath leaf-list is updated by vrf {vrf.name}.')
 
         if vrf.direct.address_family_ipv6_policy:
             dc_route_policies = root.cisco_dc__dc_site[vrf.site].dc_route_policy
             for dc_route_policy in dc_route_policies:
                 if vrf.direct.address_family_ipv6_policy in dc_route_policy.route_policy:
                     route_policy = dc_route_policy.route_policy[vrf.direct.address_family_ipv6_policy]
+                    vrf_device = route_policy.vrf_device.create(
+                        vrf._path)
                     for device in vrf.device:
-                        if (vrf.name, device.leaf_id) not in route_policy.device:
-                            route_policy.device.create(
-                                vrf._path, device.leaf_id)
+                        vrf_device.leaf_id.create(device.leaf_id)
+                    log.info(
+                        f'Dc route policy {dc_route_policy.name} route policy {route_policy.profile} attached vrf keypath leaf-list is updated by vrf {vrf.name}.')
 
     if vrf.static.exists():
         if vrf.static.address_family_ipv4_policy:
@@ -167,20 +219,24 @@ def _set_hidden_leaves(root, vrf, id_parameters, log):
             for dc_route_policy in dc_route_policies:
                 if vrf.static.address_family_ipv4_policy in dc_route_policy.route_policy:
                     route_policy = dc_route_policy.route_policy[vrf.static.address_family_ipv4_policy]
+                    vrf_device = route_policy.vrf_device.create(
+                        vrf._path)
                     for device in vrf.device:
-                        if (vrf.name, device.leaf_id) not in route_policy.device:
-                            route_policy.device.create(
-                                vrf._path, device.leaf_id)
+                        vrf_device.leaf_id.create(device.leaf_id)
+                    log.info(
+                        f'Dc route policy {dc_route_policy.name} route policy {route_policy.profile} attached vrf keypath leaf-list is updated by vrf {vrf.name}.')
 
         if vrf.static.address_family_ipv6_policy:
             dc_route_policies = root.cisco_dc__dc_site[vrf.site].dc_route_policy
             for dc_route_policy in dc_route_policies:
                 if vrf.static.address_family_ipv6_policy in dc_route_policy.route_policy:
                     route_policy = dc_route_policy.route_policy[vrf.static.address_family_ipv6_policy]
+                    vrf_device = route_policy.vrf_device.create(
+                        vrf._path)
                     for device in vrf.device:
-                        if (vrf.name, device.leaf_id) not in route_policy.device:
-                            route_policy.device.create(
-                                vrf._path, device.leaf_id)
+                        vrf_device.leaf_id.create(device.leaf_id)
+                    log.info(
+                        f'Dc route policy {dc_route_policy.name} route policy {route_policy.profile} attached vrf keypath leaf-list is updated by vrf {vrf.name}.')
 
 
 def _apply_template(vrf):

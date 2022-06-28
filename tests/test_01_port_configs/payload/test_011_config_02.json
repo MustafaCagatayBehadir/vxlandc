@@ -1,11 +1,12 @@
 {
     "port-config": [
         {
-            "name": "PC100001",
+            "name": "PC100003",
+            "connection": "host",
+            "speed": "1G",
             "port-channel": {
+                "node": "nw_lf_cnx9_003.dsslab_site1",
                 "node-port": [
-                    "1/10",
-                    "1/11",
                     "1/48"
                 ]
             }

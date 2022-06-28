@@ -3,6 +3,7 @@ from pathlib import Path
 from nsoapi import NsoRestconfCall
 from pytest import mark
 import json
+from pprint import pprint
 
 
 class DcSiteTests:
@@ -27,6 +28,8 @@ class DcSiteTests:
         resp = self.nso.get(path=path)
         assert resp.status_code == 200
         assert json.loads(resp.text) == expected
+        pprint(resp.json())
+
 
     @mark.parametrize('expected, post_path, get_path', [
         (expected_path / 'ref_002_resource_pools.json',
@@ -40,3 +43,4 @@ class DcSiteTests:
         assert post_resp.status_code == 200
         assert get_resp.status_code == 200
         assert json.loads(get_resp.text) == expected
+        pprint(get_resp.json())

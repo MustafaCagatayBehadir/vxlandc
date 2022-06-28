@@ -54,6 +54,12 @@ submodule cisco-dc-common {
         }
     }
 
+    typedef mtu {
+        type uint16 {
+            range 68..9216;
+        }
+    }
+
     typedef route-target {
         type string {
             pattern

@@ -11,7 +11,13 @@
                 },
                 {
                     "name": "vrf-100001"
-                }                
+                },
+                {
+                    "name": "vrf-100002",
+                    "l3vni": {
+                        "fabric-external-vlan-id": 10
+                    }
+                }
             ]
         }
     ]

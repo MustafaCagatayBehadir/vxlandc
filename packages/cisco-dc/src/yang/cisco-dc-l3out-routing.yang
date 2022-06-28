@@ -178,7 +178,6 @@ submodule cisco-dc-l3out-routing {
                 leaf ttl {
                     tailf:info "Specify ttl value";
                     type uint8;
-                    default 5;
                 }
 
                 list peer-route-policy {

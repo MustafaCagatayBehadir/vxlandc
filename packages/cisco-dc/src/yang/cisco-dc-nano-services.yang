@@ -70,6 +70,9 @@ submodule cisco-dc-nano-services {
                                 ncs:trigger-expr "status = 'reached'";
                             }
                             ncs:monitor "$SERVICE" {
+                                ncs:trigger-expr "id-allocated = 'true'";
+                            }
+                            ncs:monitor "$SERVICE" {
                                 ncs:trigger-expr "approved = 'true'";
                             }
                         }
@@ -77,6 +80,7 @@ submodule cisco-dc-nano-services {
                     ncs:nano-callback;
                 }
             }
+
             ncs:state "ncs:ready";
         }
     }
@@ -112,6 +116,9 @@ submodule cisco-dc-nano-services {
                         ncs:all {
                             ncs:monitor  "$SERVICE/plan/component[type='ncs:self'][name='self']/state[name='cisco-dc:id-allocated']" {
                                 ncs:trigger-expr "status = 'reached'";
+                            }
+                            ncs:monitor "$SERVICE" {
+                                ncs:trigger-expr "id-allocated = 'true'";
                             }
                             ncs:monitor "$SERVICE" {
                                 ncs:trigger-expr "approved = 'true'";
@@ -170,6 +177,9 @@ submodule cisco-dc-nano-services {
                         ncs:all {
                             ncs:monitor  "$SERVICE/plan/component[type='ncs:self'][name='self']/state[name='cisco-dc:id-allocated']" {
                                 ncs:trigger-expr "status = 'reached'";
+                            }
+                            ncs:monitor "$SERVICE" {
+                                ncs:trigger-expr "id-allocated = 'true'";
                             }
                             ncs:monitor "$SERVICE" {
                                 ncs:trigger-expr "approved = 'true'";

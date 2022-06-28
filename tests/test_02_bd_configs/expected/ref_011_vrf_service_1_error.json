@@ -1,0 +1,12 @@
+{
+    "ietf-restconf:errors": {
+        "error": [
+            {
+                "error-type": "application",
+                "error-tag": "malformed-message",
+                "error-path": "/cisco-dc:dc-site[fabric='avr-dss1-lbox-yaani-fabric']/vrf-config[name='vrf-100002']/approved",
+                "error-message": "Python cb_nano_create error. Fabric external vrf vlan 10 is already used in device nw_blf_cnx9_001.dsslab_site1 connection port-channel501.10"
+            }
+        ]
+    }
+}

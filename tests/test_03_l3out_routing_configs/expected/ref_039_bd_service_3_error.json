@@ -1,0 +1,12 @@
+{
+    "ietf-restconf:errors": {
+        "error": [
+            {
+                "error-type": "application",
+                "error-tag": "invalid-value",
+                "error-path": "/cisco-dc:dc-site[fabric='avr-dss1-lbox-yaani-fabric']/tenant-service[name='0001_TURKCELL']/bridge-domain[name='BD-SERVICE-3']/routing",
+                "error-message": "/dc-site{avr-dss1-lbox-yaani-fabric}/tenant-service{0001_TURKCELL}/bridge-domain{BD-SERVICE-3}/routing/bgp{10.0.0.3}/source-interface/fabric-internal-connection/node{nw_lf_cnx9_001.dsslab_site1}/loopback-id (value \"100\"): Loopback-id is already used in the device for another bgp peer under the same tenant but different bridge-domain."
+            }
+        ]
+    }
+}

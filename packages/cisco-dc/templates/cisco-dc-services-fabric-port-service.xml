@@ -6,7 +6,7 @@
             <config>
                 <interface xmlns="http://tail-f.com/ned/cisco-nx">
                     <Ethernet>
-                        <name>{node-port}</name>
+                        <name tags="nocreate">{node-port}</name>
                         <?switch-context service?>
                         <enable>
                             <switchport>true</switchport>
@@ -16,12 +16,12 @@
                             <trunk when="{mode='trunk'}">
                                 <allowed>
                                     <vlan>
-                                        <ids>{bd-vlan/vlan}</ids>
+                                        <ids>{vlan}</ids>
                                     </vlan>
                                 </allowed>
                             </trunk>
                             <access when="{mode='access'}">
-                                <vlan>{bd-vlan/vlan}</vlan>
+                                <vlan>{vlan}</vlan>
                             </access>
                         </switchport>
                         <shutdown when="{shutdown}" />
@@ -73,12 +73,12 @@
                             <trunk when="{mode='trunk'}">
                                 <allowed>
                                     <vlan>
-                                        <ids>{bd-vlan/vlan}</ids>
+                                        <ids>{vlan}</ids>
                                     </vlan>
                                 </allowed>
                             </trunk>
                             <access when="{mode='access'}">
-                                <vlan>{bd-vlan/vlan}</vlan>
+                                <vlan>{vlan}</vlan>
                             </access>
                         </switchport>
                         <shutdown when="{shutdown}" />
@@ -113,7 +113,7 @@
                         </vpc>
                     </port-channel>
                     <Ethernet>
-                        <name>{node-port}</name>
+                        <name tags="nocreate">{node-port}</name>
                         <?switch-context service?>
                         <channel-group>
                             <id>{port-channel/allocated-port-channel-id}</id>
@@ -142,12 +142,12 @@
                             <trunk when="{mode='trunk'}">
                                 <allowed>
                                     <vlan>
-                                        <ids>{bd-vlan/vlan}</ids>
+                                        <ids>{vlan}</ids>
                                     </vlan>
                                 </allowed>
                             </trunk>
                             <access when="{mode='access'}">
-                                <vlan>{bd-vlan/vlan}</vlan>
+                                <vlan>{vlan}</vlan>
                             </access>
                         </switchport>
                         <shutdown when="{shutdown}" />
@@ -182,7 +182,7 @@
                         </vpc>
                     </port-channel>
                     <Ethernet>
-                        <name>{node-port}</name>
+                        <name tags="nocreate">{node-port}</name>
                         <?switch-context service?>
                         <channel-group>
                             <id>{vpc-port-channel/allocated-port-channel-id}</id>

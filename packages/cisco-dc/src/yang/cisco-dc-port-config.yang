@@ -26,36 +26,66 @@ submodule cisco-dc-port-config {
 
         leaf name {
             tailf:info "Port Group Name";
-            tailf:cli-allow-range;
             type dc-string;
         }
 
         leaf mode {
             tailf:info "Port Group Mode can be Access or Trunk";
-            tailf:display-when "not(../mode-oper)";
             type enumeration {
                 enum access;
                 enum trunk;
             }
             mandatory true;
-        }
-
-        leaf mode-oper {
-            tailf:info "Port Group Mode operational value";
-            tailf:cli-show-config;
-            config false;
-            type string;
-            tailf:default-ref "../mode";
-        }
-
-        list bd-service {
-            tailf:hidden "Attach bridge domain defined in infra";
-            key "kp";
-
-            leaf kp {
-                tailf:info "Specify keypath name";
-                type string;
+        
+            must "not(../port-config/mode) or current() = ../port-config/mode" {
+                error-message
+                  "Port group mode can't be changed if it has ports under it.";
             }
+        }
+
+        list attached-bridge-domain {
+            tailf:info "Attach bridge-domain defined in infra by bridge-domain service";
+            config false;
+            tailf:cdb-oper {
+                tailf:persistent true;
+            }
+
+            key "site tenant bridge-domain";
+
+            leaf site {
+                tailf:info "Site name";
+                type leafref {
+                    path "../../../cisco-dc:fabric";
+                }
+            }
+
+            leaf tenant {
+                tailf:info "Tenant name";
+                type leafref {
+                    path "../../../cisco-dc:tenant-service/cisco-dc:name";
+                }
+            }
+
+            leaf bridge-domain {
+                tailf:info "Bridge domain name";
+                type leafref {
+                    path "deref(../tenant)/../cisco-dc:bridge-domain/cisco-dc:name";
+                }
+            }
+        }
+
+        leaf-list attached-bridge-domain-kp {
+            tailf:hidden "dc";
+            type string;
+        }
+
+        leaf-list attached-ports {
+            tailf:info "Attached port-config name";
+            config false;
+            tailf:cdb-oper {
+                tailf:persistent true;
+            }
+            type dc-string;
         }
     }
 
@@ -65,10 +95,6 @@ submodule cisco-dc-port-config {
             tailf:info "Port Name";
             tailf:cli-allow-range;
             type dc-string;
-        }
-
-        tailf:validate "port-config-service-validation" {
-            tailf:dependency ".";
         }
 
         leaf description {
@@ -133,19 +159,21 @@ submodule cisco-dc-port-config {
                         mandatory true;
                     }
 
+                    leaf-list node-port-copy {
+                        tailf:info "only to suppress compiler warning on must expression";
+                        type string;
+                        tailf:hidden "dc";
+                    }
+
                     leaf-list node-port {
                         tailf:info "Node Port Id List";
                         type node-port;
                         min-elements 1;
-                    }
 
-                    leaf node-port-flat {
-                        config false;
-                        tailf:cdb-oper {
-                            tailf:persistent true;
+                        must "not(../node-port-copy) or ../node-port-copy = ." {
+                            error-message
+                              "Node-port can't be changed ones the port is deployed";
                         }
-                        tailf:info "Flat structure of the Node Port";
-                        type string;
                     }
                 }
             }
@@ -198,15 +226,6 @@ submodule cisco-dc-port-config {
                         tailf:info "Node Port Id List";
                         type node-port;
                         min-elements 1;
-                    }
-
-                    leaf node-port-flat {
-                        config false;
-                        tailf:cdb-oper {
-                            tailf:persistent true;
-                        }
-                        tailf:info "Flat structure of the Node Port";
-                        type string;
                     }
                 }
             }
@@ -263,24 +282,6 @@ submodule cisco-dc-port-config {
                         min-elements 1;
                     }
 
-                    leaf node-1-port-flat {
-                        config false;
-                        tailf:cdb-oper {
-                            tailf:persistent true;
-                        }
-                        tailf:info "Flat structure of the Node 1 Port";
-                        type string;
-                    }
-
-                    leaf node-2-port-flat {
-                        config false;
-                        tailf:cdb-oper {
-                            tailf:persistent true;
-                        }
-                        tailf:info "Flat structure of the Node 2 Port";
-                        type string;
-                    }
-
                     list node {
                         tailf:hidden "dc";
 
@@ -304,21 +305,6 @@ submodule cisco-dc-port-config {
                         }
                     }
                 }
-            }
-        }
-
-        list bd-vlan {
-            tailf:hidden "Attach bridge domain vlan id";
-            key "kp vlan";
-
-            leaf kp {
-                tailf:info "Specify keypath name";
-                type string;
-            }
-
-            leaf vlan {
-                tailf:info "Define vlan value";
-                type vlan;
             }
         }
 
@@ -366,15 +352,32 @@ submodule cisco-dc-port-config {
             type string;
         }
 
+        leaf-list vlan {
+            tailf:info "Vlan id list for port.";
+            type vlan;
+            tailf:hidden "dc";
+        }
+
         leaf port-group {
             tailf:hidden "Just for convenience";
             type string;
             tailf:default-ref "../../name";
         }
 
+        leaf-list attached-bridge-domain-kp {
+            tailf:hidden "dc";
+            type string;
+        }
+
         leaf type {
             tailf:hidden "dc";
             type string;
+        }
+
+        leaf id-allocated {
+            tailf:hidden "dc";
+            type boolean;
+            default false;
         }
 
         leaf approved {

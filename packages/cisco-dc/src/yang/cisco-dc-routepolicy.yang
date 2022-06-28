@@ -330,6 +330,44 @@ submodule cisco-dc-routepolicy {
                 }
             }
 
+            list bd-device {
+                when "current()/../../dc-route-policy-type = 'tenant'";
+                tailf:hidden "dc";
+
+                key kp;
+
+                leaf kp {
+                    tailf:info "Bridge-domain keypath";
+                    type string;
+                }
+
+                leaf-list leaf_id {
+                    tailf:info "Bridge-domain device";
+                    type leafref {
+                        path "/ncs:devices/ncs:device/ncs:name";
+                    }
+                }
+            }
+
+            list vrf-device {
+                when "current()/../../dc-route-policy-type = 'vrf'";
+                tailf:hidden "dc";
+
+                key kp;
+
+                leaf kp {
+                    tailf:info "Vrf keypath";
+                    type string;
+                }
+
+                leaf-list leaf_id {
+                    tailf:info "Vrf device";
+                    type leafref {
+                        path "/ncs:devices/ncs:device/ncs:name";
+                    }
+                }
+            }
+
             list device {
                 tailf:hidden "Attach device defined in infra";
                 key "kp leaf-id";

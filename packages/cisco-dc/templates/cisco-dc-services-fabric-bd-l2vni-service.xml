@@ -65,7 +65,8 @@
                                     <redirects>false</redirects>
                                 </ip> 
                             <?end?>
-                        <?end?>                       
+                        <?end?>
+                        <mtu when="{../mtu}">{../mtu}</mtu>     
                         <fabric>
                             <forwarding>
                                 <mode>anycast-gateway</mode>

@@ -5,8 +5,10 @@
             "inner-remote-as": {
                 "remote-as": 34984
             },
-            "ebgp-multihop": 5,
             "update-source": "port-channel501.3",
+            "log-neighbor-changes": [
+                null
+            ],
             "address-family": [
                 {
                     "proto": "ipv4",

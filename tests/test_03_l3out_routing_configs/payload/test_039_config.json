@@ -1,0 +1,26 @@
+{
+    "routing": {
+        "bgp": [
+            {
+                "peer-address": "10.0.0.3",
+                "source-interface": {
+                    "fabric-internal-connection": {
+                        "node": [
+                            {
+                                "leaf-id": "nw_lf_cnx9_001.dsslab_site1",
+                                "loopback-id": 100,
+                                "address": "10.3.0.1/32"
+                            },
+                            {
+                                "leaf-id": "nw_lf_cnx9_002.dsslab_site1",
+                                "loopback-id": 100,
+                                "address": "10.3.0.2/32"
+                            }
+                        ]
+                    }
+                },
+                "remote-as": 65540
+            }
+        ]
+    }
+}

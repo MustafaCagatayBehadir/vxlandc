@@ -7,9 +7,6 @@
             },
             "local-as": 9121,
             "update-source": "port-channel501.3",
-            "log-neighbor-changes": [
-                null
-            ],
             "bfd": [
                 null
             ],

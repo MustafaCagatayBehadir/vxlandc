@@ -6,9 +6,6 @@
                 "remote-as": 34984
             },
             "update-source": "port-channel501.3",
-            "log-neighbor-changes": [
-                null
-            ],
             "address-family": [
                 {
                     "proto": "ipv4",

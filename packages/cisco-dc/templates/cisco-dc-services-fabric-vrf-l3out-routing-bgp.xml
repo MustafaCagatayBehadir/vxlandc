@@ -63,7 +63,6 @@
                                     <keepalive>{timers/keepalive}</keepalive>
                                     <holdtime>{timers/holdtime}</holdtime>
                                 </timers>
-                                <log-neighbor-changes/>
                                 <address-family when="{address-family='ipv4'}">
                                     <proto>ipv4</proto>
                                     <type>unicast</type>

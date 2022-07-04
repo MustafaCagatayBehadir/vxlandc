@@ -55,6 +55,7 @@
                         <id>{as-number}</id>
                         <vrf>
                             <name>{name}</name>
+                            <log-neighbor-changes/>
                             <address-family>
                                 <proto>ipv4</proto>
                                 <type>unicast</type>

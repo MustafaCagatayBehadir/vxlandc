@@ -7,9 +7,6 @@
             },
             "ebgp-multihop": 5,
             "update-source": "loopback100",
-            "log-neighbor-changes": [
-                null
-            ],
             "address-family": [
                 {
                     "proto": "ipv6",

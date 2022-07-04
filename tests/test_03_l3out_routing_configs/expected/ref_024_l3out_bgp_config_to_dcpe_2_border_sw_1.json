@@ -11,9 +11,6 @@
                 "passwd": ".*"
             },
             "update-source": "port-channel502.3",
-            "log-neighbor-changes": [
-                null
-            ],
             "bfd": [
                 null
             ],

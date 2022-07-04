@@ -11,9 +11,6 @@
                 "passwd": ".*"
             },
             "update-source": "port-channel501.3",
-            "log-neighbor-changes": [
-                null
-            ],
             "disable-connected-check": [
                 null
             ],

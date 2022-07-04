@@ -2,6 +2,9 @@
     "tailf-ned-cisco-nx:vrf": [
         {
             "name": "pdu-mgmt",
+            "log-neighbor-changes": [
+                null
+            ],
             "address-family": [
                 {
                     "proto": "ipv4",
